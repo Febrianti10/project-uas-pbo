@@ -1,0 +1,5 @@
+# Abaikan folder dependencies Composer
+/vendor/
+
+# Abaikan file environment (jika nanti Anda pakai)
+.env 
