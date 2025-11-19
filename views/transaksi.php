@@ -12,13 +12,13 @@ $tab = $_GET['tab'] ?? 'pendaftaran'; // default tab
             <li class="nav-item">
                 <a class="nav-link <?= $tab === 'pendaftaran' ? 'active' : '' ?>"
                    href="index.php?page=transaksi&tab=pendaftaran">
-                    📝 Pendaftaran (Check-In)
+                     Pendaftaran (Check-In)
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link <?= $tab === 'pengembalian' ? 'active' : '' ?>"
                    href="index.php?page=transaksi&tab=pengembalian">
-                    📦 Pengembalian (Check-Out)
+                     Pengembalian (Check-Out)
                 </a>
             </li>
         </ul>
