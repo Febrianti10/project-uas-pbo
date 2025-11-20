@@ -6,7 +6,7 @@
   <!-- Brand -->
   <div class="sidebar-brand">
     <a href="index.php?page=dashboard" class="brand-link">
-      <img src="assets/img/AdminLTELogo.png" alt="Logo" class="brand-image opacity-75 shadow" />
+      <img src="img/LOGO.png" alt="Logo" class="brand-image opacity-75 shadow" />
       <span class="brand-text fw-light">SIP Hewan</span>
     </a>
   </div>
