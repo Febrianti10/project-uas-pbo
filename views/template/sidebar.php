@@ -1,6 +1,5 @@
 <?php
-// pastikan di index.php sebelum include sidebar sudah ada:
-// $page = $_GET['page'] ?? 'dashboard';
+// pastikan $page sudah ada dari index.php
 ?>
 
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
@@ -15,14 +14,14 @@
   <!-- Sidebar Wrapper -->
   <div class="sidebar-wrapper">
     <nav class="mt-2">
-      <!-- PENTING: data-lte-toggle="treeview" -->
-      <ul
-        class="nav sidebar-menu flex-column"
-        data-lte-toggle="treeview"
-        role="navigation"
-        aria-label="Main navigation"
-        data-accordion="false"
-      >
+
+      <!-- UL utama -->
+      <ul class="nav sidebar-menu flex-column"
+          data-lte-toggle="treeview"
+          role="navigation"
+          aria-label="Main navigation"
+          data-accordion="false">
+
         <!-- DASHBOARD -->
         <li class="nav-item">
           <a href="index.php?page=dashboard"
@@ -32,11 +31,13 @@
           </a>
         </li>
 
-        <!-- DATA (TREEVIEW / DROPDOWN) -->
-        <li class="nav-item <?php echo in_array($page, ['hewan','pelanggan','layanan','transaksi']) ? 'menu-open' : ''; ?>">
-          <!-- PENTING: href="#" biar nggak pindah halaman -->
+        <!-- MENU DATA (DROPDOWN) -->
+        <li class="nav-item 
+            <?php echo in_array($page, ['hewan','pelanggan','layanan']) ? 'menu-open' : ''; ?>">
+          
           <a href="#"
-             class="nav-link <?php echo in_array($page, ['hewan','pelanggan','layanan','transaksi']) ? 'active' : ''; ?>">
+             class="nav-link 
+                <?php echo in_array($page, ['hewan','pelanggan','layanan']) ? 'active' : ''; ?>">
             <i class="nav-icon bi bi-archive-fill"></i>
             <p>
               Data
@@ -44,7 +45,7 @@
             </p>
           </a>
 
-          <!-- submenu -->
+          <!-- SUBMENU DATA -->
           <ul class="nav nav-treeview">
             <li class="nav-item">
               <a href="index.php?page=hewan"
@@ -53,6 +54,7 @@
                 <p>Data Hewan</p>
               </a>
             </li>
+
             <li class="nav-item">
               <a href="index.php?page=pelanggan"
                  class="nav-link <?php echo ($page === 'pelanggan') ? 'active' : ''; ?>">
@@ -60,6 +62,7 @@
                 <p>Data Pelanggan</p>
               </a>
             </li>
+
             <li class="nav-item">
               <a href="index.php?page=layanan"
                  class="nav-link <?php echo ($page === 'layanan') ? 'active' : ''; ?>">
@@ -67,14 +70,16 @@
                 <p>Jenis Layanan</p>
               </a>
             </li>
-            <li class="nav-item">
-              <a href="index.php?page=transaksi"
-                 class="nav-link <?php echo ($page === 'transaksi') ? 'active' : ''; ?>">
-                <i class="nav-icon bi bi-circle"></i>
-                <p>Transaksi Penitipan</p>
-              </a>
-            </li>
           </ul>
+        </li>
+
+        <!-- TRANSAKSI PENITIPAN (MENU TERSENDIRI) -->
+        <li class="nav-item">
+          <a href="index.php?page=transaksi"
+             class="nav-link <?php echo ($page === 'transaksi') ? 'active' : ''; ?>">
+            <i class="nav-icon bi bi-journal-text"></i>
+            <p>Transaksi Penitipan</p>
+          </a>
         </li>
 
         <!-- LAPORAN -->
@@ -93,6 +98,7 @@
             <p>Logout</p>
           </a>
         </li>
+
       </ul>
     </nav>
   </div>
