@@ -34,8 +34,8 @@
         </li>
 
         <!-- MENU DATA (DROPDOWN) -->
-        <li class="nav-item <?php echo in_array($page, ['hewan','pelanggan','layanan','transaksi']) ? 'menu-open' : ''; ?>">
-          <a href="#" class="nav-link <?php echo in_array($page, ['hewan','pelanggan','layanan','transaksi']) ? 'active' : ''; ?>">
+        <li class="nav-item <?php echo in_array($page, ['hewan','pelanggan','layanan']) ? 'menu-open' : ''; ?>">
+          <a href="#" class="nav-link <?php echo in_array($page, ['hewan','pelanggan','layanan']) ? 'active' : ''; ?>">
             <i class="nav-icon bi bi-archive-fill"></i>
             <p>
               Data
@@ -64,6 +64,8 @@
                 <p>Jenis Layanan</p>
               </a>
             </li>
+            
+        <!-- Transaksi -->
             <li class="nav-item">
               <a href="index.php?page=transaksi"
                  class="nav-link <?php echo ($page === 'transaksi') ? 'active' : ''; ?>">
