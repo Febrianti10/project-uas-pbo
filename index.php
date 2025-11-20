@@ -10,15 +10,23 @@ switch ($page) {
         break;
 
     case 'transaksi':
+        // ini bisa kamu pakai sebagai "Transaksi Penitipan"
         include 'views/transaksi.php';
         break;
 
     case 'layanan':
-        include 'views/layanan.php';   // nanti kamu buat views/layanan.php
+        // Jenis Layanan
+        include 'views/layanan.php';
         break;
 
     case 'hewan':
-        include 'views/hewan.php';     // nanti kamu buat views/hewan.php
+        // Data Hewan
+        include 'views/hewan.php';
+        break;
+
+    case 'pelanggan':
+        // Data Pelanggan
+        include 'views/pelanggan.php';
         break;
 
     case 'laporan':
@@ -37,6 +45,6 @@ switch ($page) {
 
     default:
         // kalau page tidak dikenali, tampilkan 404 sederhana
-        include 'views/404.php';       // boleh kamu buat file 404 sendiri
+        include 'views/404.php';
         break;
 }
