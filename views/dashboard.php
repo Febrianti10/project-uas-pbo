@@ -5,30 +5,55 @@ include __DIR__ . '/template/header.php';
 
 /*
   Controller bisa mengisi variabel ini:
+
   $totalHewan
   $totalKucing
   $totalAnjing
   $totalPendapatanHariIni
   $totalKamar
   $kamarTerisi
+  $kapasitasKucingMaks
+  $kapasitasAnjingMaks
   $transaksiTerbaru = [
-      ['no_form' => 'F-001', 'pemilik' => 'Budi', 'hewan' => 'Mochi', 'paket' => 'B001', 'status' => 'Lunas', 'total' => 300000],
+      [
+        'no_form' => 'F-001',
+        'pemilik' => 'Budi',
+        'hewan'   => 'Mochi',
+        'paket'   => 'B001 - Paket Harian + Grooming',
+        'status'  => 'Lunas',
+        'total'   => 300000
+      ],
       ...
   ];
 */
 
-$totalHewan                 = $totalHewan                 ?? 0;
-$totalKucing                = $totalKucing                ?? 0;
-$totalAnjing                = $totalAnjing                ?? 0;
-$totalPendapatanHariIni     = $totalPendapatanHariIni     ?? 0;
-$totalKamar                 = $totalKamar                 ?? 0;
-$kamarTerisi                = $kamarTerisi                ?? 0;
-$persenTerisi               = $totalKamar > 0 ? round(($kamarTerisi / $totalKamar) * 100) : 0;
-$transaksiTerbaru           = $transaksiTerbaru           ?? [];
+// nilai default jika controller belum isi
+$totalHewan             = $totalHewan             ?? 0;
+$totalKucing            = $totalKucing            ?? 0;
+$totalAnjing            = $totalAnjing            ?? 0;
+$totalPendapatanHariIni = $totalPendapatanHariIni ?? 0;
+$totalKamar             = $totalKamar             ?? 0;
+$kamarTerisi           = $kamarTerisi           ?? 0;
+$kapasitasKucingMaks    = $kapasitasKucingMaks    ?? 0;
+$kapasitasAnjingMaks    = $kapasitasAnjingMaks    ?? 0;
+$transaksiTerbaru       = $transaksiTerbaru       ?? [];
+
+// hitungan turunan
+$persenTerisi   = $totalKamar > 0 ? round(($kamarTerisi / $totalKamar) * 100) : 0;
+$kamarKosong    = max($totalKamar - $kamarTerisi, 0);
+
+$sisaSlotKucing = $kapasitasKucingMaks > 0
+    ? max($kapasitasKucingMaks - $totalKucing, 0)
+    : 0;
+
+$sisaSlotAnjing = $kapasitasAnjingMaks > 0
+    ? max($kapasitasAnjingMaks - $totalAnjing, 0)
+    : 0;
 ?>
 
 <h2 class="mb-3">Penitipan Hewan</h2>
 
+<!-- ROW 1: STAT KECIL -->
 <div class="row g-3 mb-3">
     <!-- Total Hewan Dititipkan -->
     <div class="col-lg-3 col-md-6">
@@ -39,7 +64,8 @@ $transaksiTerbaru           = $transaksiTerbaru           ?? [];
                     <span class="display-6 fw-semibold mb-0" data-count="<?= (int)$totalHewan; ?>">0</span>
                     <div class="text-muted small mt-1">Keseluruhan</div>
                 </div>
-                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center"
+                     style="width:42px;height:42px;">
                     <i class="bi bi-house-heart text-primary"></i>
                 </div>
             </div>
@@ -55,7 +81,8 @@ $transaksiTerbaru           = $transaksiTerbaru           ?? [];
                     <span class="fs-2 fw-semibold mb-0" data-count="<?= (int)$totalKucing; ?>">0</span>
                     <div class="text-muted small mt-1">Saat ini</div>
                 </div>
-                <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+                <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center"
+                     style="width:42px;height:42px;">
                     <i class="bi bi-cat text-info"></i>
                 </div>
             </div>
@@ -71,7 +98,8 @@ $transaksiTerbaru           = $transaksiTerbaru           ?? [];
                     <span class="fs-2 fw-semibold mb-0" data-count="<?= (int)$totalAnjing; ?>">0</span>
                     <div class="text-muted small mt-1">Saat ini</div>
                 </div>
-                <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+                <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center"
+                     style="width:42px;height:42px;">
                     <i class="bi bi-dog text-warning"></i>
                 </div>
             </div>
@@ -87,7 +115,8 @@ $transaksiTerbaru           = $transaksiTerbaru           ?? [];
                     <span class="fs-4 fw-semibold mb-0" data-money="<?= (int)$totalPendapatanHariIni; ?>">Rp 0</span>
                     <div class="text-muted small mt-1">Total transaksi masuk</div>
                 </div>
-                <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center" style="width:42px;height:42px;">
+                <div class="rounded-circle bg-success-subtle d-flex align-items-center justify-content-center"
+                     style="width:42px;height:42px;">
                     <i class="bi bi-cash-stack text-success"></i>
                 </div>
             </div>
@@ -95,6 +124,7 @@ $transaksiTerbaru           = $transaksiTerbaru           ?? [];
     </div>
 </div>
 
+<!-- ROW 2: RINGKASAN + TRANSAKSI TERBARU -->
 <div class="row g-3">
     <!-- Ringkasan Hari Ini -->
     <div class="col-lg-4">
@@ -112,6 +142,14 @@ $transaksiTerbaru           = $transaksiTerbaru           ?? [];
                         <span>Total kamar</span>
                         <strong><?= (int)$totalKamar; ?></strong>
                     </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span>Kamar terisi</span>
+                        <strong><?= (int)$kamarTerisi; ?></strong>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span>Kamar kosong</span>
+                        <strong><?= (int)$kamarKosong; ?></strong>
+                    </li>
                     <li class="list-group-item px-0">
                         <div class="d-flex justify-content-between mb-1">
                             <span>Okupansi kamar</span>
@@ -125,6 +163,22 @@ $transaksiTerbaru           = $transaksiTerbaru           ?? [];
                         </small>
                     </li>
                 </ul>
+
+                <!-- Info untuk kasir: sisa slot hewan -->
+                <div class="mt-3 p-2 rounded bg-body-secondary small">
+                    <div class="d-flex justify-content-between">
+                        <span>Sisa slot kucing</span>
+                        <strong><?= (int)$sisaSlotKucing; ?></strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Sisa slot anjing</span>
+                        <strong><?= (int)$sisaSlotAnjing; ?></strong>
+                    </div>
+                    <div class="text-muted mt-1">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Gunakan info ini sebelum menerima penitipan baru.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
