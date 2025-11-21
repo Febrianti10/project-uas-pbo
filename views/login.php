@@ -1,106 +1,90 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <title>Login - Sistem Penitipan Hewan</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login | Sistem Penitipan Hewan</title>
 
-  <!-- AdminLTE CSS -->
-  <link rel="stylesheet" href="/penitipan-hewan/assets/css/adminlte.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta1/dist/css/adminlte.min.css">
 
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+    <style>
+        /* Custom CSS */
+        body.login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* Mengubah warna background di luar card menjadi biru */
+            background-color: #0265FE !important; 
+        }
+        .login-box {
+            width: 360px;
+        }
+        /* style judul */
+        .login-title {
+            font-size: 1.5rem; /* Ukuran font h3 standar Bootstrap */
+            font-weight: 500; /* Tidak terlalu tebal */
+            color: #212529; /* Warna teks gelap standar */
+            text-decoration: none; /* Menghilangkan garis bawah link */
+        }
+    </style>
 </head>
-<body class="login-page bg-body-tertiary">
+<body class="login-page">
 
-  <div class="login-box">
-    <!-- Logo -->
-    <div class="login-logo mb-3">
-      <a href="#" class="text-decoration-none">
-        <i class="bi bi-shield-check me-1"></i>
-        <b>Penitipan</b> Hewan
-      </a>
+<div class="login-box">
+    
+    <div class="card card-outline card-primary shadow-lg border-0">
+        <div class="card-header text-center py-3">
+            <a href="#" class="login-title">
+                Sistem Penitipan Hewan
+            </a>
+        </div>
+        
+        <div class="card-body p-4">
+            <p class="login-box-msg text-muted">Silakan login untuk masuk sistem</p>
+
+            <?php if (isset($_SESSION['error_message'])): ?>
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    <?= $_SESSION['error_message']; ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php unset($_SESSION['error_message']); ?>
+            <?php endif; ?>
+
+            <form action="/project-uas-pbo/login-process" method="post">
+                
+                <div class="input-group mb-3">
+                    <input type="text" name="username" class="form-control form-control-lg bg-light" placeholder="Username" required autofocus>
+                    <div class="input-group-text bg-light border-start-0 text-muted">
+                        <span class="bi bi-person-fill"></span>
+                    </div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <input type="password" name="password" class="form-control form-control-lg bg-light" placeholder="Password" required>
+                    <div class="input-group-text bg-light border-start-0 text-muted">
+                        <span class="bi bi-lock-fill"></span>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">Sign In</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
     </div>
+</div>
 
-    <!-- Card -->
-    <div class="card shadow-sm border-0">
-      <div class="card-body login-card-body">
-        <p class="login-box-msg mb-4">
-          Silakan login sebagai admin untuk mengelola penitipan hewan.
-        </p>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@4.0.0-beta1/dist/js/adminlte.min.js"></script>
 
-        <!-- TAMPILKAN ERROR (opsional, nanti dari controller) -->
-        <?php if (!empty($errorMessage ?? '')): ?>
-          <div class="alert alert-danger py-2">
-            <?= htmlspecialchars($errorMessage); ?>
-          </div>
-        <?php endif; ?>
-
-        <form action="?page=auth&action=login" method="post" novalidate>
-          <!-- Username / Email -->
-          <div class="mb-3">
-            <label for="username" class="form-label">Username atau Email</label>
-            <div class="input-group">
-              <span class="input-group-text">
-                <i class="bi bi-person"></i>
-              </span>
-              <input
-                type="text"
-                class="form-control"
-                id="username"
-                name="username"
-                placeholder="Masukkan username atau email"
-                required
-              />
-            </div>
-          </div>
-
-          <!-- Password -->
-          <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <div class="input-group">
-              <span class="input-group-text">
-                <i class="bi bi-lock"></i>
-              </span>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                name="password"
-                placeholder="Masukkan password"
-                required
-              />
-            </div>
-          </div>
-
-          <!-- Remember + Tombol -->
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="1" id="remember" name="remember" />
-              <label class="form-check-label" for="remember">
-                Ingat saya
-              </label>
-            </div>
-            <a href="#" class="small text-decoration-none">Lupa password?</a>
-          </div>
-
-          <div class="d-grid mb-2">
-            <button type="submit" class="btn btn-primary">
-              <i class="bi bi-box-arrow-in-right me-1"></i> Login
-            </button>
-          </div>
-        </form>
-
-        <p class="mb-0 mt-3 text-center text-muted small">
-          &copy; <?= date('Y'); ?> Sistem Penitipan Hewan
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
-  <script src="/penitipan-hewan/assets/js/adminlte.js"></script>
 </body>
 </html>

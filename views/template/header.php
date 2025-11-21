@@ -29,32 +29,23 @@ if (!isset($pageTitle)) {
     <nav class="app-header navbar navbar-expand bg-body border-bottom shadow-sm">
         <div class="container-fluid">
 
-            <!-- Tombol toggle sidebar -->
+            <!-- Tombol toggle sidebar (kiri) -->
             <button class="navbar-toggler" type="button" data-lte-toggle="sidebar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Brand kecil di navbar -->
-            <a href="index.php?page=dashboard" class="navbar-brand ms-2">
-                <span class="brand-text fw-semibold">Admin Penitipan</span>
-            </a>
+            <!-- Kosongkan sisi kiri, biar badge user di kanan -->
+            <div class="flex-grow-1"></div>
 
-            <!-- Menu kanan -->
-            <ul class="navbar-nav ms-auto align-items-center">
-                <?php if (!empty($_SESSION['user'])): ?>
-                    <li class="nav-item me-3">
-                        <span class="nav-link">
-                            <i class="bi bi-person-circle me-1"></i>
-                            <?= htmlspecialchars($_SESSION['user']['username']) ?>
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <a href="index.php?page=logout" class="nav-link text-danger">
-                            <i class="bi bi-box-arrow-right me-1"></i> Logout
-                        </a>
-                    </li>
-                <?php endif; ?>
-            </ul>
+            <!-- Badge user di pojok kanan -->
+            <div class="d-flex align-items-center">
+                <div class="px-3 py-1 rounded-pill bg-primary text-white d-flex align-items-center">
+                    <i class="bi bi-person-fill me-2"></i>
+                    <span class="small">
+                        <?= htmlspecialchars($_SESSION['user']['username'] ?? 'admin'); ?>
+                    </span>
+                </div>
+            </div>
         </div>
     </nav>
     <!-- /HEADER -->
