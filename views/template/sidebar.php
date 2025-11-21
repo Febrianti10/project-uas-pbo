@@ -5,9 +5,9 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
   <!-- Brand -->
   <div class="sidebar-brand">
-    <a href="index.php?page=dashboard" class="brand-link">
-      <img src="img/Logo.png" alt="Logo" class="brand-image opacity-75 shadow" />
-      <span class="brand-text fw-light">SIP Hewan</span>
+    <a href="index.php?page=dashboard" class="brand-link d-flex align-items-center">
+      <img src="img/Logo.png" alt="Logo" class="brand-image brand-logo" />
+      <span class="brand-text fw-light ms-2">SIP Hewan</span>
     </a>
   </div>
 
@@ -17,15 +17,15 @@
 
       <!-- UL utama -->
       <ul class="nav sidebar-menu flex-column"
-          data-lte-toggle="treeview"
-          role="navigation"
-          aria-label="Main navigation"
-          data-accordion="false">
+        data-lte-toggle="treeview"
+        role="navigation"
+        aria-label="Main navigation"
+        data-accordion="false">
 
         <!-- DASHBOARD -->
         <li class="nav-item">
           <a href="index.php?page=dashboard"
-             class="nav-link <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
+            class="nav-link <?php echo ($page === 'dashboard') ? 'active' : ''; ?>">
             <i class="nav-icon bi bi-speedometer2"></i>
             <p>Dashboard</p>
           </a>
@@ -33,11 +33,11 @@
 
         <!-- MENU DATA (DROPDOWN) -->
         <li class="nav-item 
-            <?php echo in_array($page, ['hewan','pelanggan','layanan']) ? 'menu-open' : ''; ?>">
-          
+            <?php echo in_array($page, ['hewan', 'pelanggan', 'layanan']) ? 'menu-open' : ''; ?>">
+
           <a href="#"
-             class="nav-link 
-                <?php echo in_array($page, ['hewan','pelanggan','layanan']) ? 'active' : ''; ?>">
+            class="nav-link 
+                <?php echo in_array($page, ['hewan', 'pelanggan', 'layanan']) ? 'active' : ''; ?>">
             <i class="nav-icon bi bi-archive-fill"></i>
             <p>
               Data
@@ -49,7 +49,7 @@
           <ul class="nav nav-treeview">
             <li class="nav-item">
               <a href="index.php?page=hewan"
-                 class="nav-link <?php echo ($page === 'hewan') ? 'active' : ''; ?>">
+                class="nav-link <?php echo ($page === 'hewan') ? 'active' : ''; ?>">
                 <i class="nav-icon bi bi-circle"></i>
                 <p>Data Hewan</p>
               </a>
@@ -57,7 +57,7 @@
 
             <li class="nav-item">
               <a href="index.php?page=pelanggan"
-                 class="nav-link <?php echo ($page === 'pelanggan') ? 'active' : ''; ?>">
+                class="nav-link <?php echo ($page === 'pelanggan') ? 'active' : ''; ?>">
                 <i class="nav-icon bi bi-circle"></i>
                 <p>Data Pelanggan</p>
               </a>
@@ -65,7 +65,7 @@
 
             <li class="nav-item">
               <a href="index.php?page=layanan"
-                 class="nav-link <?php echo ($page === 'layanan') ? 'active' : ''; ?>">
+                class="nav-link <?php echo ($page === 'layanan') ? 'active' : ''; ?>">
                 <i class="nav-icon bi bi-circle"></i>
                 <p>Jenis Layanan</p>
               </a>
@@ -76,18 +76,9 @@
         <!-- TRANSAKSI PENITIPAN (MENU TERSENDIRI) -->
         <li class="nav-item">
           <a href="index.php?page=transaksi"
-             class="nav-link <?php echo ($page === 'transaksi') ? 'active' : ''; ?>">
+            class="nav-link <?php echo ($page === 'transaksi') ? 'active' : ''; ?>">
             <i class="nav-icon bi bi-journal-text"></i>
             <p>Transaksi Penitipan</p>
-          </a>
-        </li>
-
-        <!-- LAPORAN -->
-        <li class="nav-item">
-          <a href="index.php?page=laporan"
-             class="nav-link <?php echo ($page === 'laporan') ? 'active' : ''; ?>">
-            <i class="nav-icon bi bi-file-earmark-bar-graph"></i>
-            <p>Laporan</p>
           </a>
         </li>
 

@@ -38,15 +38,17 @@ body {
 /* ==============================
    HEADER JUDUL HALAMAN
 ============================== */
-h2, .page-title {
+h2,
+.page-title {
     font-weight: 700;
     color: #222;
 }
 
 /* ==============================
-   IKON BULAT
+   IKON BULAT UNTUK STAT CARD
+   (dibatasi hanya di dalam .card)
 ============================== */
-.rounded-circle {
+.card .rounded-circle {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -55,8 +57,12 @@ h2, .page-title {
 }
 
 /* warna icon sesuai kategori */
-.text-primary { color: var(--primary-blue) !important; }
-.text-accent { color: var(--accent-orange) !important; }
+.text-primary {
+    color: var(--primary-blue) !important;
+}
+.text-accent {
+    color: var(--accent-orange) !important;
+}
 
 /* ==============================
    BADGE STATUS
@@ -77,29 +83,79 @@ h2, .page-title {
 /* aksen khusus */
 .badge-accent {
     background: var(--accent-orange);
-    color: white;
+    color: #ffffff;
 }
 
 /* ==============================
    SIDEBAR
+   (dibatasi hanya di .app-sidebar,
+    supaya nav di navbar tidak ikut kena)
 ============================== */
-.nav-link {
+
+/* Background sidebar */
+.app-sidebar {
+    background-color: #0265FE !important;
+}
+
+/* Brand area (logo + teks) */
+.app-sidebar .sidebar-brand {
+    background-color: #0265FE;      /* warna utama */
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+}
+
+/* Logo Sidebar */
+.app-sidebar .brand-logo,
+.app-sidebar .brand-image {
+    height: 48px;     /* perbesar logo */
+    width: auto;      /* jaga proporsi */
+    object-fit: contain;
+    filter: drop-shadow(0 0 0 rgba(0,0,0,0)); /* hilangkan shadow */
+}
+
+/* Teks brand */
+.app-sidebar .brand-text {
+    color: #ffffff !important;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+
+/* Link di sidebar */
+.app-sidebar .nav-link {
     border-radius: 8px;
     transition: 0.2s ease;
     margin-bottom: 4px;
     font-weight: 500;
+    color: #ffffff !important;
 }
 
-.nav-link.active,
-.nav-link:hover {
-    background: rgba(2, 101, 254, 0.12) !important;
-    color: var(--primary-blue) !important;
+/* Ikon default di sidebar */
+.app-sidebar .nav-icon {
+    color: #ffffff !important;
+}
+
+/* Hover menu */
+.app-sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+/* Link aktif */
+.app-sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Submenu bulatan (icon di treeview) */
+.app-sidebar .nav-treeview .nav-icon {
+    color: #ffffff !important;
 }
 
 /* ==============================
    TABLE STYLE
 ============================== */
-table thead {
+table thead tr {
     background: #f0f4ff;
 }
 
@@ -146,7 +202,8 @@ table thead {
 /* ==============================
    ANIMASI STAT KECIL
 ============================== */
-[data-count], [data-money] {
+[data-count],
+[data-money] {
     font-weight: 700;
     color: var(--primary-blue);
 }
