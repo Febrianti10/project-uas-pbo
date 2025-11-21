@@ -3,70 +3,162 @@ $pageTitle  = 'Data Layanan';
 $activeMenu = 'layanan';
 include __DIR__ . '/template/header.php';
 
-/* 
-   Data bisa diambil dari database oleh controller, 
-   tapi untuk saat ini kita buat array agar tampilan langsung terlihat.
+/*
+   NANTI:
+   - Data ini idealnya diambil dari database (tabel `layanan` / `paket`).
+   - Kode paket & harga yang sama juga akan dipakai di form pendaftaran,
+     supaya total biaya bisa dihitung otomatis berdasarkan:
+     harga_paket x lama_inap.
 */
 
+// Paket utama: Daycare & Boarding
 $layananUtama = [
     [
-        'nama' => 'Penitipan Peliharaan (Boarding)',
-        'kode' => 'UTM001',
-        'deskripsi' => 'Layanan inti penitipan hewan selama 24 jam (anjing/kucing).',
+        'kode'   => 'P001',
+        'nama'   => 'Paket Daycare (Tanpa Menginap) ≤ 5 kg',
+        'harga'  => 50000,
+        'satuan' => '/ hari',
+        'detail' => [
+            'Makan 2x',
+            'Minum',
+            'Kandang & pasir',
+            'Tidak menginap',
+        ],
     ],
     [
-        'nama' => 'Penjaga Hewan di Rumah (Pet Sitting)',
-        'kode' => 'UTM002',
-        'deskripsi' => 'Pet sitter datang ke rumah pemilik untuk merawat hewan di lingkungan mereka sendiri.',
+        'kode'   => 'P002',
+        'nama'   => 'Paket Daycare (Tanpa Menginap) > 5 kg',
+        'harga'  => 60000,
+        'satuan' => '/ hari',
+        'detail' => [
+            'Makan 2x',
+            'Minum',
+            'Kandang & pasir',
+            'Tidak menginap',
+        ],
     ],
     [
-        'nama' => 'Penitipan Harian (Day Care)',
-        'kode' => 'UTM003',
-        'deskripsi' => 'Hewan dititipkan hanya pada siang hari dan dijemput sore hari.',
+        'kode'   => 'P003',
+        'nama'   => 'Paket Boarding',
+        'harga'  => 120000,
+        'satuan' => '/ hari',
+        'detail' => [
+            'Makan',
+            'Minum',
+            'Kandang & pasir',
+            'Menginap 24 jam',
+        ],
+    ],
+    [
+        'kode'   => 'P004',
+        'nama'   => 'Paket Boarding > 5 kg',
+        'harga'  => 120000,
+        'satuan' => '/ hari',
+        'detail' => [
+            'Makan',
+            'Minum',
+            'Kandang & pasir',
+            'Menginap 24 jam',
+        ],
+    ],
+    [
+        'kode'   => 'P005',
+        'nama'   => 'Paket Boarding VIP',
+        'harga'  => 250000,
+        'satuan' => '/ hari',
+        'detail' => [
+            'Makan',
+            'Minum',
+            'Kandang & pasir',
+            'Menginap 24 jam',
+            'Grooming lengkap (potong kuku, rapih bulu, bersih telinga, mandi, pengeringan, sisir, parfum)',
+        ],
     ],
 ];
 
+// Layanan tambahan
 $layananTambahan = [
     [
-        'nama' => 'Grooming Hewan (Pet Grooming)',
-        'kode' => 'ADD001',
-        'deskripsi' => 'Mandi, potong kuku, potong bulu, blow dry, dan perawatan kebersihan lainnya.',
+        'kode'   => 'G001',
+        'nama'   => 'Grooming Dasar',
+        'harga'  => 100000,
+        'satuan' => '/ sesi',
+        'detail' => [
+            'Pemotongan kuku',
+            'Perapihan bulu',
+            'Pembersihan telinga',
+            'Mandi & pengeringan',
+            'Sisir & parfum',
+        ],
     ],
     [
-        'nama' => 'Dog Walking',
-        'kode' => 'ADD002',
-        'deskripsi' => 'Mengajak anjing berjalan-jalan atau olahraga.',
+        'kode'   => 'G002',
+        'nama'   => 'Grooming Lengkap',
+        'harga'  => 170000,
+        'satuan' => '/ sesi',
+        'detail' => [
+            'Termasuk grooming dasar',
+            'Trimming / bentuk bulu',
+        ],
     ],
     [
-        'nama' => 'Pet Taxi / Transportation',
-        'kode' => 'ADD003',
-        'deskripsi' => 'Layanan antar jemput hewan dari rumah ke fasilitas atau tujuan lain.',
+        'kode'   => 'L003',
+        'nama'   => 'Vitamin / Suplemen',
+        'harga'  => 50000,
+        'satuan' => '/ sekali pemberian',
+        'detail' => [
+            'Pemberian vitamin / suplemen sesuai kebutuhan hewan',
+        ],
+    ],
+    [
+        'kode'   => 'L004',
+        'nama'   => 'Vaksin',
+        'harga'  => 260000,
+        'satuan' => '/ dosis',
+        'detail' => [
+            'Kucing: Tricat Trio / Felocell 3 / Purevax',
+            'Anjing: DHPPi / setara',
+        ],
     ],
 ];
 ?>
 
 <h2 class="mb-3">Data Layanan</h2>
 
-<!-- LAYANAN UTAMA -->
+<!-- PAKET PENITIPAN (DAYCARE & BOARDING) -->
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-primary text-white">
-        <h5 class="card-title mb-0">Layanan Utama Penitipan</h5>
+        <h5 class="card-title mb-0">Paket Penitipan (Daycare & Boarding)</h5>
     </div>
     <div class="card-body">
         <div class="row g-3">
             <?php foreach ($layananUtama as $l): ?>
-            <div class="col-lg-4 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="fw-semibold"><?= htmlspecialchars($l['nama']); ?></h5>
-                        <span class="badge bg-primary"><?= htmlspecialchars($l['kode']); ?></span>
-                        <p class="text-muted small mt-2"><?= htmlspecialchars($l['deskripsi']); ?></p>
-                        <button class="btn btn-outline-primary btn-sm w-100 mt-2">
-                            <i class="bi bi-pencil-square me-1"></i> Kelola Layanan
-                        </button>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="fw-semibold mb-1"><?= htmlspecialchars($l['nama']); ?></h5>
+                            <span class="badge bg-primary mb-2"><?= htmlspecialchars($l['kode']); ?></span>
+
+                            <p class="mb-1 fw-semibold">
+                                Rp <?= number_format($l['harga'], 0, ',', '.'); ?>
+                                <span class="text-muted small"><?= htmlspecialchars($l['satuan']); ?></span>
+                            </p>
+
+                            <?php if (!empty($l['detail'])): ?>
+                                <ul class="small text-muted mb-0 ps-3">
+                                    <?php foreach ($l['detail'] as $item): ?>
+                                        <li><?= htmlspecialchars($item); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+
+                            <!-- Tombol ini nanti bisa diarahkan ke form edit paket -->
+                            <button class="btn btn-outline-primary btn-sm w-100 mt-3">
+                                <i class="bi bi-pencil-square me-1"></i> Kelola Paket
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
     </div>
@@ -80,18 +172,31 @@ $layananTambahan = [
     <div class="card-body">
         <div class="row g-3">
             <?php foreach ($layananTambahan as $l): ?>
-            <div class="col-lg-4 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="fw-semibold"><?= htmlspecialchars($l['nama']); ?></h5>
-                        <span class="badge bg-secondary"><?= htmlspecialchars($l['kode']); ?></span>
-                        <p class="text-muted small mt-2"><?= htmlspecialchars($l['deskripsi']); ?></p>
-                        <button class="btn btn-outline-secondary btn-sm w-100 mt-2">
-                            <i class="bi bi-pencil-square me-1"></i> Kelola Layanan
-                        </button>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <h5 class="fw-semibold mb-1"><?= htmlspecialchars($l['nama']); ?></h5>
+                            <span class="badge bg-secondary mb-2"><?= htmlspecialchars($l['kode']); ?></span>
+
+                            <p class="mb-1 fw-semibold">
+                                Rp <?= number_format($l['harga'], 0, ',', '.'); ?>
+                                <span class="text-muted small"><?= htmlspecialchars($l['satuan']); ?></span>
+                            </p>
+
+                            <?php if (!empty($l['detail'])): ?>
+                                <ul class="small text-muted mb-0 ps-3">
+                                    <?php foreach ($l['detail'] as $item): ?>
+                                        <li><?= htmlspecialchars($item); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+
+                            <button class="btn btn-outline-secondary btn-sm w-100 mt-3">
+                                <i class="bi bi-pencil-square me-1"></i> Kelola Layanan
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
     </div>
