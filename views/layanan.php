@@ -4,200 +4,269 @@ $activeMenu = 'layanan';
 include __DIR__ . '/template/header.php';
 
 /*
-   NANTI:
-   - Data ini idealnya diambil dari database (tabel `layanan` / `paket`).
-   - Kode paket & harga yang sama juga akan dipakai di form pendaftaran,
-     supaya total biaya bisa dihitung otomatis berdasarkan:
-     harga_paket x lama_inap.
+    Catatan:
+    - Nanti array ini bisa diganti menjadi fetch dari database.
+    - Untuk sekarang dibuat statis supaya tampilannya jadi.
 */
 
-// Paket utama: Daycare & Boarding
+// PAKET PENITIPAN
 $layananUtama = [
     [
         'kode'   => 'P001',
         'nama'   => 'Paket Daycare (Tanpa Menginap) ≤ 5 kg',
         'harga'  => 50000,
         'satuan' => '/ hari',
-        'detail' => [
-            'Makan 2x',
-            'Minum',
-            'Kandang & pasir',
-            'Tidak menginap',
-        ],
+        'detail' => "Makan 2x\nMinum\nKandang & pasir\nTidak menginap",
     ],
     [
         'kode'   => 'P002',
         'nama'   => 'Paket Daycare (Tanpa Menginap) > 5 kg',
         'harga'  => 60000,
         'satuan' => '/ hari',
-        'detail' => [
-            'Makan 2x',
-            'Minum',
-            'Kandang & pasir',
-            'Tidak menginap',
-        ],
+        'detail' => "Makan 2x\nMinum\nKandang & pasir\nTidak menginap",
     ],
     [
         'kode'   => 'P003',
         'nama'   => 'Paket Boarding',
         'harga'  => 120000,
         'satuan' => '/ hari',
-        'detail' => [
-            'Makan',
-            'Minum',
-            'Kandang & pasir',
-            'Menginap 24 jam',
-        ],
+        'detail' => "Makan\nMinum\nKandang & pasir\nMenginap 24 jam",
     ],
     [
         'kode'   => 'P004',
         'nama'   => 'Paket Boarding > 5 kg',
         'harga'  => 120000,
         'satuan' => '/ hari',
-        'detail' => [
-            'Makan',
-            'Minum',
-            'Kandang & pasir',
-            'Menginap 24 jam',
-        ],
+        'detail' => "Makan\nMinum\nKandang & pasir\nMenginap 24 jam",
     ],
     [
         'kode'   => 'P005',
         'nama'   => 'Paket Boarding VIP',
         'harga'  => 250000,
         'satuan' => '/ hari',
-        'detail' => [
-            'Makan',
-            'Minum',
-            'Kandang & pasir',
-            'Menginap 24 jam',
-            'Grooming lengkap (potong kuku, rapih bulu, bersih telinga, mandi, pengeringan, sisir, parfum)',
-        ],
+        'detail' => "Makan\nMinum\nKandang & pasir\nMenginap 24 jam\nGrooming lengkap (potong kuku, rapih bulu, bersih telinga, mandi, pengeringan, sisir, parfum)",
     ],
 ];
 
-// Layanan tambahan
+// LAYANAN TAMBAHAN
 $layananTambahan = [
     [
         'kode'   => 'G001',
         'nama'   => 'Grooming Dasar',
         'harga'  => 100000,
         'satuan' => '/ sesi',
-        'detail' => [
-            'Pemotongan kuku',
-            'Perapihan bulu',
-            'Pembersihan telinga',
-            'Mandi & pengeringan',
-            'Sisir & parfum',
-        ],
+        'detail' => "Pemotongan kuku\nPerapihan bulu\nPembersihan telinga\nMandi & pengeringan\nSisir & parfum",
     ],
     [
         'kode'   => 'G002',
         'nama'   => 'Grooming Lengkap',
         'harga'  => 170000,
         'satuan' => '/ sesi',
-        'detail' => [
-            'Termasuk grooming dasar',
-            'Trimming / bentuk bulu',
-        ],
+        'detail' => "Termasuk grooming dasar\nTrimming / bentuk bulu",
     ],
     [
         'kode'   => 'L003',
         'nama'   => 'Vitamin / Suplemen',
         'harga'  => 50000,
         'satuan' => '/ sekali pemberian',
-        'detail' => [
-            'Pemberian vitamin / suplemen sesuai kebutuhan hewan',
-        ],
+        'detail' => "Pemberian vitamin / suplemen sesuai kebutuhan hewan",
     ],
     [
         'kode'   => 'L004',
         'nama'   => 'Vaksin',
         'harga'  => 260000,
         'satuan' => '/ dosis',
-        'detail' => [
-            'Kucing: Tricat Trio / Felocell 3 / Purevax',
-            'Anjing: DHPPi / setara',
-        ],
+        'detail' => "Kucing: Tricat Trio / Felocell 3 / Purevax\nAnjing: DHPPi / setara",
     ],
 ];
 ?>
 
 <h2 class="mb-3">Data Layanan</h2>
 
-<!-- PAKET PENITIPAN (DAYCARE & BOARDING) -->
+<!-- ===========================
+     PAKET PENITIPAN
+=============================== -->
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-primary text-white">
         <h5 class="card-title mb-0">Paket Penitipan (Daycare & Boarding)</h5>
     </div>
     <div class="card-body">
         <div class="row g-3">
-            <?php foreach ($layananUtama as $l): ?>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <h5 class="fw-semibold mb-1"><?= htmlspecialchars($l['nama']); ?></h5>
-                            <span class="badge bg-primary mb-2"><?= htmlspecialchars($l['kode']); ?></span>
 
-                            <p class="mb-1 fw-semibold">
-                                Rp <?= number_format($l['harga'], 0, ',', '.'); ?>
-                                <span class="text-muted small"><?= htmlspecialchars($l['satuan']); ?></span>
+            <?php foreach ($layananUtama as $l): ?>
+                <?php
+                    $modalId = 'modal_' . $l['kode'];
+                    $detailList = explode("\n", $l['detail']);
+                ?>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <h5 class="fw-semibold mb-1"><?= $l['nama']; ?></h5>
+                            <span class="badge bg-primary"><?= $l['kode']; ?></span>
+
+                            <p class="fw-semibold mt-2 mb-1">
+                                Rp <?= number_format($l['harga'],0,',','.'); ?>
+                                <span class="small text-muted"><?= $l['satuan']; ?></span>
                             </p>
 
-                            <?php if (!empty($l['detail'])): ?>
-                                <ul class="small text-muted mb-0 ps-3">
-                                    <?php foreach ($l['detail'] as $item): ?>
-                                        <li><?= htmlspecialchars($item); ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            <?php endif; ?>
+                            <ul class="text-muted small ps-3">
+                                <?php foreach ($detailList as $d): ?>
+                                    <li><?= $d; ?></li>
+                                <?php endforeach; ?>
+                            </ul>
 
-                            <!-- Tombol ini nanti bisa diarahkan ke form edit paket -->
-                            <button class="btn btn-outline-primary btn-sm w-100 mt-3">
+                            <button class="btn btn-outline-primary btn-sm w-100 mt-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#<?= $modalId; ?>">
                                 <i class="bi bi-pencil-square me-1"></i> Kelola Paket
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal Edit Paket -->
+                <div class="modal fade" id="<?= $modalId; ?>" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <form class="modal-content"
+                              method="post"
+                              action="index.php?page=layanan&action=update"
+                              onsubmit="return confirm('Yakin ingin mengubah paket <?= $l['kode']; ?> ?');">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Paket: <?= $l['kode']; ?></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <input type="hidden" name="kode" value="<?= $l['kode']; ?>">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nama Paket</label>
+                                    <input type="text" name="nama" class="form-control" value="<?= $l['nama']; ?>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Harga</label>
+                                    <input type="number" name="harga" class="form-control" value="<?= $l['harga']; ?>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Satuan</label>
+                                    <input type="text" name="satuan" class="form-control" value="<?= $l['satuan']; ?>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Detail Paket</label>
+                                    <textarea name="detail" class="form-control" rows="4"><?= $l['detail']; ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
             <?php endforeach; ?>
+
         </div>
     </div>
 </div>
 
-<!-- LAYANAN TAMBAHAN -->
+<!-- ===========================
+     LAYANAN TAMBAHAN
+=============================== -->
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-secondary text-white">
         <h5 class="card-title mb-0">Layanan Tambahan</h5>
     </div>
     <div class="card-body">
         <div class="row g-3">
-            <?php foreach ($layananTambahan as $l): ?>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
-                            <h5 class="fw-semibold mb-1"><?= htmlspecialchars($l['nama']); ?></h5>
-                            <span class="badge bg-secondary mb-2"><?= htmlspecialchars($l['kode']); ?></span>
 
-                            <p class="mb-1 fw-semibold">
-                                Rp <?= number_format($l['harga'], 0, ',', '.'); ?>
-                                <span class="text-muted small"><?= htmlspecialchars($l['satuan']); ?></span>
+            <?php foreach ($layananTambahan as $l): ?>
+                <?php
+                    $modalId = 'modal_' . $l['kode'];
+                    $detailList = explode("\n", $l['detail']);
+                ?>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <h5 class="fw-semibold mb-1"><?= $l['nama']; ?></h5>
+                            <span class="badge bg-secondary"><?= $l['kode']; ?></span>
+
+                            <p class="fw-semibold mt-2 mb-1">
+                                Rp <?= number_format($l['harga'],0,',','.'); ?>
+                                <span class="small text-muted"><?= $l['satuan']; ?></span>
                             </p>
 
-                            <?php if (!empty($l['detail'])): ?>
-                                <ul class="small text-muted mb-0 ps-3">
-                                    <?php foreach ($l['detail'] as $item): ?>
-                                        <li><?= htmlspecialchars($item); ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            <?php endif; ?>
+                            <ul class="text-muted small ps-3">
+                                <?php foreach ($detailList as $d): ?>
+                                    <li><?= $d; ?></li>
+                                <?php endforeach; ?>
+                            </ul>
 
-                            <button class="btn btn-outline-secondary btn-sm w-100 mt-3">
+                            <button class="btn btn-outline-secondary btn-sm w-100 mt-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#<?= $modalId; ?>">
                                 <i class="bi bi-pencil-square me-1"></i> Kelola Layanan
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- Modal Edit Layanan Tambahan -->
+                <div class="modal fade" id="<?= $modalId; ?>" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <form class="modal-content"
+                              method="post"
+                              action="index.php?page=layanan&action=update"
+                              onsubmit="return confirm('Yakin ingin mengubah layanan <?= $l['kode']; ?> ?');">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Layanan: <?= $l['kode']; ?></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <input type="hidden" name="kode" value="<?= $l['kode']; ?>">
+
+                                <div class="mb-3">
+                                    <label class="form-label">Nama Layanan</label>
+                                    <input type="text" name="nama" class="form-control" value="<?= $l['nama']; ?>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Harga</label>
+                                    <input type="number" name="harga" class="form-control" value="<?= $l['harga']; ?>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Satuan</label>
+                                    <input type="text" name="satuan" class="form-control" value="<?= $l['satuan']; ?>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Detail</label>
+                                    <textarea name="detail" class="form-control" rows="4"><?= $l['detail']; ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
             <?php endforeach; ?>
+
         </div>
     </div>
 </div>
