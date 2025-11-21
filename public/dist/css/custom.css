@@ -1,0 +1,152 @@
+/* ==============================
+   FONT GLOBAL
+============================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: "Inter", sans-serif !important;
+    background: #f6f8fa; /* putih 60% */
+    color: #333;
+}
+
+/* ==============================
+   WARNA UTAMA
+============================== */
+:root {
+    --primary-blue: #0265FE;
+    --accent-orange: #FFB113;
+    --light-bg: #ffffff;
+    --card-shadow: rgba(0, 0, 0, 0.05);
+}
+
+/* ==============================
+   STYLE KARTU (CARD)
+============================== */
+.card {
+    border: none !important;
+    border-radius: 14px !important;
+    background: var(--light-bg);
+    box-shadow: 0 4px 20px var(--card-shadow);
+    transition: 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 26px rgba(0, 0, 0, 0.08);
+}
+
+/* ==============================
+   HEADER JUDUL HALAMAN
+============================== */
+h2, .page-title {
+    font-weight: 700;
+    color: #222;
+}
+
+/* ==============================
+   IKON BULAT
+============================== */
+.rounded-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2, 101, 254, 0.12);
+    border-radius: 50%;
+}
+
+/* warna icon sesuai kategori */
+.text-primary { color: var(--primary-blue) !important; }
+.text-accent { color: var(--accent-orange) !important; }
+
+/* ==============================
+   BADGE STATUS
+============================== */
+.badge-success {
+    background: #D1F7C4 !important;
+    color: #2F8F24 !important;
+}
+.badge-warning {
+    background: #FFF4CC !important;
+    color: #c88400 !important;
+}
+.badge-danger {
+    background: #FFE2E2 !important;
+    color: #c73636 !important;
+}
+
+/* aksen khusus */
+.badge-accent {
+    background: var(--accent-orange);
+    color: white;
+}
+
+/* ==============================
+   SIDEBAR
+============================== */
+.nav-link {
+    border-radius: 8px;
+    transition: 0.2s ease;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.nav-link.active,
+.nav-link:hover {
+    background: rgba(2, 101, 254, 0.12) !important;
+    color: var(--primary-blue) !important;
+}
+
+/* ==============================
+   TABLE STYLE
+============================== */
+table thead {
+    background: #f0f4ff;
+}
+
+.table-hover tbody tr:hover {
+    background: #f8fbff;
+}
+
+/* ==============================
+   PROGRESS BAR
+============================== */
+.progress-bar.bg-primary {
+    background: var(--primary-blue) !important;
+}
+
+/* ==============================
+   BUTTON STYLE
+============================== */
+.btn-primary {
+    background: var(--primary-blue) !important;
+    border-color: var(--primary-blue) !important;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.btn-accent {
+    background: var(--accent-orange) !important;
+    border-radius: 10px;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-accent:hover {
+    opacity: 0.9;
+}
+
+/* ==============================
+   CARD TITLE
+============================== */
+.card-title {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+/* ==============================
+   ANIMASI STAT KECIL
+============================== */
+[data-count], [data-money] {
+    font-weight: 700;
+    color: var(--primary-blue);
+}
