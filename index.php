@@ -21,7 +21,7 @@ switch ($page) {
         break;
 
     case 'pemilik':          // <-- TAMBAHAN: Data Pelanggan
-        include 'views/pemilik.php';
+        include 'views/pelanggan.php';
         break;
 
     case 'laporan':
