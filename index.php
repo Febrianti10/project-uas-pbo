@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 
 $page = $_GET['page'] ?? 'dashboard';
@@ -20,7 +21,7 @@ switch ($page) {
         include 'views/hewan.php';
         break;
 
-    case 'pemilik':          // <-- TAMBAHAN: Data Pelanggan
+    case 'pemilik':         
         include 'views/pelanggan.php';
         break;
 
@@ -38,6 +39,7 @@ switch ($page) {
         exit;
 
     default:
-        include 'views/404.php';   // pastikan file ini ada (langkah 3)
+        include 'views/404.php';   
         break;
 }
+?>
