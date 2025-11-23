@@ -30,6 +30,7 @@ $totalAnjing = $totalAnjing ?? 0;
 $hewanList   = $hewanList   ?? [];
 $totalkandangKecil  = $totalkandangKecil ?? 0;
 $totalkandangBesar = $totalkandangBesar  ?? 0;
+$kandangList = $kandangList ?? [];
 ?>
 
 <h2 class="mb-3">Data Hewan</h2>
@@ -190,8 +191,60 @@ $totalkandangBesar = $totalkandangBesar  ?? 0;
             <i class="bi bi-plus-lg me-1"></i> Tambah Kandang
         </a>
     </div>
-    
+    <!-- ================= MODAL TAMBAH KANDANG ================= -->
+    <div class="modal fade" id="modalKandangBaru" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content"
+                method="post"
+                action="index.php?page=hewan&action=store_kandang">
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Kandang Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
 
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Kode Kandang</label>
+                        <input type="text"
+                            name="kode"
+                            class="form-control"
+                            placeholder="Contoh: KK1, KK2, KB1, KB2"
+                            required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipe</label>
+                        <select name="tipe" class="form-select" required>
+                            <option value="">-- Pilih Tipe --</option>
+                            <option value="Kecil">Kecil (KK)</option>
+                            <option value="Besar">Besar (KB)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select" required>
+                            <option value="Kosong">Kosong</option>
+                            <option value="Terisi">Terisi</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Keterangan</label>
+                        <textarea name="keterangan"
+                            class="form-control"
+                            rows="3"
+                            placeholder="Contoh: dekat jendela, khusus hewan besar, dll."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Kandang</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
