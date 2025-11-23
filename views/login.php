@@ -56,8 +56,7 @@
                 <?php unset($_SESSION['error_message']); ?>
             <?php endif; ?>
 
-            <form action="/project-uas-pbo/auth/loginProcess" method="post">
-                
+            <form action="/project-uas-pbo/login-process" method="post"></form>                
                 <div class="input-group mb-3">
                     <input type="text" name="username" class="form-control form-control-lg bg-light" placeholder="Username" required autofocus>
                     <div class="input-group-text bg-light border-start-0 text-muted">
