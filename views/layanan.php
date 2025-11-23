@@ -88,8 +88,24 @@ $layananTambahan = [
 =============================== -->
 <div class="card shadow-sm mb-4">
     <div class="card-header bg-primary text-white">
-        <h5 class="card-title mb-0">Paket Penitipan (Daycare & Boarding)</h5>
+        <div class="d-flex justify-content-between align-items-center w-100">
+            <div class="me-3">
+                <h5 class="mb-1">Paket Penitipan (Daycare &amp; Boarding)</h5>
+                <small class="text-white-50">
+                    Paket utama yang dipilih saat pendaftaran penitipan.
+                </small>
+            </div>
+
+            <!-- TOMBOL DI UJUNG KANAN -->
+            <button type="button"
+                    class="btn btn-light btn-sm fw-semibold ms-auto"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal_tambah_paket">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Paket
+            </button>
+        </div>
     </div>
+
     <div class="card-body">
         <div class="row g-3">
 
@@ -106,27 +122,42 @@ $layananTambahan = [
 
                 <div class="col-lg-4 col-md-6">
                     <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h5 class="fw-semibold mb-1"><?= $nama; ?></h5>
-                            <span class="badge bg-primary"><?= $kode; ?></span>
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h5 class="fw-semibold mb-0"><?= $nama; ?></h5>
+                                <span class="badge bg-primary ms-2"><?= $kode; ?></span>
+                            </div>
 
                             <p class="fw-semibold mt-2 mb-1">
                                 Rp <?= number_format($harga, 0, ',', '.'); ?>
                                 <span class="small text-muted"><?= $satuan; ?></span>
                             </p>
 
-                            <ul class="text-muted small ps-3 mb-0">
+                            <ul class="text-muted small ps-3 mb-3 flex-grow-1">
                                 <?php foreach ($detailList as $d): ?>
                                     <li><?= htmlspecialchars($d); ?></li>
                                 <?php endforeach; ?>
                             </ul>
 
-                            <button type="button"
-                                    class="btn btn-outline-primary btn-sm w-100 mt-3"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#<?= $modalId; ?>">
-                                <i class="bi bi-pencil-square me-1"></i> Kelola Paket
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button"
+                                        class="btn btn-outline-primary btn-sm flex-fill"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#<?= $modalId; ?>">
+                                    <i class="bi bi-pencil-square me-1"></i> Kelola
+                                </button>
+
+                                <!-- Tombol hapus paket -->
+                                <form method="post"
+                                      action="index.php?page=layanan&action=delete_paket"
+                                      onsubmit="return confirm('Yakin ingin menghapus paket <?= $kode; ?> ?');">
+                                    <input type="hidden" name="kode" value="<?= $kode; ?>">
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -184,12 +215,70 @@ $layananTambahan = [
     </div>
 </div>
 
+<!-- Modal Tambah Paket Baru -->
+<div class="modal fade" id="modal_tambah_paket" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content"
+              method="post"
+              action="index.php?page=layanan&action=create_paket"
+              onsubmit="return confirm('Yakin ingin menambahkan paket baru?');">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Paket Penitipan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Kode Paket</label>
+                    <input type="text" name="kode" class="form-control" placeholder="Misal: P006" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nama Paket</label>
+                    <input type="text" name="nama" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Harga (Rp)</label>
+                    <input type="number" name="harga" class="form-control" min="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Satuan</label>
+                    <input type="text" name="satuan" class="form-control" value="/ hari" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Detail Paket</label>
+                    <textarea name="detail" class="form-control" rows="4" placeholder="Satu fasilitas per baris"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan Paket</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
 <!-- ===========================
      LAYANAN TAMBAHAN
 =============================== -->
 <div class="card shadow-sm mb-4">
-    <div class="card-header bg-secondary text-white">
-        <h5 class="card-title mb-0">Layanan Tambahan</h5>
+    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="card-title mb-0">Layanan Tambahan</h5>
+            <small class="d-block">Grooming, vaksin, vitamin, dan layanan opsional lainnya.</small>
+        </div>
+        <button type="button"
+                class="btn btn-light btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#modal_tambah_tambahan">
+            <i class="bi bi-plus-lg me-1"></i> Tambah Layanan
+        </button>
     </div>
     <div class="card-body">
         <div class="row g-3">
@@ -207,27 +296,42 @@ $layananTambahan = [
 
                 <div class="col-lg-4 col-md-6">
                     <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h5 class="fw-semibold mb-1"><?= $nama; ?></h5>
-                            <span class="badge bg-secondary"><?= $kode; ?></span>
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h5 class="fw-semibold mb-0"><?= $nama; ?></h5>
+                                <span class="badge bg-secondary ms-2"><?= $kode; ?></span>
+                            </div>
 
                             <p class="fw-semibold mt-2 mb-1">
                                 Rp <?= number_format($harga, 0, ',', '.'); ?>
                                 <span class="small text-muted"><?= $satuan; ?></span>
                             </p>
 
-                            <ul class="text-muted small ps-3 mb-0">
+                            <ul class="text-muted small ps-3 mb-3 flex-grow-1">
                                 <?php foreach ($detailList as $d): ?>
                                     <li><?= htmlspecialchars($d); ?></li>
                                 <?php endforeach; ?>
                             </ul>
 
-                            <button type="button"
-                                    class="btn btn-outline-secondary btn-sm w-100 mt-3"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#<?= $modalId; ?>">
-                                <i class="bi bi-pencil-square me-1"></i> Kelola Layanan
-                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button"
+                                        class="btn btn-outline-secondary btn-sm flex-fill"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#<?= $modalId; ?>">
+                                    <i class="bi bi-pencil-square me-1"></i> Kelola
+                                </button>
+
+                                <!-- Tombol hapus layanan tambahan -->
+                                <form method="post"
+                                      action="index.php?page=layanan&action=delete_tambahan"
+                                      onsubmit="return confirm('Yakin ingin menghapus layanan <?= $kode; ?> ?');">
+                                    <input type="hidden" name="kode" value="<?= $kode; ?>">
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -281,6 +385,55 @@ $layananTambahan = [
             <?php endforeach; ?>
 
         </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Layanan Tambahan -->
+<div class="modal fade" id="modal_tambah_tambahan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content"
+              method="post"
+              action="index.php?page=layanan&action=create_tambahan"
+              onsubmit="return confirm('Yakin ingin menambahkan layanan tambahan baru?');">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Layanan Tambahan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Kode Layanan</label>
+                    <input type="text" name="kode" class="form-control" placeholder="Misal: G003 / L005" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Nama Layanan</label>
+                    <input type="text" name="nama" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Harga (Rp)</label>
+                    <input type="number" name="harga" class="form-control" min="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Satuan</label>
+                    <input type="text" name="satuan" class="form-control" value="/ sesi" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Detail</label>
+                    <textarea name="detail" class="form-control" rows="4" placeholder="Satu fasilitas / penjelasan per baris"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan Layanan</button>
+            </div>
+
+        </form>
     </div>
 </div>
 
