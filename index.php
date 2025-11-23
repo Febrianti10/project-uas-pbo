@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// ambil parameter ?page=...
 $page = $_GET['page'] ?? 'dashboard';
 
 switch ($page) {
@@ -14,11 +13,15 @@ switch ($page) {
         break;
 
     case 'layanan':
-        include 'views/layanan.php';   // nanti kamu buat views/layanan.php
+        include 'views/layanan.php';
         break;
 
     case 'hewan':
-        include 'views/hewan.php';     // nanti kamu buat views/hewan.php
+        include 'views/hewan.php';
+        break;
+
+    case 'pemilik':          // <-- TAMBAHAN: Data Pelanggan
+        include 'views/pelanggan.php';
         break;
 
     case 'laporan':
@@ -30,13 +33,11 @@ switch ($page) {
         break;
 
     case 'logout':
-        // hapus session lalu balik ke halaman login
         session_destroy();
         header('Location: index.php?page=login');
         exit;
 
     default:
-        // kalau page tidak dikenali, tampilkan 404 sederhana
-        include 'views/404.php';       // boleh kamu buat file 404 sendiri
+        include 'views/404.php';   // pastikan file ini ada (langkah 3)
         break;
 }
