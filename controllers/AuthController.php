@@ -66,7 +66,7 @@ class AuthController {
         $_SESSION['username'] = $user['username'];
         
         // 7. Redirect ke Dashboard Kasir
-        header('Location: /PROJECT-UAS-PBO/views/dashboard'); 
+        header('Location: /PROJECT-UAS-PBO/transaksi/dashboard'); 
         exit;
     }
     
