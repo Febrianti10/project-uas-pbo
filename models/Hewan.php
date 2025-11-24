@@ -1,152 +1,171 @@
 <?php
-/**
- * Model Hewan
- * Mengelola data hewan di database
- */
+require_once __DIR__ . '/../config/database.php';
 
-class Hewan {
-    private $pdo;
+/**
+ * Model User
+ * Untuk autentikasi kasir & admin
+ * 
+ * @author h1101241034@student.untan.ac.id
+ */
+class User {
+    private $db;
     
     public function __construct() {
-        $this->pdo = Database::getInstance();
+        $this->db = getDB();
     }
     
     /**
-     * Get semua data hewan dengan informasi pelanggan
+     * LOGIN - Autentikasi user
+     * 
+     * @param string $username
+     * @param string $password (plain text)
+     * @return array|false User data atau false jika gagal
      */
-    public function getAll() {
-        $sql = "SELECT h.*, p.nama_pelanggan, p.no_hp 
-                FROM hewan h
-                INNER JOIN pelanggan p ON h.id_pelanggan = p.id_pelanggan
-                ORDER BY h.created_at DESC";
+    public function login($username, $password) {
+        $sql = "SELECT * FROM user WHERE username = :username LIMIT 1";
         
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['username' => $username]);
+        $user = $stmt->fetch();
+        
+        // Cek password (harus pakai password_verify karena di-hash)
+        if ($user && password_verify($password, $user['password'])) {
+            // Jangan return password!
+            unset($user['password']);
+            return $user;
+        }
+        
+        return false;
     }
     
     /**
-     * Get hewan by ID
+     * GET BY ID
+     * 
+     * @param int $id
+     * @return array|false
      */
     public function getById($id) {
-        $sql = "SELECT h.*, p.nama_pelanggan, p.no_hp, p.alamat 
-                FROM hewan h
-                INNER JOIN pelanggan p ON h.id_pelanggan = p.id_pelanggan
-                WHERE h.id_hewan = ?";
+        $sql = "SELECT id_user, username, nama_lengkap, role, created_at 
+                FROM user 
+                WHERE id_user = :id";
         
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch();
     }
     
     /**
-     * Get hewan berdasarkan pelanggan
+     * GET ALL - Ambil semua user
+     * 
+     * @return array
      */
-    public function getByPelanggan($id_pelanggan) {
-        $sql = "SELECT * FROM hewan WHERE id_pelanggan = ? ORDER BY nama_hewan ASC";
+    public function getAll() {
+        $sql = "SELECT id_user, username, nama_lengkap, role, created_at 
+                FROM user 
+                ORDER BY created_at DESC";
         
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id_pelanggan]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    
-    /**
-     * Get hewan yang tersedia (tidak sedang dititipkan)
-     */
-    public function getAvailable() {
-        $sql = "SELECT h.*, p.nama_pelanggan 
-                FROM hewan h
-                INNER JOIN pelanggan p ON h.id_pelanggan = p.id_pelanggan
-                WHERE h.status = 'tersedia'
-                ORDER BY h.nama_hewan ASC";
-        
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll();
     }
     
     /**
-     * Insert hewan baru
+     * CREATE - Tambah user baru
+     * 
+     * @param array $data ['username', 'password', 'nama_lengkap', 'role']
+     * @return bool
      */
-    public function insert($data) {
-        $sql = "INSERT INTO hewan 
-                (id_pelanggan, nama_hewan, jenis, ras, ukuran, warna, catatan_khusus, status) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    public function create($data) {
+        // Hash password dulu!
+        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
         
-        $stmt = $this->pdo->prepare($sql);
+        $sql = "INSERT INTO user (username, password, nama_lengkap, role) 
+                VALUES (:username, :password, :nama_lengkap, :role)";
+        
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            $data['id_pelanggan'],
-            $data['nama_hewan'],
-            $data['jenis'],
-            $data['ras'] ?? null,
-            $data['ukuran'],
-            $data['warna'] ?? null,
-            $data['catatan_khusus'] ?? null,
-            $data['status'] ?? 'tersedia'
+            'username' => $data['username'],
+            'password' => $hashedPassword,
+            'nama_lengkap' => $data['nama_lengkap'],
+            'role' => $data['role'] ?? 'kasir'
         ]);
     }
     
     /**
-     * Update data hewan
+     * UPDATE - Update data user (tanpa password)
+     * 
+     * @param int $id
+     * @param array $data
+     * @return bool
      */
     public function update($id, $data) {
-        $sql = "UPDATE hewan 
-                SET id_pelanggan = ?, 
-                    nama_hewan = ?, 
-                    jenis = ?, 
-                    ras = ?, 
-                    ukuran = ?, 
-                    warna = ?, 
-                    catatan_khusus = ?
-                WHERE id_hewan = ?";
+        $sql = "UPDATE user 
+                SET username = :username,
+                    nama_lengkap = :nama_lengkap,
+                    role = :role
+                WHERE id_user = :id";
         
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute([
-            $data['id_pelanggan'],
-            $data['nama_hewan'],
-            $data['jenis'],
-            $data['ras'] ?? null,
-            $data['ukuran'],
-            $data['warna'] ?? null,
-            $data['catatan_khusus'] ?? null,
-            $id
+            'id' => $id,
+            'username' => $data['username'],
+            'nama_lengkap' => $data['nama_lengkap'],
+            'role' => $data['role']
         ]);
     }
     
     /**
-     * Update status hewan
+     * UPDATE PASSWORD - Ganti password user
+     * 
+     * @param int $id
+     * @param string $newPassword (plain text)
+     * @return bool
      */
-    public function updateStatus($id, $status) {
-        $sql = "UPDATE hewan SET status = ? WHERE id_hewan = ?";
+    public function updatePassword($id, $newPassword) {
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$status, $id]);
+        $sql = "UPDATE user SET password = :password WHERE id_user = :id";
+        
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'id' => $id,
+            'password' => $hashedPassword
+        ]);
     }
     
     /**
-     * Delete hewan
+     * DELETE
+     * 
+     * @param int $id
+     * @return bool
      */
     public function delete($id) {
-        $sql = "DELETE FROM hewan WHERE id_hewan = ?";
+        $sql = "DELETE FROM user WHERE id_user = :id";
         
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute([$id]);
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['id' => $id]);
     }
     
     /**
-     * Cek apakah hewan sedang dalam transaksi aktif
+     * CHECK USERNAME - Cek apakah username sudah ada
+     * 
+     * @param string $username
+     * @param int|null $excludeId (untuk update, exclude id sendiri)
+     * @return bool
      */
-    public function hasActiveTransaction($id) {
-        $sql = "SELECT COUNT(*) as total 
-                FROM transaksi 
-                WHERE id_hewan = ? 
-                AND status = 'sedang_dititipkan'";
+    public function isUsernameExists($username, $excludeId = null) {
+        if ($excludeId) {
+            $sql = "SELECT COUNT(*) as total FROM user 
+                    WHERE username = :username AND id_user != :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['username' => $username, 'id' => $excludeId]);
+        } else {
+            $sql = "SELECT COUNT(*) as total FROM user WHERE username = :username";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['username' => $username]);
+        }
         
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+        $result = $stmt->fetch();
         return $result['total'] > 0;
     }
 }
-?>
