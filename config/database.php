@@ -22,7 +22,7 @@ class Database {
     private $host = 'localhost';
     private $dbname = 'db_penitipan_hewan';
     private $username = 'root';
-    private $password = ''; // Kosongkan untuk XAMPP/Laragon default
+    private $password = 'Sh3Belajar!SQL'; // Kosongkan untuk XAMPP/Laragon default
     
     // UNTUK PRODUCTION (uncomment saat deploy)
     // private $host = 'aws.connect.psdb.cloud'; // PlanetScale
