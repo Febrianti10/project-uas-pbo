@@ -126,6 +126,7 @@ CREATE TABLE detail_transaksi (
 
 -- Insert User (Password: 'password123' - sudah di-hash)
 INSERT INTO user (username, password, nama_lengkap, role) VALUES
+('admin01', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin Utama', 'admin'),
 ('kasir01', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Siti Nurhaliza', 'kasir'),
 ('kasir02', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Budi Santoso', 'kasir');
 
