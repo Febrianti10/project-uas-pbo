@@ -3,3 +3,6 @@
 
 # Abaikan file environment (jika nanti Anda pakai)
 .env 
+.env.local
+*.log
+.DS_Store

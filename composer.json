@@ -3,6 +3,7 @@
   "description": "Aplikasi PHP native untuk penitipan hewan.",
   "type": "project",
   "require": {
+    "php": "^8.2",
     "dompdf/dompdf": "^2.0"
   },
   "autoload": {
@@ -10,7 +11,8 @@
       "App\\Controllers\\": "controllers/",
       "App\\Models\\": "models/",
       "App\\Config\\": "config/",
-      "App\\Helpers\\": "helper/"
+      "App\\Helpers\\": "helper/",
+      "App\\Core\\": "core/"
     }
   }
 }

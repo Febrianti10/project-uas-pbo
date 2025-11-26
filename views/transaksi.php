@@ -64,7 +64,9 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                     ======================================================== -->
                     <h5 class="mb-3">Form Pendaftaran Penitipan</h5>
 
-                    <form method="post" action="index.php?page=transaksi&action=save_checkin">
+                    <!-- <form method="post" action="index.php?page=transaksi&action=save_checkin"> -->
+                    <form method="post" action="index.php?action=createTransaksi">
+
                         <div class="row g-4">
 
                             <!-- INFORMASI PEMILIK -->
