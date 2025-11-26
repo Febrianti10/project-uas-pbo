@@ -10,9 +10,7 @@
     "psr-4": {
       "App\\Controllers\\": "controllers/",
       "App\\Models\\": "models/",
-      "App\\Config\\": "config/",
-      "App\\Helpers\\": "helper/",
-      "App\\Core\\": "core/"
+      "App\\Config\\": "config/"
     }
   }
 }
