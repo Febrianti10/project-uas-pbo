@@ -51,56 +51,81 @@ $sisaSlotAnjing = $kapasitasAnjingMaks > 0
     : 0;
 ?>
 
-<h2 class="mb-3">Penitipan Hewan</h2>
+<h2 class="mb-4">Dashboard Penitipan</h2>
 
-<!-- ROW 1: STAT KECIL -->
-<div class="row g-3 mb-3">
+<!-- ROW 1: STAT UTAMA -->
+<div class="row g-4 mb-4">
     <!-- Total Hewan Dititipkan -->
-    <div class="col-lg-3 col-md-6">
+    <div class="col-xl-3 col-lg-6">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-muted small text-uppercase mb-1">Total Hewan Dititipkan</div>
-                    <span class="display-6 fw-semibold mb-0" data-count="<?= (int)$totalHewan; ?>">0</span>
-                    <div class="text-muted small mt-1">Keseluruhan</div>
-                </div>
-                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center"
-                    style="width:42px;height:42px;">
-                    <i class="bi bi-house-heart text-primary"></i>
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="text-muted text-uppercase small mb-2">Total Hewan Dititipkan</h6>
+                        <h2 class="fw-bold text-primary mb-0" data-count="<?= (int)$totalHewan; ?>">0</h2>
+                        <span class="text-muted small">Hewan aktif saat ini</span>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center ms-3"
+                        style="width:60px;height:60px;">
+                        <i class="bi bi-house-heart fs-5 text-primary"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Total Kucing -->
-    <div class="col-lg-3 col-md-6">
+    <div class="col-xl-3 col-lg-6">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-muted small text-uppercase mb-1">Kucing Dititipkan</div>
-                    <span class="fs-2 fw-semibold mb-0" data-count="<?= (int)$totalKucing; ?>">0</span>
-                    <div class="text-muted small mt-1">Saat ini</div>
-                </div>
-                <div class="rounded-circle bg-info-subtle d-flex align-items-center justify-content-center"
-                    style="width:42px;height:42px;">
-                    <i class="bi bi-cat text-info"></i>
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="text-muted text-uppercase small mb-2">Kucing Dititipkan</h6>
+                        <h2 class="fw-bold text-info mb-0" data-count="<?= (int)$totalKucing; ?>">0</h2>
+                        <span class="text-muted small">Dalam perawatan</span>
+                    </div>
+                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center ms-3"
+                        style="width:60px;height:60px;">
+                        <i class="bi bi-cat fs-5 text-info"></i>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Total Anjing -->
-    <div class="col-lg-3 col-md-6">
+    <div class="col-xl-3 col-lg-6">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="text-muted small text-uppercase mb-1">Anjing Dititipkan</div>
-                    <span class="fs-2 fw-semibold mb-0" data-count="<?= (int)$totalAnjing; ?>">0</span>
-                    <div class="text-muted small mt-1">Saat ini</div>
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="text-muted text-uppercase small mb-2">Anjing Dititipkan</h6>
+                        <h2 class="fw-bold text-warning mb-0" data-count="<?= (int)$totalAnjing; ?>">0</h2>
+                        <span class="text-muted small">Dalam perawatan</span>
+                    </div>
+                    <div class="rounded-circle bg-warning bg-opacity-10 d-flex align-items-center justify-content-center ms-3"
+                        style="width:60px;height:60px;">
+                        <i class="bi bi-dog fs-5 text-warning"></i>
+                    </div>
                 </div>
-                <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center"
-                    style="width:42px;height:42px;">
-                    <i class="bi bi-dog text-warning"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pendapatan Hari Ini -->
+    <div class="col-xl-3 col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="text-muted text-uppercase small mb-2">Pendapatan Hari Ini</h6>
+                        <h2 class="fw-bold text-success mb-0" data-money="<?= (int)$totalPendapatanHariIni; ?>">Rp 0</h2>
+                        <span class="text-muted small">Total transaksi hari ini</span>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center ms-3"
+                        style="width:60px;height:60px;">
+                        <i class="bi bi-cash-coin fs-5 text-success"></i>
+                    </div>
                 </div>
             </div>
         </div>
@@ -108,58 +133,85 @@ $sisaSlotAnjing = $kapasitasAnjingMaks > 0
 </div>
 
 <!-- ROW 2: RINGKASAN + TRANSAKSI TERBARU -->
-<div class="row g-3">
-    <!-- Ringkasan Hari Ini -->
+<div class="row g-4">
+    <!-- Ringkasan Kapasitas -->
     <div class="col-lg-4">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-transparent border-bottom-0 pb-1">
-                <h5 class="card-title mb-0">Ringkasan Hari Ini</h5>
+            <div class="card-header bg-transparent border-bottom-0 pb-0">
+                <h5 class="card-title mb-3">Ringkasan Kapasitas</h5>
             </div>
             <div class="card-body">
-                <ul class="list-group list-group-flush small">
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                        <span>Hewan menginap saat ini</span>
-                        <strong><?= (int)$totalHewan; ?></strong>
-                    </li>
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                        <span>Total kamar</span>
-                        <strong><?= (int)$totalKamar; ?></strong>
-                    </li>
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                        <span>Kamar terisi</span>
-                        <strong><?= (int)$kamarTerisi; ?></strong>
-                    </li>
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                        <span>Kamar kosong</span>
-                        <strong><?= (int)$kamarKosong; ?></strong>
-                    </li>
-                    <li class="list-group-item px-0">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span>Okupansi kamar</span>
-                            <strong><?= $persenTerisi; ?>%</strong>
+                <!-- Okupansi Kamar -->
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Okupansi Kamar</h6>
+                        <span class="fw-bold text-primary"><?= $persenTerisi; ?>%</span>
+                    </div>
+                    <div class="progress mb-2" style="height: 8px;">
+                        <div class="progress-bar bg-primary" style="width: <?= $persenTerisi; ?>%;"></div>
+                    </div>
+                    <div class="row text-center small">
+                        <div class="col-4">
+                            <div class="fw-semibold text-primary"><?= (int)$kamarTerisi; ?></div>
+                            <div class="text-muted">Terisi</div>
                         </div>
-                        <div class="progress" style="height: 6px;">
-                            <div class="progress-bar bg-primary" style="width: <?= $persenTerisi; ?>%;"></div>
+                        <div class="col-4">
+                            <div class="fw-semibold text-success"><?= (int)$kamarKosong; ?></div>
+                            <div class="text-muted">Kosong</div>
                         </div>
-                        <small class="text-muted d-block mt-1">
-                            <?= (int)$kamarTerisi; ?> kamar terisi dari <?= (int)$totalKamar; ?> kamar.
-                        </small>
-                    </li>
-                </ul>
+                        <div class="col-4">
+                            <div class="fw-semibold text-secondary"><?= (int)$totalKamar; ?></div>
+                            <div class="text-muted">Total</div>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Info untuk kasir: sisa slot hewan -->
-                <div class="mt-3 p-2 rounded bg-body-secondary small">
-                    <div class="d-flex justify-content-between">
-                        <span>Sisa slot kucing</span>
-                        <strong><?= (int)$sisaSlotKucing; ?></strong>
+                <!-- Sisa Slot Hewan -->
+                <div class="border-top pt-3">
+                    <h6 class="mb-3">Sisa Slot Tersedia</h6>
+                    
+                    <!-- Slot Kucing -->
+                    <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded bg-info bg-opacity-5">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-info bg-opacity-10 p-2 me-3">
+                                <i class="bi bi-cat text-info"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">Kucing</div>
+                                <small class="text-muted">Maksimal: <?= (int)$kapasitasKucingMaks; ?> slot</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h5 fw-bold text-info mb-0"><?= (int)$sisaSlotKucing; ?></div>
+                            <small class="text-muted">Tersisa</small>
+                        </div>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <span>Sisa slot anjing</span>
-                        <strong><?= (int)$sisaSlotAnjing; ?></strong>
+
+                    <!-- Slot Anjing -->
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded bg-warning bg-opacity-5">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle bg-warning bg-opacity-10 p-2 me-3">
+                                <i class="bi bi-dog text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="fw-semibold">Anjing</div>
+                                <small class="text-muted">Maksimal: <?= (int)$kapasitasAnjingMaks; ?> slot</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="h5 fw-bold text-warning mb-0"><?= (int)$sisaSlotAnjing; ?></div>
+                            <small class="text-muted">Tersisa</small>
+                        </div>
                     </div>
-                    <div class="text-muted mt-1">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Gunakan info ini sebelum menerima penitipan baru.
+                </div>
+
+                <!-- Info Penting -->
+                <div class="mt-4 p-3 rounded bg-light border">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-info-circle text-primary me-2 mt-1"></i>
+                        <div class="small">
+                            <strong>Informasi Penting:</strong> Pastikan tersedia slot yang cukup sebelum menerima penitipan baru.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -169,46 +221,66 @@ $sisaSlotAnjing = $kapasitasAnjingMaks > 0
     <!-- Transaksi Terbaru -->
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-transparent border-bottom-0 d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Transaksi Terbaru</h5>
-                <a href="index.php?page=transaksi&tab=pengembalian" class="small text-decoration-none">
-                    Lihat semua
+            <div class="card-header bg-transparent border-bottom-0 d-flex justify-content-between align-items-center pb-3">
+                <div>
+                    <h5 class="card-title mb-1">Transaksi Terbaru</h5>
+                    <p class="text-muted small mb-0">5 transaksi terakhir hari ini</p>
+                </div>
+                <a href="index.php?page=transaksi&tab=pendaftaran" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Transaksi Baru
                 </a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table mb-0 align-middle">
+                    <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th>No. Form</th>
-                                <th>Pemilik</th>
-                                <th>Hewan</th>
-                                <th>Paket</th>
-                                <th>Total</th>
-                                <th>Status</th>
+                                <th class="border-0 ps-4">No. Form</th>
+                                <th class="border-0">Pemilik</th>
+                                <th class="border-0">Hewan</th>
+                                <th class="border-0">Paket</th>
+                                <th class="border-0 text-end">Total</th>
+                                <th class="border-0 text-center">Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($transaksiTerbaru)): ?>
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-3">
-                                        Belum ada transaksi terbaru.
+                                    <td colspan="6" class="text-center text-muted py-5">
+                                        <div class="py-3">
+                                            <i class="bi bi-receipt display-4 text-muted opacity-50"></i>
+                                            <p class="mt-3 mb-0">Belum ada transaksi terbaru</p>
+                                            <small>Transaksi yang dibuat akan muncul di sini</small>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($transaksiTerbaru as $trx): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($trx['no_form']); ?></td>
-                                        <td><?= htmlspecialchars($trx['pemilik']); ?></td>
-                                        <td><?= htmlspecialchars($trx['hewan']); ?></td>
-                                        <td><?= htmlspecialchars($trx['paket']); ?></td>
-                                        <td>Rp <?= number_format($trx['total'], 0, ',', '.'); ?></td>
+                                        <td class="ps-4 fw-semibold"><?= htmlspecialchars($trx['no_form']); ?></td>
                                         <td>
+                                            <div class="fw-medium"><?= htmlspecialchars($trx['pemilik']); ?></div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <?php 
+                                                $hewanIcon = strtolower($trx['hewan']) === 'kucing' ? 'bi-cat text-info' : 'bi-dog text-warning';
+                                                ?>
+                                                <i class="bi <?= $hewanIcon; ?> me-2"></i>
+                                                <?= htmlspecialchars($trx['hewan']); ?>
+                                            </div>
+                                        </td>
+                                        <td class="small"><?= htmlspecialchars($trx['paket']); ?></td>
+                                        <td class="text-end fw-semibold">
+                                            Rp <?= number_format($trx['total'], 0, ',', '.'); ?>
+                                        </td>
+                                        <td class="text-center">
                                             <?php
                                             $status = $trx['status'];
                                             $badgeClass = 'secondary';
                                             if ($status === 'Lunas') $badgeClass = 'success';
-                                            elseif ($status === 'Menginep') $badgeClass = 'warning';
+                                            elseif ($status === 'Menginap') $badgeClass = 'primary';
+                                            elseif ($status === 'Pending') $badgeClass = 'warning';
                                             elseif ($status === 'Batal') $badgeClass = 'danger';
                                             ?>
                                             <span class="badge text-bg-<?= $badgeClass; ?>">
@@ -221,42 +293,61 @@ $sisaSlotAnjing = $kapasitasAnjingMaks > 0
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Footer dengan link lihat semua -->
+                <?php if (!empty($transaksiTerbaru)): ?>
+                    <div class="card-footer bg-transparent border-0 pt-3">
+                        <div class="text-center">
+                            <a href="index.php?page=transaksi&tab=pengembalian" class="text-decoration-none small">
+                                <i class="bi bi-arrow-right me-1"></i> Lihat Semua Transaksi
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Animasi angka count-up sederhana -->
+<!-- Animasi angka count-up -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // angka biasa
+        // Animasi untuk angka biasa
         document.querySelectorAll('[data-count]').forEach(function(el) {
             const target = parseInt(el.dataset.count || '0');
             let current = 0;
-            const step = Math.max(1, Math.ceil(target / 60));
-            const interval = setInterval(() => {
-                current += step;
+            const duration = 1500; // ms
+            const steps = 60;
+            const increment = target / steps;
+            const stepTime = duration / steps;
+
+            const timer = setInterval(() => {
+                current += increment;
                 if (current >= target) {
                     current = target;
-                    clearInterval(interval);
+                    clearInterval(timer);
                 }
-                el.textContent = current.toLocaleString('id-ID');
-            }, 16);
+                el.textContent = Math.floor(current).toLocaleString('id-ID');
+            }, stepTime);
         });
 
-        // angka uang
+        // Animasi untuk uang
         document.querySelectorAll('[data-money]').forEach(function(el) {
             const target = parseInt(el.dataset.money || '0');
             let current = 0;
-            const step = Math.max(1000, Math.ceil(target / 60));
-            const interval = setInterval(() => {
-                current += step;
+            const duration = 1500;
+            const steps = 60;
+            const increment = target / steps;
+            const stepTime = duration / steps;
+
+            const timer = setInterval(() => {
+                current += increment;
                 if (current >= target) {
                     current = target;
-                    clearInterval(interval);
+                    clearInterval(timer);
                 }
-                el.textContent = 'Rp ' + current.toLocaleString('id-ID');
-            }, 16);
+                el.textContent = 'Rp ' + Math.floor(current).toLocaleString('id-ID');
+            }, stepTime);
         });
     });
 </script>
