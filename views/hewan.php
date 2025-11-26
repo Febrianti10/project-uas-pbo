@@ -282,73 +282,50 @@ if (empty($kandangList)) {
                             </tr>
 
                             <!-- MODAL EDIT KANDANG (untuk baris ini) -->
-                            <div class="modal fade"
-                                id="modalEditKandang<?= (int)$k['id']; ?>"
-                                tabindex="-1"
-                                aria-hidden="true">
+                            <div class="modal fade" id="modalEditKandang<?= (int)$k['id']; ?>" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
-                                    <form class="modal-content"
-                                        method="post"
-                                        action="index.php?page=hewan&action=update_kandang">
-
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">
-                                                Edit Kandang: <?= htmlspecialchars($k['kode']); ?>
-                                            </h5>
-                                            <button type="button"
-                                                class="btn-close"
-                                                data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-
-                                        <div class="modal-body">
-                                            <!-- id untuk update -->
-                                            <input type="hidden" name="id" value="<?= (int)$k['id']; ?>">
-
-                                            <div class="mb-3">
-                                                <label class="form-label">Kode Kandang</label>
-                                                <input type="text"
-                                                    name="kode"
-                                                    class="form-control"
-                                                    value="<?= htmlspecialchars($k['kode']); ?>"
-                                                    placeholder="Contoh: KK01, KB01"
-                                                    required>
+                                    <div class="modal-content">
+                                        <form method="post" action="index.php?page=hewan&action=update_kandang">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Edit Kandang <?= htmlspecialchars($k['kode']); ?></h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
+                                            <div class="modal-body">
+                                                <!-- id untuk update -->
+                                                <input type="hidden" name="id" value="<?= (int)$k['id']; ?>">
 
-                                            <div class="mb-3">
-                                                <label class="form-label">Tipe</label>
-                                                <select name="tipe" class="form-select" required>
-                                                    <option value="Kecil" <?= ($k['tipe'] ?? '') === 'Kecil' ? 'selected' : ''; ?>>
-                                                        Kecil (KK)
-                                                    </option>
-                                                    <option value="Besar" <?= ($k['tipe'] ?? '') === 'Besar' ? 'selected' : ''; ?>>
-                                                        Besar (KB)
-                                                    </option>
-                                                </select>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Kode Kandang</label>
+                                                    <input type="text"
+                                                        name="kode"
+                                                        class="form-control"
+                                                        value="<?= htmlspecialchars($k['kode']); ?>"
+                                                        placeholder="Contoh: KK01, KB01"
+                                                        required>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tipe</label>
+                                                    <select name="tipe" class="form-select" required>
+                                                        <option value="Kecil" <?= ($k['tipe'] ?? '') === 'Kecil' ? 'selected' : ''; ?>>Kecil (KK)</option>
+                                                        <option value="Besar" <?= ($k['tipe'] ?? '') === 'Besar' ? 'selected' : ''; ?>>Besar (KB)</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Catatan</label>
+                                                    <textarea name="catatan"
+                                                        class="form-control"
+                                                        rows="3"
+                                                        placeholder="Contoh: dekat jendela, kandang besar, dll."><?= htmlspecialchars($k['catatan'] ?? ''); ?></textarea>
+                                                </div>
                                             </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label">Catatan</label>
-                                                <textarea name="catatan"
-                                                    class="form-control"
-                                                    rows="3"
-                                                    placeholder="Contoh: dekat jendela, kandang besar, dll."><?= htmlspecialchars($k['catatan'] ?? ''); ?></textarea>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                             </div>
-                                        </div>
-
-                                        <div class="modal-footer">
-                                            <button type="button"
-                                                class="btn btn-light"
-                                                data-bs-dismiss="modal">
-                                                Batal
-                                            </button>
-                                            <button type="submit"
-                                                class="btn btn-primary">
-                                                Simpan Perubahan
-                                            </button>
-                                        </div>
-
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                             <!-- END MODAL EDIT -->
@@ -359,6 +336,7 @@ if (empty($kandangList)) {
         </div>
     </div>
 </div>
+
 
 <!-- MODAL TAMBAH KANDANG -->
 <div class="modal fade" id="modalKandangBaru" tabindex="-1" aria-hidden="true">
