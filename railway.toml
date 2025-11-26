@@ -2,6 +2,5 @@
 builder = "NIXPACKS"
 
 [deploy]
-# Hapus `-t public` jika index.php Anda berada di root folder proyek.
-# Dan gunakan `index.php` sebagai router, sehingga semua request ditangani olehnya.
-startCommand = "php -S 0.0.0.0:$PORT index.php"
+# Gunakan router PHP bawaan yang memeriksa keberadaan file sebelum meneruskan ke index.php
+startCommand = "php -S 0.0.0.0:$PORT -t . index.php"
