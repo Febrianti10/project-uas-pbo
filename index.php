@@ -6,15 +6,18 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+// >>> TAMBAHKAN INI UNTUK MEMPERBAIKI MASALAH REDIRECT/LOGOUT <<<
+ob_start();
 
 // asset router
+// index.php
+
 if (PHP_SAPI === 'cli-server') {
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $cleanPath = ltrim($path, '/');
-
-    // Periksa apakah path mengarah ke file yang ada di disk (misalnya CSS/JS)
-    if (file_exists($cleanPath) && !is_dir($cleanPath)) {
-        // Jika file ada, kembalikan false. Server Built-in akan melayani file tersebut.
+    
+    // UBAH BARIS INI: Tambahkan __DIR__ . '/'
+    if (file_exists(__DIR__ . '/' . $cleanPath) && !is_dir(__DIR__ . '/' . $cleanPath)) {
         return false; 
     }
 }
