@@ -43,7 +43,7 @@
 //         break;
 
 // index.php - Entry Point Gabungan (Frontend + Backend)
-
+require __DIR__ . '/vendor/autoload.php';
 // Autoload untuk load class otomatis dari /models dan /controllers
 spl_autoload_register(function ($className) {
     $paths = [
