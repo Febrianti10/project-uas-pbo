@@ -224,7 +224,6 @@ $sisaSlotAnjing = $kapasitasAnjingMaks > 0
             <div class="card-header bg-transparent border-bottom-0 d-flex justify-content-between align-items-center pb-3">
                 <div>
                     <h5 class="card-title mb-1">Transaksi Terbaru</h5>
-                    <p class="text-muted small mb-0">5 transaksi terakhir hari ini</p>
                 </div>
                 <a href="index.php?page=transaksi&tab=pendaftaran" class="btn btn-outline-primary btn-sm">
                     <i class="bi bi-plus-circle me-1"></i> Transaksi Baru
