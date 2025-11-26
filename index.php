@@ -2,10 +2,23 @@
 
 // index.php - Entry Point Gabungan (Frontend + Backend)
 
-// AKTIFKAN DISPLAY ERROR UNTUK DEBUGGING DI RAILWAY
+// === HANDLER ERROR AGGRESIF UNTUK DEBUGGING RAILWAY ===
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    if (!(error_reporting() & $errno)) {
+        return false;
+    }
+    // Tampilkan error secara detail
+    echo "<h1>FATAL ERROR DETECTED</h1>";
+    echo "<b>Error:</b> {$errstr}<br>";
+    echo "<b>File:</b> {$errfile}<br>";
+    echo "<b>Line:</b> {$errline}<br>";
+    die();
+});
+
 // >>> TAMBAHKAN INI UNTUK MEMPERBAIKI MASALAH REDIRECT/LOGOUT <<<
 ob_start();
 
