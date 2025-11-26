@@ -328,4 +328,4 @@ if (!isset($totalkandangKecil) || !isset($totalkandangBesar)) {
     </div>
 </div>
 
-<?php include __DIR__ . '/template/footer.php'; ?>
+<?php include __DIR__ . '/template/footer.php'
