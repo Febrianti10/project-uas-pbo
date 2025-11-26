@@ -2,7 +2,12 @@
 
 // index.php - Entry Point Gabungan (Frontend + Backend)
 
+// AKTIFKAN DISPLAY ERROR UNTUK DEBUGGING DI RAILWAY
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
+// asset router
 if (PHP_SAPI === 'cli-server') {
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $cleanPath = ltrim($path, '/');
