@@ -43,6 +43,24 @@
 //         break;
 
 // index.php - Entry Point Gabungan (Frontend + Backend)
+
+// ==========================================================
+// LOGIKA ROUTER ASET STATIS (WAJIB UNTUK PHP BUILT-IN SERVER)
+// ==========================================================
+// 1. Ambil path dari URL yang diminta (misal: /public/dist/css/adminlte.css)
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// 2. Hapus slash di awal untuk mencocokkan dengan path di file system
+$cleanPath = ltrim($path, '/');
+
+// 3. Periksa apakah path tersebut mengarah ke file yang benar-benar ada di disk (misalnya CSS/JS)
+if (file_exists($cleanPath) && !is_dir($cleanPath)) {
+    // Jika file ada (misalnya: public/dist/css/adminlte.css),
+    // kembalikan FALSE. Built-in server PHP akan melayani file tersebut secara langsung
+    // dan TIDAK melanjutkan ke script router MVC Anda.
+    return false;
+}
+
 // require __DIR__ . '/vendor/autoload.php';
 // Autoload untuk load class otomatis dari /models dan /controllers
 spl_autoload_register(function ($className) {
