@@ -20,57 +20,64 @@ return [
  * @author h1101241034@student.untan.ac.id
  */
 
+/**
+ * Database Configuration
+ */
+
 class Database {
     private static $instance = null;
     private $connection;
     
-    // ============================================
-    // KONFIGURASI DATABASE
-    // ============================================
-    
-    // UNTUK LOKAL (Laragon/XAMPP)
-    private $host = 'localhost';
-    private $dbname = 'db_penitipan_hewan';
-    private $username = 'root';
-    private $password = ''; // Kosongkan untuk XAMPP/Laragon default
-    
-    // UNTUK PRODUCTION (uncomment saat deploy)
-    // private $host = 'aws.connect.psdb.cloud'; // PlanetScale
-    // private $dbname = 'penitipan_hewan';
-    // private $username = 'your_username';
-    // private $password = 'your_password';
-    
+    private $host;
+    private $dbname;
+    private $username;
+    private $password;
+    private $port; 
     private $charset = 'utf8mb4';
     
-    /**
-     * Private constructor - Singleton Pattern
-     */
     private function __construct() {
+        
+        // --- LOGIKA MENDETEKSI LINGKUNGAN (RAILWAY vs LOKAL) ---
+        // Jika ENV VAR MYSQLHOST ada (berarti di Railway), gunakan itu.
+        if (getenv('MYSQLHOST')) {
+            $this->host = getenv('MYSQLHOST');
+            $this->port = getenv('MYSQLPORT') ?: '3306'; 
+            $this->dbname = getenv('MYSQLDATABASE');
+            $this->username = getenv('MYSQLUSER');
+            $this->password = getenv('MYSQLPASSWORD');
+        } else {
+            // Jika tidak ada ENV VAR (berarti di lokal), gunakan konfigurasi lokal default.
+            $this->host = 'localhost';
+            $this->port = '3306';
+            $this->dbname = 'db_penitipan_hewan';
+            $this->username = 'root';
+            $this->password = 'Sh3Belajar!SQL'; // Ganti dengan password lokal Anda
+        }
+        
+        // Tentukan DSN dengan PORT
+        $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->dbname};charset={$this->charset}";
+        
         try {
-            $dsn = "mysql:host={$this->host};dbname={$this->dbname};charset={$this->charset}";
-            
             $options = [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_ERRMODE           => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false,
+                PDO::ATTR_EMULATE_PREPARES => false,
                 PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4",
-                PDO::ATTR_PERSISTENT         => false, // Matikan persistent connection untuk shared hosting
+                PDO::ATTR_PERSISTENT => false,
             ];
-            
-            // Tambahan untuk PlanetScale (uncomment saat deploy ke PlanetScale)
-            // $options[PDO::MYSQL_ATTR_SSL_CA] = true;
-            // $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
             
             $this->connection = new PDO($dsn, $this->username, $this->password, $options);
             
         } catch (PDOException $e) {
-            // Log error ke file (jangan tampilkan di production!)
-            error_log("Database Connection Error: " . $e->getMessage());
-            
-            // Tampilkan pesan user-friendly
+            // Tampilkan error PDO jika debugging aktif (karena ini error fatal)
+            if (ini_get('display_errors')) {
+                die("Koneksi DB Gagal: " . $e->getMessage() . "<br>Host: {$this->host}, DB: {$this->dbname}");
+            }
+            // Pesan user-friendly di production
             die("Maaf, terjadi kesalahan koneksi database. Silakan hubungi administrator.");
         }
     }
+
     
     /**
      * Get Database Instance
@@ -96,6 +103,7 @@ class Database {
     /**
      * Prevent cloning
      */
+    // add
     private function __clone() {}
     
     /**

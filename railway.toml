@@ -1,6 +1,13 @@
+[build]
+builder = "NIXPACKS"
+
 [deploy]
+<<<<<<< HEAD
 <<<<<<< HEAD
 startCommand = "php -S 0.0.0.0:$PORT -t public"
 =======
 startCommand = "php -S 0.0.0.0:$PORT -t public"
 >>>>>>> 6b5ed58b57d31a8a4534cfa8e32e9cfd7009baeb
+=======
+startCommand = "php -S 0.0.0.0:$PORT index.php"
+>>>>>>> 6707f301d7ba394eaef796f606fa0380005a2d13

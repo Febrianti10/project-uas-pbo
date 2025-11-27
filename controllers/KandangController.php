@@ -1,3 +1,4 @@
+<?php
 if ($action == 'update') {
     $id      = $_POST['id'];
     $kode    = $_POST['kode'];
@@ -16,3 +17,4 @@ if ($action == 'update') {
     header("Location: index.php?page=hewan");
     exit;
 }
+?>
