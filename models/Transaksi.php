@@ -7,7 +7,7 @@ require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, Tra
  * CRUD untuk transaksi penitipan hewan
  * 
  */
-class Transaksi
+class Transaksi // Menggunakan Encapsulation private $db;
 {
     private $db;
 
