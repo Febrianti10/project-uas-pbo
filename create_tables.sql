@@ -3,7 +3,6 @@
 -- ==================================================
 
 -- Drop database jika sudah ada (hati-hati di production!)
-DROP DATABASE IF EXISTS db_penitipan_hewan;
 CREATE DATABASE db_penitipan_hewan;
 USE db_penitipan_hewan;
 
