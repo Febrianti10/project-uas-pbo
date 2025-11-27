@@ -4,31 +4,37 @@ require_once __DIR__ . '/../config/database.php';
 
 class Layanan
 {
-    private $koneksi;
+    private $db;
 
-    public function __construct($db)
+    public function __construct()
     {
-        $this->koneksi = $db;
+        $this->db = getDB(); // === PDO
     }
 
-    // Tambah layanan (baik paket atau tambahan)
+    // Tambah layanan
     public function tambahLayanan($nama, $harga, $jenis)
     {
         $nama  = clean($nama);
         $jenis = clean($jenis);
         $harga = number_only($harga);
 
-        $query = "INSERT INTO layanan (nama, harga, jenis) VALUES (?, ?, ?)";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("sds", $nama, $harga, $jenis);
-        return $stmt->execute();
+        $sql = "INSERT INTO layanan (nama, harga, jenis) 
+                VALUES (:nama, :harga, :jenis)";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'nama'  => $nama,
+            'harga' => $harga,
+            'jenis' => $jenis
+        ]);
     }
 
     // Ambil semua layanan
     public function getAllLayanan()
     {
-        $query = "SELECT * FROM layanan ORDER BY jenis ASC, id DESC";
-        return $this->koneksi->query($query);
+        $sql = "SELECT * FROM layanan ORDER BY jenis ASC, id DESC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
     }
 
     // Ambil layanan berdasarkan jenis
@@ -36,48 +42,52 @@ class Layanan
     {
         $jenis = clean($jenis);
 
-        $query = "SELECT * FROM layanan WHERE jenis = ? ORDER BY id DESC";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("s", $jenis);
-        $stmt->execute();
-        return $stmt->get_result();
+        $sql = "SELECT * FROM layanan 
+                WHERE jenis = :jenis 
+                ORDER BY id DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['jenis' => $jenis]);
+        return $stmt->fetchAll();
     }
 
     // Ambil satu layanan
     public function getLayananById($id)
     {
-        $id = intval($id);
+        $sql = "SELECT * FROM layanan WHERE id = :id";
 
-        $query = "SELECT * FROM layanan WHERE id = ?";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => intval($id)]);
+        return $stmt->fetch();
     }
 
     // Update layanan
     public function updateLayanan($id, $nama, $harga, $jenis)
     {
-        $id    = intval($id);
-        $nama  = clean($nama);
-        $jenis = clean($jenis);
-        $harga = number_only($harga);
+        $sql = "UPDATE layanan 
+                SET nama = :nama, 
+                    harga = :harga, 
+                    jenis = :jenis 
+                WHERE id = :id";
 
-        $query = "UPDATE layanan SET nama = ?, harga = ?, jenis = ? WHERE id = ?";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("sdsi", $nama, $harga, $jenis, $id);
-        return $stmt->execute();
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'id'    => intval($id),
+            'nama'  => clean($nama),
+            'harga' => number_only($harga),
+            'jenis' => clean($jenis)
+        ]);
     }
 
     // Hapus layanan
     public function deleteLayanan($id)
     {
-        $id = intval($id);
+        $sql = "DELETE FROM layanan WHERE id = :id";
 
-        $query = "DELETE FROM layanan WHERE id = ?";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'id' => intval($id)
+        ]);
     }
 }
 ?>
