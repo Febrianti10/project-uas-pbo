@@ -71,10 +71,10 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                     ======================================================== -->
                     <h5 class="mb-3">Form Pendaftaran Penitipan</h5>
 
-                    <!-- <form method="post" action="index.php?action=createTransaksi"> -->
+                    <form method="post" action="index.php?action=createTransaksi" id="formPendaftaran">
                     <!-- <form method="post" action="index.php?page=transaksi&action=create"> -->
 
-                    <form method="post" action="controllers/TransaksiController.php?action=create" id="formPendaftaran">
+                    <!-- <form method="post" action="controllers/TransaksiController.php?action=create" id="formPendaftaran"> -->
 
                         <div class="row g-4">
 

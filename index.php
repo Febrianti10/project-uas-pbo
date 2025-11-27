@@ -108,14 +108,9 @@ if ($action) {
             break;
 
         case 'cetakBukti':
-            if (!isset($_GET['id']) || empty($_GET['id'])) {
-                echo json_encode(['error' => 'ID transaksi tidak ditemukan']);
-                exit;
-            }
             $controller = new TransaksiController();
             $controller->cetakBukti($_GET['id']);
             break;
-
 
         default:
             echo json_encode(['error' => 'Action not found']);
@@ -156,6 +151,8 @@ switch ($page) {
         session_destroy();
         header('Location: index.php?page=login');
         exit;
+    case 'cetakbukti':
+        include 'views/cetak_bukti.php';
     default:
         include 'views/404.php';
         break;

@@ -2,88 +2,122 @@
 
 class TransaksiController {
     private $transaksiModel;
+    private $detailTransaksiModel;
     private $pelangganModel;
     private $hewanModel;
+    private $kandangModel;
 
     public function __construct() {
         require_once __DIR__ . '/../models/Transaksi.php';
+        require_once __DIR__ . '/../models/DetailTransaksi.php';
         require_once __DIR__ . '/../models/Pelanggan.php';
         require_once __DIR__ . '/../models/Hewan.php';
         require_once __DIR__ . '/../models/Kandang.php';
-        
-        $this->transaksiModel = new Transaksi();
-        $this->pelangganModel = new Pelanggan();
-        $this->hewanModel = new Hewan();
+        require_once __DIR__ . '/../models/Layanan.php'; // Tambahkan Layanan
+
+        $this->transaksiModel     = new Transaksi();
+        $this->detailTransaksiModel = new DetailTransaksi();
+        $this->pelangganModel     = new Pelanggan();
+        $this->hewanModel         = new Hewan();
+        $this->kandangModel       = new Kandang();
     }
 
-   public function create() {
-    error_log("TransaksiController::create() called");
-    error_log("POST data: " . print_r($_POST, true));
+public function create()
+{
+    try {
+        // --- 1. Ambil data dari POST ---
+        $id_pelanggan   = $_POST['id_pelanggan'] ?? null;
+        $nama_pelanggan = $_POST['nama_pelanggan'];
+        $alamat         = $_POST['alamat'];
+        $no_hp          = $_POST['no_hp'];
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        try {
-            // Validasi data required
-            if (empty($_POST['id_layanan']) || empty($_POST['id_kandang']) || empty($_POST['nama_hewan'])) {
-                throw new Exception("Data required tidak lengkap");
-            }
+        $nama_hewan     = $_POST['nama_hewan'];
+        $jenis_hewan    = $_POST['jenis_hewan'];
+        $ras_hewan      = $_POST['ras_hewan'];
 
-            // 1. Handle Pelanggan (create new if doesn't exist)
-            $id_pelanggan = $this->handlePelanggan($_POST);
-            
-            // 2. Handle Hewan (create new)
-            $id_hewan = $this->handleHewan($_POST, $id_pelanggan);
-            
-            // 3. Hitung biaya
-            $biayaData = $this->hitungBiaya($_POST);
-            
-            // 4. Prepare transaksi data
-            $transaksiData = [
-                'id_pelanggan' => $id_pelanggan,
-                'id_hewan' => $id_hewan,
-                'id_kandang' => $_POST['id_kandang'],
-                'id_layanan' => $_POST['id_layanan'],
-                'biaya_paket' => $biayaData['biaya_paket'],
-                'tanggal_masuk' => $_POST['tanggal_masuk'] ?? date('Y-m-d'),
-                'durasi' => $_POST['durasi'] ?? 1,
-                'total_biaya' => $biayaData['total_biaya']
-            ];
+        $id_kandang     = $_POST['id_kandang'];
+        $id_layanan     = $_POST['id_layanan'];
+        $jumlah_hari    = $_POST['jumlah_hari'];
 
-            error_log("Transaksi data: " . print_r($transaksiData, true));
+        $layanan_tambahan = $_POST['layanan_tambahan'] ?? [];
 
-            // 5. Create transaksi
-            $id_transaksi = $this->transaksiModel->create($transaksiData);
-            
-            if ($id_transaksi) {
-                // 6. Create detail transaksi (layanan tambahan)
-                $this->handleDetailTransaksi($_POST, $id_transaksi);
-                
-                // 7. Update status kandang dan hewan
-                $kandangModel = new Kandang();
-                $kandangModel->updateStatus($transaksiData['id_kandang'], 'terpakai');
-                
-                $this->hewanModel->updateStatus($id_hewan, 'sedang_dititipan');
-                
-                // Redirect ke halaman sukses
-                header('Location: index.php?page=transaksi&status=success&tab=pendaftaran&id=' . $id_transaksi);
-                exit;
-            } else {
-                throw new Exception("Gagal membuat transaksi");
-            }
-
-        } catch (Exception $e) {
-            error_log("Error in create transaksi: " . $e->getMessage());
-            header('Location: index.php?page=transaksi&status=error&message=' . urlencode($e->getMessage()) . '&tab=pendaftaran');
-            exit;
+        // --- 2. Handle Pelanggan ---
+        if (!$id_pelanggan) {
+            $id_pelanggan = $this->pelangganModel->create([
+                'nama_pelanggan' => $nama_pelanggan,
+                'alamat'         => $alamat,
+                'no_hp'          => $no_hp
+            ]);
         }
-    } else {
-        header('Location: index.php?page=transaksi&status=error&message=Invalid request method&tab=pendaftaran');
+
+        // --- 3. Insert Hewan ---
+        $id_hewan = $this->hewanModel->create([
+            'id_pelanggan' => $id_pelanggan,
+            'nama_hewan'   => $nama_hewan,
+            'jenis_hewan'  => $jenis_hewan,
+            'ras_hewan'    => $ras_hewan,
+            'status'       => 'sedang_dititipkan'
+        ]);
+
+        // --- 4. Ambil data layanan dari DB ---
+        $layanan = $this->transaksiModel->getLayananById($id_layanan);
+        $total_biaya = $layanan['harga'] * $jumlah_hari;
+
+        // Layanan tambahan
+        foreach ($layanan_tambahan as $kode => $qty) {
+            if ($qty > 0) {
+                $dataTambahan = $this->transaksiModel->getLayananTambahan($kode);
+                $total_biaya += $dataTambahan['harga'] * $qty;
+            }
+        }
+
+        // --- 5. Insert Transaksi ---
+        $dataTransaksi = [
+            'id_hewan'       => $id_hewan,
+            'id_kandang'     => $id_kandang,
+            'id_layanan'     => $id_layanan,
+            'tanggal_masuk'  => date('Y-m-d'),
+            'jumlah_hari'    => $jumlah_hari,
+            'total_biaya'    => $total_biaya,
+            'status'         => 'aktif'
+        ];
+
+        $id_transaksi = $this->transaksiModel->create($dataTransaksi);
+
+        // --- 6. Insert detail transaksi ---
+        $this->detailTransaksiModel->create([
+            'id_transaksi' => $id_transaksi,
+            'nama_layanan' => $layanan['nama_layanan'],
+            'quantity'     => $jumlah_hari,
+            'subtotal'     => $layanan['harga'] * $jumlah_hari
+        ]);
+
+        foreach ($layanan_tambahan as $kode => $qty) {
+            if ($qty > 0) {
+                $dataL = $this->transaksiModel->getLayananTambahan($kode);
+
+                $this->detailTransaksiModel->create([
+                    'id_transaksi' => $id_transaksi,
+                    'nama_layanan' => $dataL['nama_layanan'],
+                    'quantity'     => $qty,
+                    'subtotal'     => $dataL['harga'] * $qty
+                ]);
+            }
+        }
+
+        // --- 7. Update status kandang ---
+        $this->kandangModel->updateStatus($id_kandang, 'terpakai');
+
+        // --- 8. Redirect ke halaman cetak struk ---
+        header("Location: index.php?page=cetak_bukti&id_transaksi=" . $id_transaksi);
         exit;
+
+    } catch (Exception $e) {
+        echo "Error create transaksi: " . $e->getMessage();
     }
 }
 
-/**
- * Hitung biaya transaksi
- */
+
 /**
  * Hitung biaya transaksi - FIXED VERSION
  */
@@ -276,6 +310,24 @@ private function handleDetailTransaksi($data, $id_transaksi) {
         $data = $this->transaksiModel->search($keyword);
         echo json_encode($data);
     }
+    public function cetakBukti() {
+    if (!isset($_GET['id'])) {
+        die("ID transaksi tidak ditemukan");
+    }
+
+    $id = $_GET['id'];
+
+    // Ambil data transaksi lengkap
+    $transaksiData = $this->transaksiModel->getById($id);
+
+    if (!$transaksiData) {
+        die("Transaksi tidak ditemukan");
+    }
+
+    // Load view khusus untuk bukti
+    include __DIR__ . '/../views/cetak_bukti.php';
+}
+
 
     public function checkout() {
         $id = $_POST['id'] ?? '';
@@ -304,36 +356,6 @@ private function handleDetailTransaksi($data, $id_transaksi) {
         
     }
     
-    
-
-    public function cetakBukti($id_transaksi){
-    require_once __DIR__ . '/../models/Transaksi.php';
-
-    $transaksiModel = new Transaksi();
-
-    // Ambil data transaksi lengkap
-    $dataTransaksi = $transaksiModel->getById($id_transaksi);
-
-    if (!$dataTransaksi) {
-        echo "Transaksi tidak ditemukan!";
-        return;
-    }
-
-    // Data hewan sudah ada di hasil query (JOIN)
-    $dataHewan = [
-        'nama' => $dataTransaksi['nama_hewan'],
-        'jenis' => $dataTransaksi['jenis'],
-        'ras' => $dataTransaksi['ras'],
-        'ukuran' => $dataTransaksi['ukuran'],
-        'warna' => $dataTransaksi['warna'],
-    ];
-
-    // Detail layanan menggunakan tabel detail_layanan
-    $dataLayanan = $dataTransaksi['detail_layanan'] ?? [];
-
-    include "views/cetak_bukti.php";
-    }
-
 }
 
 ?>

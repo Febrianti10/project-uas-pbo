@@ -119,7 +119,7 @@ public function create($data) {
         }
         
     } catch (Exception $e) {
-        error_log("❌ MODEL ERROR create transaksi: " . $e->getMessage());
+        error_log(" MODEL ERROR create transaksi: " . $e->getMessage());
         return false;
     }
 }
