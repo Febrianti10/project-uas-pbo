@@ -4,8 +4,20 @@
 buildCommand = "composer install --no-dev"
 
 [deploy]
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+startCommand = "php -S 0.0.0.0:$PORT -t public"
+=======
+startCommand = "php -S 0.0.0.0:$PORT -t public"
+>>>>>>> 6b5ed58b57d31a8a4534cfa8e32e9cfd7009baeb
+=======
+startCommand = "php -S 0.0.0.0:$PORT index.php"
+>>>>>>> 6707f301d7ba394eaef796f606fa0380005a2d13
+=======
 # Perintah start default untuk PHP di Railway (jika menggunakan buildpack standar)
 # Ini adalah tebakan terbaik untuk menjalankan PHP-FPM di port yang benar
 startCommand = "vendor/bin/heroku-php-apache2 public/" 
 # ATAU jika menggunakan Nginx:
 # startCommand = "vendor/bin/heroku-php-nginx public/"
+>>>>>>> 8e183b63bffd4bede691e3d1a0d51028de6624ed
