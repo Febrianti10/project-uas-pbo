@@ -1,14 +1,17 @@
 <?php
-// Jika file yang diminta ada di folder public, berikan langsung
-if (preg_match('/\.(?:png|jpg|jpeg|gif|css|js|woff|woff2|svg|ttf|map)$/', $_SERVER["REQUEST_URI"])) {
+// Router bawaan PHP: kalau file ada, tampilkan file tsb
+$path = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+
+if ($path !== "/" && file_exists(__DIR__ . $path)) {
     return false;
 }
 
-// Jika request menuju file real di public/, kasih
-$path = __DIR__ . parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
-if (is_file($path)) {
-    return false;
+// Jika request mengarah ke folder public
+if (str_starts_with($path, "/public/")) {
+    $file = __DIR__ . $path;
+    if (file_exists($file)) {
+        return false; // langsung load file CSS, JS, image
+    }
 }
 
-// Selain itu, lempar semua request ke index.php
-include __DIR__ . '/index.php';
+require 'index.php';

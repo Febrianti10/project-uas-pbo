@@ -60,7 +60,7 @@ $currentPage = $page ?? ($activeMenu ?? 'dashboard');
 
         <!-- TRANSAKSI PENITIPAN -->
         <li class="nav-item mb-1">
-          <a href="index.php?page=transaksi"
+          <a href="/index.php?page=transaksi"
              class="nav-link modern-link <?= $currentPage === 'transaksi' ? 'active' : '' ?>">
             <i class="bi bi-receipt modern-icon"></i>
             <span>Transaksi Penitipan</span>
@@ -69,7 +69,7 @@ $currentPage = $page ?? ($activeMenu ?? 'dashboard');
 
         <!-- LOGOUT -->
         <li class="nav-item mt-2">
-          <a href="index.php?page=logout" class="nav-link modern-link text-warning">
+          <a href="/index.php?page=logout" class="nav-link modern-link text-warning">
             <i class="bi bi-box-arrow-right modern-icon"></i>
             <span>Logout</span>
           </a>
