@@ -343,7 +343,8 @@ if (empty($kandangList)) {
     <div class="modal-dialog modal-dialog-centered">
         <form class="modal-content"
             method="post"
-            action="index.php?page=kandang&action=store">
+            action="index.php?action=storeKandang">
+            <!-- action="index.php?page=kandang&action=store"> -->
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Kandang Baru</h5>
                 <button type="button"

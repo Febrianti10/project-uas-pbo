@@ -1,6 +1,6 @@
 <?php
-// Pastikan autoload sudah me-load model Kandang
-// require_once __DIR__ . '/../models/Kandang.php'; 
+
+// Memastikan Kandang Model di-load (melalui spl_autoload_register di index.php)
 
 class KandangController
 {
@@ -8,63 +8,64 @@ class KandangController
 
     public function __construct()
     {
-        // Asumsi class Kandang sudah dibuat di models/Kandang.php
+        // Panggil Kandang Model
         $this->model = new Kandang();
     }
 
     /**
-     * Menangani POST request dari form 'Tambah Kandang'
-     * index.php?action=storeKandang
+     * Menangani POST request untuk menyimpan data kandang baru.
+     * Dipanggil via index.php?action=storeKandang
      */
     public function store()
     {
-        // Hanya proses jika request method adalah POST
+        // Proteksi dasar untuk memastikan data dikirim via POST
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode(['error' => 'Method Not Allowed']);
-            return;
+            header('Location: index.php?page=hewan&status=error&message=Invalid request method.');
+            exit;
         }
-
+        
         $dataKandang = [
-            'kode'    => $_POST['kode'] ?? '',
+            'kode'    => trim($_POST['kode'] ?? ''),
             'tipe'    => $_POST['tipe'] ?? '',
-            'catatan' => $_POST['catatan'] ?? ''
+            'catatan' => trim($_POST['catatan'] ?? null)
         ];
 
+        // Validasi
         if (empty($dataKandang['kode']) || empty($dataKandang['tipe'])) {
-            header('Location: index.php?page=hewan&status=error&message=Kode dan Tipe Kandang harus diisi');
+            header('Location: index.php?page=hewan&status=error&message=Kode dan Tipe Kandang harus diisi.');
             exit;
         }
 
+        // Simpan ke database
         if ($this->model->create($dataKandang)) {
-            // Berhasil disimpan
-            header('Location: index.php?page=hewan&status=success&message=Kandang berhasil ditambahkan!');
+            // Berhasil
+            header('Location: index.php?page=hewan&status=success&message=Kandang ' . $dataKandang['kode'] . ' berhasil ditambahkan.');
         } else {
-            // Gagal (misalnya kode duplikat, dll.)
-            header('Location: index.php?page=hewan&status=error&message=Gagal menambahkan kandang, coba kode lain.');
+            // Gagal, kemungkinan kode duplikat
+            header('Location: index.php?page=hewan&status=error&message=Gagal menambahkan kandang. Kode mungkin sudah ada atau terjadi kesalahan database.');
         }
         exit;
     }
 
     /**
-     * Menghapus kandang
-     * index.php?action=deleteKandang&id=X
+     * Menghapus kandang berdasarkan ID.
+     * Dipanggil via index.php?action=deleteKandang&id=X
      */
     public function delete()
     {
-        $id = $_GET['id'] ?? null;
-        if (!$id) {
-            header('Location: index.php?page=hewan&status=error&message=ID Kandang tidak ditemukan.');
+        $id = (int)($_GET['id'] ?? 0);
+        if ($id <= 0) {
+            header('Location: index.php?page=hewan&status=error&message=ID Kandang tidak valid.');
             exit;
         }
 
         if ($this->model->delete($id)) {
-            header('Location: index.php?page=hewan&status=success&message=Kandang berhasil dihapus!');
+            header('Location: index.php?page=hewan&status=success&message=Kandang berhasil dihapus.');
         } else {
-            header('Location: index.php?page=hewan&status=error&message=Gagal menghapus kandang.');
+            header('Location: index.php?page=hewan&status=error&message=Gagal menghapus kandang. Mungkin kandang sedang terisi.');
         }
         exit;
     }
     
-    // Anda juga bisa menambahkan public function update() di sini
+    // Anda bisa tambahkan public function update() dan public function read() di sini
 }

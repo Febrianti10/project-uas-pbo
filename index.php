@@ -61,6 +61,14 @@ if ($action) {
             $controller = new TransaksiController();
             $controller->cetakBukti($_GET['id']);
             break;
+        case 'storeKandang': // Menangani POST dari form tambah kandang
+            $controller = new KandangController();
+            $controller->store();
+            break;
+        case 'deleteKandang': // Menangani GET dari tombol hapus kandang
+            $controller = new KandangController();
+            $controller->delete();
+            break;
         default:
             echo json_encode(['error' => 'Action not found']);
             break;
