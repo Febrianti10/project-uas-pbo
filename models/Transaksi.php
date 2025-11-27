@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, TransferPayment, dll.
+require_once __DIR__ . '/../config/database.php'; //penerapan konsep OOP Class Transaksi berhubungan dengan database (PDO)
+require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, TransferPayment, dll. //penerapan konsep OOP Class Transaksi berhubungan dengan PaymentMethod
 
 /**
  * Model Transaksi
@@ -20,7 +20,7 @@ class Transaksi
      * Ambil transaksi aktif (hewan yang sedang menginap)
      */
 
-    public function getAll()
+    public function getAll() // Penerapan Konsep OOP Class Transaksi membutuhkan data dari hewan, layanan, dan pelanggan
     {
         $sql = "SELECT 
                     t.*,
