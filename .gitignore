@@ -1,8 +1,10 @@
-# Abaikan folder dependencies Composer
+# Saran Tambahan untuk .gitignore
+# File konfigurasi yang hanya digunakan di server lokal/dev
 /vendor/
-
-# Abaikan file environment (jika nanti Anda pakai)
 .env 
 .env.local
 *.log
 .DS_Store
+# Tambahkan Dockerfile dan default.conf jika Anda tidak ingin meng-commit-nya
+# Dockerfile 
+# default.conf
