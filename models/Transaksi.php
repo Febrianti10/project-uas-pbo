@@ -20,7 +20,7 @@ class Transaksi
      * Ambil transaksi aktif (hewan yang sedang menginap)
      */
 
-    public function getAll()
+    public function getAll() // Penerapan Konsep OOP Class Transaksi membutuhkan data dari hewan, layanan, dan pelanggan
     {
         $sql = "SELECT 
                     t.*,
