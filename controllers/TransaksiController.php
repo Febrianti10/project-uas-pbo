@@ -1,52 +1,121 @@
 <?php
-// controllers/TransaksiController.php
+
 class TransaksiController {
     private $transaksiModel;
+    private $pelangganModel;
+    private $hewanModel;
 
     public function __construct() {
+        require_once __DIR__ . '/../models/Transaksi.php';
+        require_once __DIR__ . '/../models/Pelanggan.php';
+        require_once __DIR__ . '/../models/Hewan.php';
+        require_once __DIR__ . '/../models/Kandang.php';
+        
         $this->transaksiModel = new Transaksi();
+        $this->pelangganModel = new Pelanggan();
+        $this->hewanModel = new Hewan();
     }
 
     public function create() {
-        // Validasi server-side
-        $idPelanggan = $_POST['id_pelanggan'] ?? '';
-        $idHewan = $_POST['id_hewan'] ?? '';
-        $tanggalMasuk = $_POST['tanggal_masuk'] ?? '';
-        $durasiHari = $_POST['durasi_hari'] ?? '';
-        $subtotal = $_POST['subtotal'] ?? '';
-        $detailLayanan = json_decode($_POST['detail_layanan'] ?? '[]', true); // Array dari frontend
+        error_log("TransaksiController::create() called");
+        error_log("POST data: " . print_r($_POST, true));
 
-        if (empty($idPelanggan) || empty($idHewan) || empty($tanggalMasuk) || empty($durasiHari) || !is_numeric($subtotal)) {
-            echo json_encode(['error' => 'Data tidak lengkap atau invalid']);
-            return;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                // Validasi data required
+                if (empty($_POST['id_layanan']) || empty($_POST['id_kandang']) || empty($_POST['nama_hewan'])) {
+                    throw new Exception("Data required tidak lengkap");
+                }
+
+                // 1. Handle Pelanggan (create new if doesn't exist)
+                $id_pelanggan = $this->handlePelanggan($_POST);
+                
+                // 2. Handle Hewan (create new)
+                $id_hewan = $this->handleHewan($_POST, $id_pelanggan);
+                
+                // 3. Prepare transaksi data
+                $transaksiData = [
+                    'id_pelanggan' => $id_pelanggan,
+                    'id_hewan' => $id_hewan,
+                    'id_kandang' => $_POST['id_kandang'],
+                    'id_layanan' => $_POST['id_layanan'],
+                    'tanggal_masuk' => $_POST['tanggal_masuk'] ?? date('Y-m-d'),
+                    'durasi' => $_POST['durasi'] ?? 1,
+                    'total_biaya' => $_POST['total_biaya'] ?? 0
+                ];
+
+                error_log("Transaksi data: " . print_r($transaksiData, true));
+
+                // 4. Create transaksi
+                if ($this->transaksiModel->create($transaksiData)) {
+                    // Update status kandang menjadi terpakai
+                    $kandangModel = new Kandang();
+                    $kandangModel->updateStatus($transaksiData['id_kandang'], 'terpakai');
+                    
+                    // Update status hewan menjadi sedang_dititipkan
+                    $this->hewanModel->updateStatus($id_hewan, 'sedang_dititipkan');
+                    
+                    // Redirect ke halaman sukses
+                    header('Location: index.php?page=transaksi&status=success&tab=pendaftaran');
+                    exit;
+                } else {
+                    throw new Exception("Gagal membuat transaksi");
+                }
+
+            } catch (Exception $e) {
+                error_log("Error in create transaksi: " . $e->getMessage());
+                header('Location: index.php?page=transaksi&status=error&message=' . urlencode($e->getMessage()) . '&tab=pendaftaran');
+                exit;
+            }
+        } else {
+            header('Location: index.php?page=transaksi&status=error&message=Invalid request method&tab=pendaftaran');
+            exit;
         }
+    }
 
-        if ($durasiHari <= 0 || $subtotal < 0) {
-            echo json_encode(['error' => 'Durasi hari dan subtotal harus positif']);
-            return;
-        }
+    private function handlePelanggan($data) {
+    $id_pelanggan = $data['id_pelanggan'] ?? null;
+    
+    // Jika id_pelanggan ada, berarti pelanggan sudah terdaftar
+    if (!empty($id_pelanggan)) {
+        return $id_pelanggan;
+    }
+    
+    // Jika tidak ada id_pelanggan, buat pelanggan baru
+    $pelangganData = [
+        'nama_pelanggan' => $data['search_pemilik'] ?? '',
+        'no_hp' => $data['no_hp'] ?? '',
+        'alamat' => $data['alamat'] ?? ''
+    ];
 
-        // Asumsi id_user dari session (kasir yang login)
-        if (!isset($_SESSION['user_id'])) {
-            echo json_encode(['error' => 'Anda harus login']);
-            return;
-        }
+    $newPelangganId = $this->pelangganModel->create($pelangganData);
+    if ($newPelangganId) {
+        return $newPelangganId;
+    } else {
+        throw new Exception("Gagal membuat pelanggan baru");
+    }
+}
 
-        $data = [
-            'id_pelanggan' => $idPelanggan,
-            'id_hewan' => $idHewan,
-            'id_user' => $_SESSION['user_id'],
-            'tanggal_masuk' => $tanggalMasuk,
-            'durasi_hari' => $durasiHari,
-            'subtotal' => $subtotal,
-            'total_biaya' => $subtotal, // Asumsi tanpa diskon dulu
+    private function handleHewan($data, $id_pelanggan) {
+        $hewanData = [
+            'id_pelanggan' => $id_pelanggan,
+            'nama_hewan' => $data['nama_hewan'] ?? '',
+            'jenis' => $data['jenis'] ?? '',
+            'ras' => $data['ras'] ?? '',
+            'ukuran' => $data['ukuran'] ?? '',
+            'warna' => $data['warna'] ?? '',
+            'catatan' => $data['catatan'] ?? '',
+            'status' => 'tersedia' // Akan diupdate setelah transaksi berhasil
         ];
 
-        $idTransaksi = $this->transaksiModel->create($data, $detailLayanan);
-        if ($idTransaksi) {
-            echo json_encode(['success' => 'Transaksi berhasil dibuat', 'id_transaksi' => $idTransaksi]);
+        // Create hewan dan langsung return ID-nya
+        if ($this->hewanModel->create($hewanData)) {
+            // Ambil last insert ID dari database connection
+            require_once __DIR__ . '/../config/database.php';
+            $db = getDB();
+            return $db->lastInsertId();
         } else {
-            echo json_encode(['error' => 'Gagal membuat transaksi']);
+            throw new Exception("Gagal membuat data hewan");
         }
     }
 

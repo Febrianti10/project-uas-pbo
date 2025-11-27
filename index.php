@@ -39,18 +39,21 @@ if ($action) {
             break;
             
         // PELANGGAN ACTIONS
+        // Di bagian switch($action), pastikan case searchPelanggan ada:
         case 'searchPelanggan':
-            // Load model secara manual untuk menghindari autoload issue
             require_once __DIR__ . '/models/Pelanggan.php';
             $pelangganModel = new Pelanggan();
             
             $keyword = $_GET['q'] ?? '';
+            error_log("Searching pelanggan with keyword: " . $keyword);
+            
             $results = $pelangganModel->searchForAutocomplete($keyword);
+            error_log("Found " . count($results) . " results");
             
             header('Content-Type: application/json');
             echo json_encode($results);
             exit;
-            // break;
+
         // Tambahkan case ini di switch($action) di index.php
         case 'getKandangTersedia':
             require_once __DIR__ . '/models/Kandang.php';
@@ -65,7 +68,7 @@ if ($action) {
             header('Content-Type: application/json');
             echo json_encode($kandangTersedia);
             exit;
-            break;
+            // break;
             
         // TRANSAKSI ACTIONS     
         case 'createTransaksi':

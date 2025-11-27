@@ -76,6 +76,12 @@ class Pelanggan
                 "no_hp" => $data["no_hp"],
                 "alamat" => $data["alamat"] ?? null,
             ]);
+            if ($result) {
+            return $this->db->lastInsertId(); // Return the inserted ID
+        } else {
+            return false;
+        }
+        
 
         } catch (Exception $e) {
             error_log("Error create pelanggan: " . $e->getMessage());
@@ -226,4 +232,9 @@ class Pelanggan
         $result = $stmt->fetch();
         return ($result['total'] ?? 0) > 0;
     }
+    // Tambahkan method ini di class Pelanggan
+public function getLastInsertId() {
+    return $this->db->lastInsertId();
+}
+
 }

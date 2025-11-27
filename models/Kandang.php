@@ -82,13 +82,19 @@ class Kandang
         return $stmt->fetch();
     }
 
-    /**
-     * Update status kandang
-     */
-    public function updateStatus($id, $status)
-    {
-        $sql = "UPDATE kandang SET status = ? WHERE id_kandang = ?";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$status, $id]);
+
+public function updateStatus($id, $status) {
+    $allowed = ["tersedia", "terpakai", "maintenance"];
+
+    if (!in_array($status, $allowed)) {
+        $status = "tersedia";
     }
+
+    $sql = "UPDATE kandang SET status = :status WHERE id_kandang = :id";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([
+        "id" => $id,
+        "status" => $status
+    ]);
+}
 }

@@ -57,32 +57,40 @@ class Hewan
     /**
      * Tambah hewan baru
      */
-    public function create($data)
-    {
-        try {
-            $sql = "INSERT INTO hewan 
-                    (id_pelanggan, nama_hewan, jenis, ras, ukuran, warna, catatan, status)
-                    VALUES 
-                    (:id_pelanggan, :nama_hewan, :jenis, :ras, :ukuran, :warna, :catatan, :status)";
+    /**
+ * Tambah hewan baru - RETURN LAST INSERT ID
+ */
+public function create($data) {
+    try {
+        $sql = "INSERT INTO hewan 
+                (id_pelanggan, nama_hewan, jenis, ras, ukuran, warna, catatan, status)
+                VALUES 
+                (:id_pelanggan, :nama_hewan, :jenis, :ras, :ukuran, :warna, :catatan, :status)";
 
-            $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->prepare($sql);
 
-            return $stmt->execute([
-                "id_pelanggan" => $data["id_pelanggan"],
-                "nama_hewan" => $data["nama_hewan"],
-                "jenis" => $data["jenis"],
-                "ras" => $data["ras"],
-                "ukuran" => $data["ukuran"],
-                "warna" => $data["warna"],
-                "catatan" => $data["catatan"] ?? null,
-                "status" => $data["status"] ?? "tersedia",
-            ]);
+        $result = $stmt->execute([
+            "id_pelanggan" => $data["id_pelanggan"],
+            "nama_hewan" => $data["nama_hewan"],
+            "jenis" => $data["jenis"],
+            "ras" => $data["ras"],
+            "ukuran" => $data["ukuran"],
+            "warna" => $data["warna"],
+            "catatan" => $data["catatan"] ?? null,
+            "status" => $data["status"] ?? "tersedia",
+        ]);
 
-        } catch (Exception $e) {
-            error_log("Error create hewan: " . $e->getMessage());
+        if ($result) {
+            return $this->db->lastInsertId(); // Return the inserted ID
+        } else {
             return false;
         }
+
+    } catch (Exception $e) {
+        error_log("Error create hewan: " . $e->getMessage());
+        return false;
     }
+}
 
     // Method lainnya bisa ditambahkan nanti setelah basic functionality work
 
@@ -335,4 +343,26 @@ class Hewan
         $result = $stmt->fetch();
         return $result['total'] ?? 0;
     }
+    /**
+ * Update status hewan
+ */
+public function updateStatus($id, $status) {
+    $allowed = ["tersedia", "sedang_dititipkan", "sudah_diambil"];
+
+    if (!in_array($status, $allowed)) {
+        $status = "tersedia";
+    }
+
+    $sql = "UPDATE hewan SET status = :status WHERE id_hewan = :id";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([
+        "id" => $id,
+        "status" => $status
+    ]);
+}
+
+// Tambahkan method ini di class Hewan  
+public function getLastInsertId() {
+    return $this->db->lastInsertId();
+}
 }
