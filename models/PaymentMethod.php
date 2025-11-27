@@ -4,6 +4,7 @@
 // Dibutuhkan oleh semua model transaksi
 require_once __DIR__ . '/../helper/helper.php';
 
+// Menggunakan Encapsulation protected $name;
 abstract class PaymentMethod {
     protected $name;
 
