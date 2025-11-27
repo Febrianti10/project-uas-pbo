@@ -1,6 +1,6 @@
 # Dockerfile
 FROM php:8.2-fpm-alpine
-RUN apk add --no-cache nginx \
+RUN apk add --no-cache nginx libpq-dev\
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql
 # ... (instalasi ekstensi lain)
 COPY default.conf /etc/nginx/conf.d/default.conf
