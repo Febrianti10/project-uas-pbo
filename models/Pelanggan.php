@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/database.php'; // penerapan Konsep OOP Class Hewan, Layanan, Pelanggan, dan Transaksi sama-sama menggunakan DB
 
-class Pelanggan // Menggunakan Encapsulation private $db
+class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
 {
     private $db;
 
@@ -55,7 +55,7 @@ class Pelanggan // Menggunakan Encapsulation private $db
 
 
     /**
-     * Tambah pelanggan baru
+     * Tambah pelanggan baru CREATE
      */
     public function create($data)
     {
@@ -90,7 +90,7 @@ class Pelanggan // Menggunakan Encapsulation private $db
     }
 
     /**
-     * Update data pelanggan
+     * Update data pelanggan UPDATE
      */
     public function update($id, $data)
     {
@@ -117,7 +117,7 @@ class Pelanggan // Menggunakan Encapsulation private $db
     }
 
     /**
-     * Hapus pelanggan
+     * Hapus pelanggan DELETE
      */
     public function delete($id)
     {

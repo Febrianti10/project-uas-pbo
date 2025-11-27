@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../config/database.php'; // penerapan Konsep OOP Class Hewan, Layanan, Pelanggan, dan Transaksi sama-sama menggunakan DB
 
 
-class Layanan // Menggunakan Encapsulation private $db
+class Layanan // Menggunakan Encapsulation private $db dan CRUD
 {
     private $db;
 
@@ -34,7 +34,7 @@ class Layanan // Menggunakan Encapsulation private $db
     }
 
     /**
-     * Tambah layanan baru
+     * CREATE layanan baru
      */
     public function create($data)
     {
@@ -53,7 +53,7 @@ class Layanan // Menggunakan Encapsulation private $db
     }
 
     /**
-     * Update data layanan
+     * UPDATE data layanan 
      */
     public function update($id, $data)
     {
@@ -73,7 +73,7 @@ class Layanan // Menggunakan Encapsulation private $db
     }
 
     /**
-     * Hapus layanan
+     * DELETE layanan
      */
     public function delete($id)
     {

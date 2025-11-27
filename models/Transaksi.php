@@ -3,11 +3,11 @@ require_once __DIR__ . '/../config/database.php'; //penerapan konsep OOP Class T
 require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, TransferPayment, dll. //penerapan konsep OOP Class Transaksi berhubungan dengan PaymentMethod
 
 /**
- * Model Transaksi
+ * Menghubungkan Semua Model 
  * CRUD untuk transaksi penitipan hewan
  * 
  */
-class Transaksi // Menggunakan Encapsulation private $db;
+class Transaksi // Menggunakan Encapsulation private $db; 
 {
     private $db;
 

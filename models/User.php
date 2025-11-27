@@ -1,11 +1,12 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/database.php'; // configurasi db
 
 /**
  * Model User
- * Untuk autentikasi kasir & admin
- * 
+ * Untuk autentikasi user saat login
+ * Ada CRUD
  */
+// encapsulation private $db
 class User {
     private $db;
     

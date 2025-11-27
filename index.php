@@ -1,6 +1,6 @@
 <?php
 
-// Struktur folder menggunakan MVC : index.php - Entry Point Gabungan (Frontend + Backend)
+// Struktur folder MVC : index.php - Entry Point Gabungan (Frontend + Backend)
 // models/ → berisi class untuk logika data
 // controllers/ → berisi logika proses dan request handling
 // views/ → berisi tampilan dengan HTML

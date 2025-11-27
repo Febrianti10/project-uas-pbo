@@ -1,3 +1,5 @@
+// Konfigurasi koneksi database terpisah sesuai pola arsitektur bersih
+
 <?php
 
 class Database {
