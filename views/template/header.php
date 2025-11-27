@@ -16,11 +16,11 @@ if (!isset($pageTitle)) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- AdminLTE v4 CSS -->
-    <!-- <link rel="stylesheet" href="/public/dist/css/adminlte.css"> -->
+    <link rel="stylesheet" href="/public/dist/css/adminlte.css">
     <!-- Custom CSS -->
-    <!-- <link rel="stylesheet" href="/public/dist/css/custom.css"> -->
-    <link rel="stylesheet" href="/dist/custom.css">
-        <link rel="stylesheet" href="/dist/adminlte.css">
+    <link rel="stylesheet" href="/public/dist/css/custom.css">
+    <!-- <link rel="stylesheet" href="/dist/custom.css">
+    <link rel="stylesheet" href="/dist/adminlte.css"> -->
 
 
     <!-- Bootstrap Icons (ikon di sidebar/nav) -->
