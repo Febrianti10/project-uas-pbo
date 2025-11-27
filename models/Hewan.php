@@ -1,171 +1,160 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-/**
- * Model User
- * Untuk autentikasi kasir & admin
- * 
- * @author h1101241034@student.untan.ac.id
- */
-class User {
+class Hewan
+{
     private $db;
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         $this->db = getDB();
     }
-    
+
     /**
-     * LOGIN - Autentikasi user
-     * 
-     * @param string $username
-     * @param string $password (plain text)
-     * @return array|false User data atau false jika gagal
+     * Ambil semua data hewan
      */
-    public function login($username, $password) {
-        $sql = "SELECT * FROM user WHERE username = :username LIMIT 1";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['username' => $username]);
-        $user = $stmt->fetch();
-        
-        // Cek password (harus pakai password_verify karena di-hash)
-        if ($user && password_verify($password, $user['password'])) {
-            // Jangan return password!
-            unset($user['password']);
-            return $user;
-        }
-        
-        return false;
-    }
-    
-    /**
-     * GET BY ID
-     * 
-     * @param int $id
-     * @return array|false
-     */
-    public function getById($id) {
-        $sql = "SELECT id_user, username, nama_lengkap, role, created_at 
-                FROM user 
-                WHERE id_user = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        return $stmt->fetch();
-    }
-    
-    /**
-     * GET ALL - Ambil semua user
-     * 
-     * @return array
-     */
-    public function getAll() {
-        $sql = "SELECT id_user, username, nama_lengkap, role, created_at 
-                FROM user 
-                ORDER BY created_at DESC";
-        
+    public function getAll()
+    {
+        $sql = "SELECT h.*, p.nama_pelanggan 
+                FROM hewan h
+                LEFT JOIN pelanggan p ON h.id_pelanggan = p.id_pelanggan
+                ORDER BY h.created_at DESC";
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
-    
+
     /**
-     * CREATE - Tambah user baru
-     * 
-     * @param array $data ['username', 'password', 'nama_lengkap', 'role']
-     * @return bool
+     * Ambil data hewan berdasarkan ID
      */
-    public function create($data) {
-        // Hash password dulu!
-        $hashedPassword = password_hash($data['password'], PASSWORD_DEFAULT);
-        
-        $sql = "INSERT INTO user (username, password, nama_lengkap, role) 
-                VALUES (:username, :password, :nama_lengkap, :role)";
-        
+    public function getById($id)
+    {
+        $sql = "SELECT h.*, 
+                       p.nama_pelanggan, p.no_hp, p.alamat
+                FROM hewan h
+                LEFT JOIN pelanggan p ON h.id_pelanggan = p.id_pelanggan
+                WHERE h.id_hewan = :id";
+
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'username' => $data['username'],
-            'password' => $hashedPassword,
-            'nama_lengkap' => $data['nama_lengkap'],
-            'role' => $data['role'] ?? 'kasir'
-        ]);
+        $stmt->execute(["id" => $id]);
+        return $stmt->fetch();
     }
-    
+
     /**
-     * UPDATE - Update data user (tanpa password)
-     * 
-     * @param int $id
-     * @param array $data
-     * @return bool
+     * Tambah hewan baru
      */
-    public function update($id, $data) {
-        $sql = "UPDATE user 
-                SET username = :username,
-                    nama_lengkap = :nama_lengkap,
-                    role = :role
-                WHERE id_user = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'id' => $id,
-            'username' => $data['username'],
-            'nama_lengkap' => $data['nama_lengkap'],
-            'role' => $data['role']
-        ]);
-    }
-    
-    /**
-     * UPDATE PASSWORD - Ganti password user
-     * 
-     * @param int $id
-     * @param string $newPassword (plain text)
-     * @return bool
-     */
-    public function updatePassword($id, $newPassword) {
-        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-        
-        $sql = "UPDATE user SET password = :password WHERE id_user = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'id' => $id,
-            'password' => $hashedPassword
-        ]);
-    }
-    
-    /**
-     * DELETE
-     * 
-     * @param int $id
-     * @return bool
-     */
-    public function delete($id) {
-        $sql = "DELETE FROM user WHERE id_user = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute(['id' => $id]);
-    }
-    
-    /**
-     * CHECK USERNAME - Cek apakah username sudah ada
-     * 
-     * @param string $username
-     * @param int|null $excludeId (untuk update, exclude id sendiri)
-     * @return bool
-     */
-    public function isUsernameExists($username, $excludeId = null) {
-        if ($excludeId) {
-            $sql = "SELECT COUNT(*) as total FROM user 
-                    WHERE username = :username AND id_user != :id";
+    public function create($data)
+    {
+        try {
+            $sql = "INSERT INTO hewan 
+                    (id_pelanggan, nama_hewan, jenis, ras, ukuran, warna, keterangan, status)
+                    VALUES 
+                    (:id_pelanggan, :nama_hewan, :jenis, :ras, :ukuran, :warna, :keterangan, :status)";
+
             $stmt = $this->db->prepare($sql);
-            $stmt->execute(['username' => $username, 'id' => $excludeId]);
-        } else {
-            $sql = "SELECT COUNT(*) as total FROM user WHERE username = :username";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute(['username' => $username]);
+
+            return $stmt->execute([
+                "id_pelanggan" => $data["id_pelanggan"],
+                "nama_hewan" => $data["nama_hewan"],
+                "jenis" => $data["jenis"],
+                "ras" => $data["ras"],
+                "ukuran" => $data["ukuran"],
+                "warna" => $data["warna"],
+                "keterangan" => $data["keterangan"] ?? null,
+                "status" => "tersedia",
+            ]);
+
+        } catch (Exception $e) {
+            error_log("Error create hewan: " . $e->getMessage());
+            return false;
         }
-        
-        $result = $stmt->fetch();
-        return $result['total'] > 0;
+    }
+
+    /**
+     * Update data hewan
+     */
+    public function update($id, $data)
+    {
+        try {
+            $sql = "UPDATE hewan SET 
+                        id_pelanggan = :id_pelanggan,
+                        nama_hewan = :nama_hewan,
+                        jenis = :jenis,
+                        ras = :ras,
+                        ukuran = :ukuran,
+                        warna = :warna,
+                        keterangan = :keterangan
+                    WHERE id_hewan = :id";
+
+            $stmt = $this->db->prepare($sql);
+
+            return $stmt->execute([
+                "id" => $id,
+                "id_pelanggan" => $data["id_pelanggan"],
+                "nama_hewan" => $data["nama_hewan"],
+                "jenis" => $data["jenis"],
+                "ras" => $data["ras"],
+                "ukuran" => $data["ukuran"],
+                "warna" => $data["warna"],
+                "keterangan" => $data["keterangan"] ?? null,
+            ]);
+
+        } catch (Exception $e) {
+            error_log("Error update hewan: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Hapus hewan (soft delete atau hard delete, sesuai kebutuhan)
+     */
+    public function delete($id)
+    {
+        try {
+            $sql = "DELETE FROM hewan WHERE id_hewan = :id";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute(["id" => $id]);
+        } catch (Exception $e) {
+            error_log("Error delete hewan: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Update status hewan (tersedia, sedang_dititipkan, sudah_diambil)
+     */
+    public function updateStatus($id, $status)
+    {
+        $allowed = ["tersedia", "sedang_dititipkan", "sudah_diambil"];
+
+        if (!in_array($status, $allowed)) {
+            $status = "tersedia";
+        }
+
+        $sql = "UPDATE hewan SET status = :status WHERE id_hewan = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            "id" => $id,
+            "status" => $status
+        ]);
+    }
+
+    /**
+     * Cari hewan berdasarkan nama/jenis/ras
+     */
+    public function search($keyword)
+    {
+        $sql = "SELECT h.*, p.nama_pelanggan
+                FROM hewan h
+                LEFT JOIN pelanggan p ON h.id_pelanggan = p.id_pelanggan
+                WHERE h.nama_hewan LIKE :key
+                OR h.jenis LIKE :key
+                OR h.ras LIKE :key
+                ORDER BY h.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(["key" => "%{$keyword}%"]);
+        return $stmt->fetchAll();
     }
 }
