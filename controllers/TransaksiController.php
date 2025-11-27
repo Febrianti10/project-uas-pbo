@@ -124,5 +124,34 @@ class TransaksiController {
             echo json_encode(['error' => 'Gagal checkout']);
         }
     }
+
+    public function cetakBukti($id_transaksi){
+    require_once 'models/Transaksi.php';
+
+    $transaksiModel = new Transaksi();
+
+    // Ambil data transaksi lengkap
+    $dataTransaksi = $transaksiModel->getById($id_transaksi);
+
+    if (!$dataTransaksi) {
+        echo "Transaksi tidak ditemukan!";
+        return;
+    }
+
+    // Data hewan sudah ada di hasil query (JOIN)
+    $dataHewan = [
+        'nama' => $dataTransaksi['nama_hewan'],
+        'jenis' => $dataTransaksi['jenis'],
+        'ras' => $dataTransaksi['ras'],
+        'ukuran' => $dataTransaksi['ukuran'],
+        'warna' => $dataTransaksi['warna'],
+    ];
+
+    // Detail layanan menggunakan tabel detail_layanan
+    $dataLayanan = $dataTransaksi['detail_layanan'] ?? [];
+
+    include "views/cetak_bukti.php";
+    }
+
 }
 ?>
