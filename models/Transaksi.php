@@ -7,6 +7,7 @@ require_once __DIR__ . '/../config/database.php';
  * 
  */
 class Transaksi {
+    // enkapsulasi koneksi DB
     private $db;
     
     public function __construct() {
@@ -57,6 +58,14 @@ class Transaksi {
             // Generate nomor transaksi
             $nomorTransaksi = $this->generateNomorTransaksi();
             
+            // Hitung total berdasarkan input (durasi & layanan)
+            $calc = $this->calculateTotalFromInputs(
+                $data['durasi_hari'] ?? 0,
+                $detailLayanan,
+                $data['paket_per_hari'] ?? 0,
+                $data['diskon'] ?? 0
+            );
+
             // Insert transaksi
             $sql = "INSERT INTO transaksi 
                     (nomor_transaksi, id_pelanggan, id_hewan, id_user, 
@@ -68,7 +77,7 @@ class Transaksi {
                      :tanggal_masuk, :jam_masuk, :estimasi_tanggal_keluar, :estimasi_jam_keluar,
                      :durasi_hari, :status, :subtotal, :diskon, :total_biaya,
                      :metode_pembayaran, :status_pembayaran)";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'nomor_transaksi' => $nomorTransaksi,
@@ -81,16 +90,17 @@ class Transaksi {
                 'estimasi_jam_keluar' => $data['estimasi_jam_keluar'] ?? null,
                 'durasi_hari' => $data['durasi_hari'] ?? 0,
                 'status' => 'sedang_dititipkan',
-                'subtotal' => $data['subtotal'] ?? 0,
-                'diskon' => $data['diskon'] ?? 0,
-                'total_biaya' => $data['total_biaya'] ?? 0,
+                // gunakan hasil perhitungan (bukan nilai dari $data yang mungkin tidak ada)
+                'subtotal' => $calc['subtotal'],
+                'diskon' => $calc['diskon'],
+                'total_biaya' => $calc['total_biaya'],
                 'metode_pembayaran' => $data['metode_pembayaran'] ?? null,
                 'status_pembayaran' => $data['status_pembayaran'] ?? 'belum_lunas'
             ]);
             
             $idTransaksi = $this->db->lastInsertId();
             
-            // Insert detail layanan
+            // Insert detail layanan (normalisasi dan hitung subtotal per item jika perlu)
             if (!empty($detailLayanan)) {
                 $sqlDetail = "INSERT INTO detail_transaksi 
                               (id_transaksi, id_layanan, jumlah, harga_satuan, subtotal) 
@@ -99,12 +109,19 @@ class Transaksi {
                 $stmtDetail = $this->db->prepare($sqlDetail);
                 
                 foreach ($detailLayanan as $detail) {
+                    // normalisasi keys: support both ['harga','qty'] and ['harga_satuan','jumlah']
+                    $harga_satuan = isset($detail['harga_satuan']) ? (float)$detail['harga_satuan']
+                                    : (isset($detail['harga']) ? (float)$detail['harga'] : 0.0);
+                    $jumlah = isset($detail['jumlah']) ? (int)$detail['jumlah']
+                              : (isset($detail['qty']) ? (int)$detail['qty'] : 1);
+                    $subtotalItem = isset($detail['subtotal']) ? (float)$detail['subtotal'] : ($harga_satuan * $jumlah);
+
                     $stmtDetail->execute([
                         'id_transaksi' => $idTransaksi,
                         'id_layanan' => $detail['id_layanan'],
-                        'jumlah' => $detail['jumlah'] ?? 1,
-                        'harga_satuan' => $detail['harga_satuan'],
-                        'subtotal' => $detail['subtotal']
+                        'jumlah' => $jumlah,
+                        'harga_satuan' => $harga_satuan,
+                        'subtotal' => $subtotalItem
                     ]);
                 }
             }
@@ -188,7 +205,7 @@ class Transaksi {
      * @return array
      */
     public function getDetailLayanan($idTransaksi) {
-        $sql = "SELECT dt.*, l.kode_layanan, l.nama_layanan, l.kategori_layanan
+        $sql = "SELECT dt.*, l.kode_layanan, l.nama_layanan, l.kategori_layanan, dt.harga_satuan, dt.jumlah, dt.subtotal
                 FROM detail_transaksi dt
                 LEFT JOIN layanan l ON dt.id_layanan = l.id_layanan
                 WHERE dt.id_transaksi = :id";
@@ -231,7 +248,33 @@ class Transaksi {
     public function updateCheckout($id, $data) {
         try {
             $this->db->beginTransaction();
-            
+
+            // Jika total_biaya tidak disediakan, hitung ulang dari detail_transaksi dan durasi
+            if (!isset($data['total_biaya']) || empty($data['total_biaya'])) {
+                // ambil transaksi dan detail layanan tersimpan
+                $transaksi = $this->getById($id);
+                $detailLayananStored = $transaksi['detail_layanan'] ?? [];
+                
+                // ubah format detail agar cocok dengan calculateTotalFromInputs
+                $detailForCalc = [];
+                foreach ($detailLayananStored as $d) {
+                    $detailForCalc[] = [
+                        'harga' => $d['harga_satuan'] ?? $d['harga'] ?? 0,
+                        'qty' => $d['jumlah'] ?? $d['qty'] ?? 1
+                    ];
+                }
+
+                $calc = $this->calculateTotalFromInputs(
+                    $data['durasi_hari'] ?? $transaksi['durasi_hari'] ?? 0,
+                    $detailForCalc,
+                    $data['paket_per_hari'] ?? 0,
+                    $data['diskon'] ?? ($transaksi['diskon'] ?? 0)
+                );
+
+                $data['total_biaya'] = $calc['total_biaya'];
+                $data['diskon'] = $calc['diskon'];
+            }
+
             $sql = "UPDATE transaksi 
                     SET tanggal_keluar_aktual = :tanggal_keluar,
                         jam_keluar_aktual = :jam_keluar,
@@ -328,5 +371,33 @@ class Transaksi {
         
         $result = $stmt->fetch();
         return (float)($result['total'] ?? 0);
+    }
+
+    /**
+    * Hitung subtotal & total berdasarkan durasi dan detail layanan
+    * $durasiHari = int
+    * $detailLayanan = array of ['id_layanan', 'harga', 'qty'] OR ['id_layanan','harga_satuan','jumlah']
+    * $paketPerHari = float (jika ada paket harian)
+    */
+    public function calculateTotalFromInputs(int $durasiHari, array $detailLayanan, float $paketPerHari = 0.0, float $diskon = 0.0) {
+        $subtotalLayanan = 0.0;
+        foreach ($detailLayanan as $d) {
+            // dukung kedua format: ['harga','qty'] atau ['harga_satuan','jumlah']
+            $harga = isset($d['harga']) ? (float)$d['harga'] : (isset($d['harga_satuan']) ? (float)$d['harga_satuan'] : 0.0);
+            $qty   = isset($d['qty']) ? (int)$d['qty'] : (isset($d['jumlah']) ? (int)$d['jumlah'] : 1);
+            $subtotalLayanan += $harga * $qty;
+        }
+
+        $biayaPaket = $paketPerHari * max(1, $durasiHari);
+        $subtotal = $biayaPaket + $subtotalLayanan;
+        $total = $subtotal - $diskon; // sesuaikan jika ada pajak, biaya tambahan, dsb.
+
+        return [
+            'biaya_paket' => $biayaPaket,
+            'subtotal_layanan' => $subtotalLayanan,
+            'subtotal' => $subtotal,
+            'diskon' => $diskon,
+            'total_biaya' => $total
+        ];
     }
 }

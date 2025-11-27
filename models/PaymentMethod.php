@@ -1,50 +1,29 @@
 <?php
-class PaymentMethod
-{
-    private $koneksi;
+require_once __DIR__ . '/../config/database.php';
+abstract class PaymentMethod {
+    protected $name;
 
-    public function __construct($db)
-    {
-        $this->koneksi = $db;
+    public function __construct($name = "") {
+        $this->name = $name;
     }
 
-    public function tambahPaymentMethod($nama)
-    {
-        $query = "INSERT INTO payment_method (nama) VALUES (?)";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("s", $nama);
-        return $stmt->execute();
-    }
+    abstract public function processPayment(float $amount, array $meta = []): array;
+    public function getName() { return $this->name; }
+}
 
-    public function getAllPaymentMethod()
-    {
-        $query = "SELECT * FROM payment_method ORDER BY id DESC";
-        return $this->koneksi->query($query);
-    }
-
-    public function getPaymentMethodById($id)
-    {
-        $query = "SELECT * FROM payment_method WHERE id = ?";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_assoc();
-    }
-
-    public function updatePaymentMethod($id, $nama)
-    {
-        $query = "UPDATE payment_method SET nama = ? WHERE id = ?";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("si", $nama, $id);
-        return $stmt->execute();
-    }
-
-    public function deletePaymentMethod($id)
-    {
-        $query = "DELETE FROM payment_method WHERE id = ?";
-        $stmt = $this->koneksi->prepare($query);
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
+// contoh implementasi
+class CashPayment extends PaymentMethod {
+    public function __construct() { parent::__construct('Cash'); }
+    public function processPayment(float $amount, array $meta = []): array {
+        // balikkan struktur standar hasil pembayaran
+        return ['success' => true, 'method' => $this->name, 'amount' => $amount, 'detail' => 'Tunai diterima'];
     }
 }
-?>
+
+class TransferPayment extends PaymentMethod {
+    public function __construct() { parent::__construct('Bank Transfer'); }
+    public function processPayment(float $amount, array $meta = []): array {
+        // contoh: cek bukti transfer dsb
+        return ['success' => true, 'method' => $this->name, 'amount' => $amount, 'detail' => 'Transfer diproses'];
+    }
+}
