@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../helper/helper.php';
 
 // Menggunakan Encapsulation protected $name;
+// Menggunakan abstract class PaymentMethod 
 abstract class PaymentMethod {
     protected $name;
 
