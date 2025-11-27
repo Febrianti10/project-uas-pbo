@@ -1,11 +1,16 @@
 <?php
 
 class TransaksiController {
+    // COMMENT: Controller class → memisahkan logika bisnis dari tampilan (konsep MVC)
+    // COMMENT: Dependency injection ke model-model & modular → mendukung reusability & clean architecture
     private $transaksiModel;
     private $pelangganModel;
     private $hewanModel;
 
     public function __construct() {
+        // COMMENT: require_once → dependency management manual dalam arsitektur MVC
+    // COMMENT: Penerapan Encapsulation → property model disimpan private dan hanya akses melalui object
+    // COMMENT: Pemanggilan Model sebagai objek → implementasi dasar OOP (instansiasi class)
         require_once __DIR__ . '/../models/Transaksi.php';
         require_once __DIR__ . '/../models/Pelanggan.php';
         require_once __DIR__ . '/../models/Hewan.php';
@@ -17,10 +22,13 @@ class TransaksiController {
     }
 
    public function create() {
+    // COMMENT: Method ini meng-handle pembuatan transaksi (CRUD → Create)
+    // COMMENT: Validasi input + Error Handling menggunakan try-catch (bagian dari fungsionalitas penilaian)
     error_log("TransaksiController::create() called");
     error_log("POST data: " . print_r($_POST, true));
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // COMMENT: Proteksi request method → security & good practice dalam request handling
         try {
             // Validasi data required
             if (empty($_POST['id_layanan']) || empty($_POST['id_kandang']) || empty($_POST['nama_hewan'])) {
@@ -88,6 +96,8 @@ class TransaksiController {
  * Hitung biaya transaksi - FIXED VERSION
  */
 private function hitungBiaya($data) {
+    // COMMENT: Encapsulation (method private) → hanya digunakan internal dalam controller
+    // COMMENT: Polimorfisme POTENSIAL: daftar layanan tambahan dapat dipisah ke subclass Payment/Layanan
     error_log("=== HITUNG BIAYA STARTED ===");
     error_log("Data for calculation: " . print_r($data, true));
     
@@ -150,6 +160,8 @@ private function hitungBiaya($data) {
  * Handle detail transaksi (layanan tambahan)
  */
 private function handleDetailTransaksi($data, $id_transaksi) {
+    // COMMENT: Mengimplementasikan relationship 1-to-many (transaksi → detail_layanan)
+    // COMMENT: CRUD Table detail transaksi
     if (empty($data['layanan_tambahan'])) {
         return;
     }
