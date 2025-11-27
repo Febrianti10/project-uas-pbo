@@ -9,22 +9,23 @@ RUN apt-get update && apt-get install -y \
 # Copy application
 COPY . /var/www/html/
 
-# Set document root ke folder public
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+# Set document root ke ROOT (bukan public)
+ENV APACHE_DOCUMENT_ROOT=/var/www/html
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# PENTING: Set permissions yang benar
+# Set permissions
 RUN chown -R www-data:www-data /var/www/html
 RUN find /var/www/html -type d -exec chmod 755 {} \;
 RUN find /var/www/html -type f -exec chmod 644 {} \;
 
-# Update Apache configuration untuk allow .htaccess
-RUN echo '<Directory /var/www/html/public>\n\
+# Apache configuration
+RUN echo '<Directory /var/www/html>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
     Require all granted\n\
+    DirectoryIndex index.php index.html\n\
 </Directory>' > /etc/apache2/conf-available/docker-php.conf
 
 RUN a2enconf docker-php
@@ -36,6 +37,3 @@ RUN sed -i 's/:80/:10000/g' /etc/apache2/sites-available/000-default.conf
 EXPOSE 10000
 
 CMD ["apache2-foreground"]
-```
-
----
