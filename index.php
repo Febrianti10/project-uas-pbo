@@ -3,26 +3,26 @@
 // index.php - Entry Point Gabungan (Frontend + Backend)
 
 // === HANDLER ERROR AGGRESIF UNTUK DEBUGGING RAILWAY ===
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 
 // >>> TAMBAHKAN INI UNTUK MEMPERBAIKI MASALAH REDIRECT/LOGOUT <<<
-ob_start();
+// ob_start();
 
 // asset router
 // index.php
 
-if (PHP_SAPI === 'cli-server') {
-    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    $cleanPath = ltrim($path, '/');
+// if (PHP_SAPI === 'cli-server') {
+//     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+//     $cleanPath = ltrim($path, '/');
     
-    // UBAH BARIS INI: Tambahkan __DIR__ . '/'
-    if (file_exists(__DIR__ . '/' . $cleanPath) && !is_dir(__DIR__ . '/' . $cleanPath)) {
-        return false; 
-    }
-}
+//     // UBAH BARIS INI: Tambahkan __DIR__ . '/'
+//     if (file_exists(__DIR__ . '/' . $cleanPath) && !is_dir(__DIR__ . '/' . $cleanPath)) {
+//         return false; 
+//     }
+// }
 
 // require __DIR__ . '/vendor/autoload.php';
 // Autoload untuk load class otomatis dari /models dan /controllers
