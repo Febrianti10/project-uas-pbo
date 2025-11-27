@@ -111,7 +111,7 @@ switch ($page) {
         include 'views/layanan.php';
         break;
     case 'hewan':
-        include 'views/hewan.php';
+        include '/views/hewan.php';
         break;
     case 'pemilik':
         include 'views/pelanggan.php';
