@@ -1,13 +1,12 @@
 <?php
 /**
- * Database Configuration
+ * Database Connection Configuration
  * Sistem Penitipan Hewan
  * 
  * CARA PAKAI:
  * 1. Lokal (Laragon/XAMPP): Pakai config default
  * 2. Production (PlanetScale/Railway): Uncomment bagian production
- * 
- * @author h1101241034@student.untan.ac.id
+ *
  */
 
 /**
