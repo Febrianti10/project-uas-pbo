@@ -301,10 +301,13 @@ private function handleDetailTransaksi($data, $id_transaksi) {
         } else {
             echo json_encode(['error' => 'Gagal checkout']);
         }
+        
     }
+    
+    
 
     public function cetakBukti($id_transaksi){
-    require_once 'models/Transaksi.php';
+    require_once __DIR__ . '/../models/Transaksi.php';
 
     $transaksiModel = new Transaksi();
 
@@ -332,4 +335,5 @@ private function handleDetailTransaksi($data, $id_transaksi) {
     }
 
 }
+
 ?>

@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/database.php'; // penerapan Konsep OOP Class Hewan, Layanan, Pelanggan, dan Transaksi sama-sama menggunakan DB
 
-class Hewan
+class Hewan // Menggunakan Encapsulation private $db, public function getLastInsertId() {return$this->db->lastInsertId();}
 {
     private $db;
 

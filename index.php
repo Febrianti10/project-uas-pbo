@@ -25,6 +25,10 @@ session_start();
 
 // Cek apakah ada action (backend routing)
 $action = $_GET['action'] ?? $_POST['action'] ?? null;
+if (empty($action) && isset($_POST['action'])) {
+    $action = $_POST['action'];
+}
+
 
 if ($action) {
     // Routing untuk backend (controllers)
@@ -91,14 +95,22 @@ if ($action) {
             $controller = new TransaksiController();
             $controller->search();
             break;
+
         case 'checkoutTransaksi':
             $controller = new TransaksiController();
-            $controller->checkout();
+            $controller->checkout(); 
             break;
+
         case 'cetakBukti':
+            if (!isset($_GET['id']) || empty($_GET['id'])) {
+                echo json_encode(['error' => 'ID transaksi tidak ditemukan']);
+                exit;
+            }
             $controller = new TransaksiController();
             $controller->cetakBukti($_GET['id']);
             break;
+
+
         default:
             echo json_encode(['error' => 'Action not found']);
             break;
@@ -108,6 +120,8 @@ if ($action) {
 
 // Jika tidak ada action, lanjut ke frontend routing (page)
 $page = $_GET['page'] ?? 'dashboard';
+error_log("ACTION REQ: " . $action);
+
 
 switch ($page) {
     case 'dashboard':

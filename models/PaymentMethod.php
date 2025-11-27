@@ -4,6 +4,8 @@
 // Dibutuhkan oleh semua model transaksi
 require_once __DIR__ . '/../helper/helper.php';
 
+// Menggunakan Encapsulation protected $name;
+// Menggunakan abstract class PaymentMethod 
 abstract class PaymentMethod {
     protected $name;
 
@@ -22,6 +24,7 @@ abstract class PaymentMethod {
 // -------------------------------
 // Implementasi Pembayaran Tunai
 // -------------------------------
+// Menggunakan Inheritance CashPayment → extends PaymentMethod
 class CashPayment extends PaymentMethod {
 
     public function __construct() {
@@ -41,6 +44,7 @@ class CashPayment extends PaymentMethod {
 // -----------------------------------
 // Implementasi Pembayaran Transfer
 // -----------------------------------
+// Menggunakan Inheritance TransferPayment → extends PaymentMethod
 class TransferPayment extends PaymentMethod {
 
     public function __construct() {

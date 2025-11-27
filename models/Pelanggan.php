@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/database.php'; // penerapan Konsep OOP Class Hewan, Layanan, Pelanggan, dan Transaksi sama-sama menggunakan DB
 
-class Pelanggan
+class Pelanggan // Menggunakan Encapsulation private $db
 {
     private $db;
 
