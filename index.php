@@ -36,19 +36,6 @@ if ($action) {
             $controller = new AuthController();
             $controller->logout();
             break;
-        // KANDANG ACTIONS
-        case 'storeKandang':
-            $controller = new KandangController();
-            $controller->store();
-            break;
-        case 'updateKandang':
-            $controller = new KandangController();
-            $controller->update();
-            break;
-        case 'deleteKandang':
-            $controller = new KandangController();
-            $controller->delete();
-            break;
         // TRANSAKSI ACTIONS     
         case 'createTransaksi':
             $controller = new TransaksiController();

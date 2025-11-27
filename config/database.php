@@ -135,3 +135,13 @@ function getDB() {
 function isDBConnected() {
     return Database::getInstance()->testConnection();
 }
+
+function getDatabaseConfig() {
+    $db = Database::getInstance();
+    return [
+        'host' => 'localhost',
+        'username' => 'root', 
+        'password' => '', // Sesuaikan dengan password MySQL Anda
+        'database' => 'db_penitipan_hewan'
+    ];
+}
