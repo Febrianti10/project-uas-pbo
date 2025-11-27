@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, TransferPayment, dll. //penerapan konsep OOP
+require_once __DIR__ . '/../config/database.php'; //penerapan konsep OOP Class Transaksi berhubungan dengan database (PDO)
+require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, TransferPayment, dll. //penerapan konsep OOP Class Transaksi berhubungan dengan PaymentMethod
 
 /**
  * Model Transaksi
