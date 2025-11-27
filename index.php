@@ -1,6 +1,10 @@
 <?php
 
 // Struktur folder menggunakan MVC : index.php - Entry Point Gabungan (Frontend + Backend)
+// models/ → berisi class untuk logika data
+// controllers/ → berisi logika proses dan request handling
+// views/ → berisi tampilan dengan HTML
+
 
 // Autoload untuk load class otomatis dari /models dan /controllers
 spl_autoload_register(function ($className) {
@@ -41,6 +45,7 @@ if ($action) {
         // PELANGGAN ACTIONS
         // Di bagian switch($action), pastikan case searchPelanggan ada:
         case 'searchPelanggan':
+        // models/ → berisi class untuk logika data
             require_once __DIR__ . '/models/Pelanggan.php';
             $pelangganModel = new Pelanggan();
             
@@ -56,6 +61,7 @@ if ($action) {
 
         // Tambahkan case ini di switch($action) di index.php
         case 'getKandangTersedia':
+        // models/ → berisi class untuk logika data
             require_once __DIR__ . '/models/Kandang.php';
             $kandangModel = new Kandang();
             
@@ -107,6 +113,7 @@ if ($action) {
 }
 
 // Jika tidak ada action, lanjut ke frontend routing (page)
+// views/ → berisi tampilan dengan HTML
 $page = $_GET['page'] ?? 'dashboard';
 
 switch ($page) {
