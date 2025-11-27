@@ -90,6 +90,10 @@ if ($action) {
             $controller = new TransaksiController();
             $controller->checkout();
             break;
+        case 'cetakBukti':
+            $controller = new TransaksiController();
+            $controller->cetakBukti($_GET['id']);
+            break;
         default:
             echo json_encode(['error' => 'Action not found']);
             break;
