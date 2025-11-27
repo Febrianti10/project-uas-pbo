@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/../helper/helper.php';  
 require_once __DIR__ . '/../config/database.php';
 
 class Layanan
@@ -8,86 +7,82 @@ class Layanan
 
     public function __construct()
     {
-        $this->db = getDB(); // === PDO
+        $this->db = getDB();
     }
 
-    // Tambah layanan
-    public function tambahLayanan($nama, $harga, $jenis)
+    /**
+     * Ambil semua data layanan
+     */
+    public function getAll()
     {
-        $nama  = clean($nama);
-        $jenis = clean($jenis);
-        $harga = number_only($harga);
-
-        $sql = "INSERT INTO layanan (nama, harga, jenis) 
-                VALUES (:nama, :harga, :jenis)";
-
+        $sql = "SELECT * FROM layanan ORDER BY nama_layanan";
         $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'nama'  => $nama,
-            'harga' => $harga,
-            'jenis' => $jenis
-        ]);
-    }
-
-    // Ambil semua layanan
-    public function getAllLayanan()
-    {
-        $sql = "SELECT * FROM layanan ORDER BY jenis ASC, id DESC";
-        $stmt = $this->db->query($sql);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 
-    // Ambil layanan berdasarkan jenis
-    public function getByJenis($jenis)
+    /**
+     * Ambil data layanan berdasarkan ID
+     */
+    public function getById($id)
     {
-        $jenis = clean($jenis);
-
-        $sql = "SELECT * FROM layanan 
-                WHERE jenis = :jenis 
-                ORDER BY id DESC";
-
+        $sql = "SELECT * FROM layanan WHERE id_layanan = ?";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['jenis' => $jenis]);
-        return $stmt->fetchAll();
-    }
-
-    // Ambil satu layanan
-    public function getLayananById($id)
-    {
-        $sql = "SELECT * FROM layanan WHERE id = :id";
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => intval($id)]);
+        $stmt->execute([$id]);
         return $stmt->fetch();
     }
 
-    // Update layanan
-    public function updateLayanan($id, $nama, $harga, $jenis)
+    /**
+     * Tambah layanan baru
+     */
+    public function create($data)
     {
-        $sql = "UPDATE layanan 
-                SET nama = :nama, 
-                    harga = :harga, 
-                    jenis = :jenis 
-                WHERE id = :id";
-
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'id'    => intval($id),
-            'nama'  => clean($nama),
-            'harga' => number_only($harga),
-            'jenis' => clean($jenis)
-        ]);
+        try {
+            $sql = "INSERT INTO layanan (nama_layanan, harga, deskripsi) VALUES (?, ?, ?)";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([
+                $data['nama_layanan'],
+                $data['harga'],
+                $data['deskripsi'] ?? null
+            ]);
+        } catch (Exception $e) {
+            error_log("Error create layanan: " . $e->getMessage());
+            return false;
+        }
     }
 
-    // Hapus layanan
-    public function deleteLayanan($id)
+    /**
+     * Update data layanan
+     */
+    public function update($id, $data)
     {
-        $sql = "DELETE FROM layanan WHERE id = :id";
+        try {
+            $sql = "UPDATE layanan SET nama_layanan = ?, harga = ?, deskripsi = ? WHERE id_layanan = ?";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([
+                $data['nama_layanan'],
+                $data['harga'],
+                $data['deskripsi'] ?? null,
+                $id
+            ]);
+        } catch (Exception $e) {
+            error_log("Error update layanan: " . $e->getMessage());
+            return false;
+        }
+    }
 
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([
-            'id' => intval($id)
-        ]);
+    /**
+     * Hapus layanan
+     */
+    public function delete($id)
+    {
+        try {
+            $sql = "DELETE FROM layanan WHERE id_layanan = ?";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([$id]);
+        } catch (Exception $e) {
+            error_log("Error delete layanan: " . $e->getMessage());
+            return false;
+        }
     }
 }
-?>

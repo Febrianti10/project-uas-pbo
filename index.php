@@ -2,16 +2,19 @@
 
 // index.php - Entry Point Gabungan (Frontend + Backend)
 
-// require __DIR__ . '/vendor/autoload.php';
 // Autoload untuk load class otomatis dari /models dan /controllers
 spl_autoload_register(function ($className) {
     $paths = [
         __DIR__ . '/models/' . $className . '.php',
         __DIR__ . '/controllers/' . $className . '.php',
+        __DIR__ . '/core/' . $className . '.php',
     ];
     foreach ($paths as $path) {
         if (file_exists($path)) {
-            require_once $path;
+            // Cek jika class sudah ada untuk menghindari duplicate
+            if (!class_exists($className)) {
+                require_once $path;
+            }
             return;
         }
     }
@@ -22,6 +25,7 @@ session_start();
 
 // Cek apakah ada action (backend routing)
 $action = $_GET['action'] ?? $_POST['action'] ?? null;
+
 if ($action) {
     // Routing untuk backend (controllers)
     switch ($action) {
@@ -33,6 +37,40 @@ if ($action) {
             $controller = new AuthController();
             $controller->logout();
             break;
+            
+        // PELANGGAN ACTIONS
+        // Di bagian switch($action), pastikan case searchPelanggan ada:
+        case 'searchPelanggan':
+            require_once __DIR__ . '/models/Pelanggan.php';
+            $pelangganModel = new Pelanggan();
+            
+            $keyword = $_GET['q'] ?? '';
+            error_log("Searching pelanggan with keyword: " . $keyword);
+            
+            $results = $pelangganModel->searchForAutocomplete($keyword);
+            error_log("Found " . count($results) . " results");
+            
+            header('Content-Type: application/json');
+            echo json_encode($results);
+            exit;
+
+        // Tambahkan case ini di switch($action) di index.php
+        case 'getKandangTersedia':
+            require_once __DIR__ . '/models/Kandang.php';
+            $kandangModel = new Kandang();
+            
+            $jenis = $_GET['jenis'] ?? '';
+            $ukuran = $_GET['ukuran'] ?? '';
+            
+            // Filter kandang berdasarkan jenis dan ukuran hewan
+            $kandangTersedia = $kandangModel->getAvailableKandang($jenis, $ukuran);
+            
+            header('Content-Type: application/json');
+            echo json_encode($kandangTersedia);
+            exit;
+            // break;
+            
+        // TRANSAKSI ACTIONS     
         case 'createTransaksi':
             $controller = new TransaksiController();
             $controller->create();
@@ -61,19 +99,11 @@ if ($action) {
             $controller = new TransaksiController();
             $controller->cetakBukti($_GET['id']);
             break;
-        case 'storeKandang': // Menangani POST dari form tambah kandang
-            $controller = new KandangController();
-            $controller->store();
-            break;
-        case 'deleteKandang': // Menangani GET dari tombol hapus kandang
-            $controller = new KandangController();
-            $controller->delete();
-            break;
         default:
             echo json_encode(['error' => 'Action not found']);
             break;
     }
-    exit; // Stop setelah handle backend, agar tidak include view
+    exit;
 }
 
 // Jika tidak ada action, lanjut ke frontend routing (page)
@@ -109,5 +139,3 @@ switch ($page) {
         include 'views/404.php';
         break;
 }
-
-

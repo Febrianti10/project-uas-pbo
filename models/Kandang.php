@@ -1,83 +1,100 @@
 <?php
-
-// Pastikan class Database sudah di-load/didefinisikan sebelum ini
-// Asumsi Anda punya class Database untuk koneksi
+require_once __DIR__ . '/../config/database.php';
 
 class Kandang
 {
     private $db;
-    private $table = 'kandang';
 
     public function __construct()
     {
-        // Asumsi koneksi database dilakukan melalui class Database
-        // Pastikan Anda memiliki file Database.php atau koneksi global
-        global $db;
-        $this->db = $db ?? (new Database())->getConnection();
+        $this->db = getDB();
     }
 
     /**
-     * Menyimpan data kandang baru ke database.
-     * @param array $data array asosiatif dengan keys 'kode', 'tipe', 'catatan'
-     * @return bool True jika berhasil, False jika gagal.
+     * Ambil semua data kandang
      */
-    public function create(array $data): bool
+    public function getAll()
     {
-        $kode    = $data['kode'] ?? '';
-        $tipe    = $data['tipe'] ?? '';
-        $catatan = $data['catatan'] ?? null;
+        $sql = "SELECT 
+                    k.id_kandang as id,
+                    k.kode_kandang as kode,
+                    k.tipe,
+                    k.catatan,
+                    k.status
+                FROM kandang k 
+                ORDER BY k.kode_kandang";
         
-        // Menyiapkan statement SQL
-        $sql = "INSERT INTO {$this->table} (kode, tipe, catatan) VALUES (:kode, :tipe, :catatan)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Hitung total kandang berdasarkan tipe
+     */
+    public function countByType($type)
+    {
+        $sql = "SELECT COUNT(*) as total FROM kandang WHERE tipe = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$type]);
+        $result = $stmt->fetch();
+        return $result['total'] ?? 0;
+    }
+
+    /**
+     * Ambil kandang yang tersedia berdasarkan jenis dan ukuran hewan
+     */
+    public function getAvailableKandang($jenisHewan, $ukuranHewan)
+    {
+        // Tentukan tipe kandang berdasarkan jenis dan ukuran hewan
+        $tipeKandang = 'Kecil'; // default
         
-        try {
-            $stmt = $this->db->prepare($sql);
-            
-            // Binding parameter
-            $stmt->bindParam(':kode', $kode);
-            $stmt->bindParam(':tipe', $tipe);
-            $stmt->bindParam(':catatan', $catatan);
-            
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            // Log error, misalnya duplikasi kode
-            error_log("Error creating kandang: " . $e->getMessage());
-            return false;
+        if ($jenisHewan === 'Anjing' || $ukuranHewan === 'Besar') {
+            $tipeKandang = 'Besar';
+        } elseif ($ukuranHewan === 'Sedang') {
+            $tipeKandang = 'Besar'; // Sedang juga pakai kandang besar
         }
+        
+        $sql = "SELECT 
+                    k.id_kandang as id,
+                    k.kode_kandang as kode,
+                    k.tipe,
+                    k.catatan,
+                    k.status
+                FROM kandang k
+                WHERE k.tipe = :tipe 
+                AND k.status = 'tersedia'
+                ORDER BY k.kode_kandang";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['tipe' => $tipeKandang]);
+        return $stmt->fetchAll();
     }
 
     /**
-     * Mengambil semua data kandang.
-     * @return array List semua kandang.
+     * Ambil data kandang berdasarkan ID
      */
-    public function getAll(): array
+    public function getById($id)
     {
-        $sql = "SELECT id_kandang AS id, kode, tipe, catatan, status FROM {$this->table} ORDER BY kode ASC";
-        try {
-            $stmt = $this->db->query($sql);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching kandang list: " . $e->getMessage());
-            return [];
-        }
+        $sql = "SELECT * FROM kandang WHERE id_kandang = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
     }
 
-    /**
-     * Menghapus kandang berdasarkan ID.
-     * @param int $id ID kandang.
-     * @return bool True jika berhasil dihapus.
-     */
-    public function delete(int $id): bool
-    {
-        $sql = "DELETE FROM {$this->table} WHERE id_kandang = :id";
-        try {
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->rowCount() > 0;
-        } catch (PDOException $e) {
-            error_log("Error deleting kandang: " . $e->getMessage());
-            return false;
-        }
+
+public function updateStatus($id, $status) {
+    $allowed = ["tersedia", "terpakai", "maintenance"];
+
+    if (!in_array($status, $allowed)) {
+        $status = "tersedia";
     }
+
+    $sql = "UPDATE kandang SET status = :status WHERE id_kandang = :id";
+    $stmt = $this->db->prepare($sql);
+    return $stmt->execute([
+        "id" => $id,
+        "status" => $status
+    ]);
+}
 }

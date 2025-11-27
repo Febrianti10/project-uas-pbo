@@ -7,140 +7,158 @@ require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, Tra
  * CRUD untuk transaksi penitipan hewan
  * 
  */
-class Transaksi {
-    // enkapsulasi koneksi DB
+class Transaksi
+{
     private $db;
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         $this->db = getDB();
     }
-    
+
     /**
-     * GENERATE NOMOR TRANSAKSI
-     * Format: TRX-YYYYMMDD-XXX
-     * 
-     * @return string
+     * Ambil transaksi aktif (hewan yang sedang menginap)
      */
-    public function generateNomorTransaksi() {
-        $date = date('Ymd');
-        $prefix = "TRX-{$date}-";
-        
-        // Cari nomor terakhir hari ini
-        $sql = "SELECT nomor_transaksi FROM transaksi 
-                WHERE nomor_transaksi LIKE :prefix 
-                ORDER BY nomor_transaksi DESC LIMIT 1";
+
+    public function getAll()
+    {
+        $sql = "SELECT 
+                    t.*,
+                    p.nama_pelanggan,
+                    h.nama_hewan,
+                    l.nama_layanan,
+                    k.kode_kandang
+                FROM transaksi t
+                LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
+                LEFT JOIN hewan h ON t.id_hewan = h.id_hewan
+                LEFT JOIN layanan l ON t.id_layanan = l.id_layanan
+                LEFT JOIN kandang k ON t.id_kandang = k.id_kandang
+                ORDER BY t.created_at DESC";
         
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(['prefix' => $prefix . '%']);
-        $last = $stmt->fetch();
-        
-        if ($last) {
-            // Ambil 3 digit terakhir, tambah 1
-            $lastNumber = (int)substr($last['nomor_transaksi'], -3);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
-        }
-        
-        return $prefix . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
-    
+
+    public function getActiveTransactions()
+    {
+        $sql = "SELECT 
+                    t.id_transaksi,
+                    t.kode_transaksi,
+                    p.nama_pelanggan,
+                    h.nama_hewan,
+                    h.jenis as jenis_hewan,
+                    k.kode_kandang,
+                    t.tanggal_masuk,
+                    t.durasi,
+                    t.total_biaya
+                FROM transaksi t
+                LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
+                LEFT JOIN hewan h ON t.id_hewan = h.id_hewan
+                LEFT JOIN kandang k ON t.id_kandang = k.id_kandang
+                WHERE t.status = 'active'
+                ORDER BY t.tanggal_masuk DESC";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     /**
-     * CREATE - Buat transaksi baru (Check-In)
-     * 
-     * @param array $data Data transaksi
-     * @param array $detailLayanan Array layanan yang dipilih
-     * @return int|false ID transaksi baru atau false
+     * Buat transaksi baru
      */
-    public function create($data, $detailLayanan = []) {
+    public function create($data)
+    {
         try {
-            $this->db->beginTransaction();
+            // Generate kode transaksi
+            $kodeTransaksi = $this->generateKodeTransaksi();
             
-            // Generate nomor transaksi
-            $nomorTransaksi = $this->generateNomorTransaksi();
-            
-            // Hitung total berdasarkan input (durasi & layanan)
-            $calc = $this->calculateTotalFromInputs(
-                $data['durasi_hari'] ?? 0,
-                $detailLayanan,
-                $data['paket_per_hari'] ?? 0,
-                $data['diskon'] ?? 0
-            );
-
-            // Insert transaksi
             $sql = "INSERT INTO transaksi 
-                    (nomor_transaksi, id_pelanggan, id_hewan, id_user, 
-                     tanggal_masuk, jam_masuk, estimasi_tanggal_keluar, estimasi_jam_keluar,
-                     durasi_hari, status, subtotal, diskon, total_biaya, 
-                     metode_pembayaran, status_pembayaran) 
+                    (kode_transaksi, id_pelanggan, id_hewan, id_kandang, id_layanan, 
+                     tanggal_masuk, durasi, total_biaya, status)
                     VALUES 
-                    (:nomor_transaksi, :id_pelanggan, :id_hewan, :id_user,
-                     :tanggal_masuk, :jam_masuk, :estimasi_tanggal_keluar, :estimasi_jam_keluar,
-                     :durasi_hari, :status, :subtotal, :diskon, :total_biaya,
-                     :metode_pembayaran, :status_pembayaran)";
-
+                    (:kode_transaksi, :id_pelanggan, :id_hewan, :id_kandang, :id_layanan,
+                     :tanggal_masuk, :durasi, :total_biaya, 'active')";
+            
             $stmt = $this->db->prepare($sql);
-            $stmt->execute([
-                'nomor_transaksi' => $nomorTransaksi,
-                'id_pelanggan' => $data['id_pelanggan'],
-                'id_hewan' => $data['id_hewan'],
-                'id_user' => $data['id_user'],
-                'tanggal_masuk' => $data['tanggal_masuk'],
-                'jam_masuk' => $data['jam_masuk'] ?? date('H:i:s'),
-                'estimasi_tanggal_keluar' => $data['estimasi_tanggal_keluar'] ?? null,
-                'estimasi_jam_keluar' => $data['estimasi_jam_keluar'] ?? null,
-                'durasi_hari' => $data['durasi_hari'] ?? 0,
-                'status' => 'sedang_dititipkan',
-                // gunakan hasil perhitungan (bukan nilai dari $data yang mungkin tidak ada)
-                'subtotal' => $calc['subtotal'],
-                'diskon' => $calc['diskon'],
-                'total_biaya' => $calc['total_biaya'],
-                'metode_pembayaran' => $data['metode_pembayaran'] ?? null,
-                'status_pembayaran' => $data['status_pembayaran'] ?? 'belum_lunas'
+            
+            return $stmt->execute([
+                "kode_transaksi" => $kodeTransaksi,
+                "id_pelanggan" => $data["id_pelanggan"],
+                "id_hewan" => $data["id_hewan"], 
+                "id_kandang" => $data["id_kandang"],
+                "id_layanan" => $data["id_layanan"],
+                "tanggal_masuk" => $data["tanggal_masuk"],
+                "durasi" => $data["durasi"],
+                "total_biaya" => $data["total_biaya"]
             ]);
             
-            $idTransaksi = $this->db->lastInsertId();
-            
-            // Insert detail layanan (normalisasi dan hitung subtotal per item jika perlu)
-            if (!empty($detailLayanan)) {
-                $sqlDetail = "INSERT INTO detail_transaksi 
-                              (id_transaksi, id_layanan, jumlah, harga_satuan, subtotal) 
-                              VALUES (:id_transaksi, :id_layanan, :jumlah, :harga_satuan, :subtotal)";
-                
-                $stmtDetail = $this->db->prepare($sqlDetail);
-                
-                foreach ($detailLayanan as $detail) {
-                    // normalisasi keys: support both ['harga','qty'] and ['harga_satuan','jumlah']
-                    $harga_satuan = isset($detail['harga_satuan']) ? (float)$detail['harga_satuan']
-                                    : (isset($detail['harga']) ? (float)$detail['harga'] : 0.0);
-                    $jumlah = isset($detail['jumlah']) ? (int)$detail['jumlah']
-                              : (isset($detail['qty']) ? (int)$detail['qty'] : 1);
-                    $subtotalItem = isset($detail['subtotal']) ? (float)$detail['subtotal'] : ($harga_satuan * $jumlah);
-
-                    $stmtDetail->execute([
-                        'id_transaksi' => $idTransaksi,
-                        'id_layanan' => $detail['id_layanan'],
-                        'jumlah' => $jumlah,
-                        'harga_satuan' => $harga_satuan,
-                        'subtotal' => $subtotalItem
-                    ]);
-                }
-            }
-            
-            // Update status hewan jadi sedang_dititipkan
-            $sqlHewan = "UPDATE hewan SET status = 'sedang_dititipkan' WHERE id_hewan = :id";
-            $stmtHewan = $this->db->prepare($sqlHewan);
-            $stmtHewan->execute(['id' => $data['id_hewan']]);
-            
-            $this->db->commit();
-            return $idTransaksi;
-            
         } catch (Exception $e) {
-            $this->db->rollBack();
             error_log("Error create transaksi: " . $e->getMessage());
             return false;
         }
     }
+
+    /**
+     * Update status transaksi (checkout)
+     */
+    public function checkout($id)
+    {
+        try {
+            $sql = "UPDATE transaksi SET status = 'completed', tanggal_keluar = CURDATE() WHERE id_transaksi = ?";
+            $stmt = $this->db->prepare($sql);
+            return $stmt->execute([$id]);
+        } catch (Exception $e) {
+            error_log("Error checkout transaksi: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Ambil data transaksi berdasarkan ID
+     */
+    public function getById($id)
+    {
+        $sql = "SELECT 
+                    t.*,
+                    p.nama_pelanggan,
+                    p.no_hp,
+                    p.alamat,
+                    h.nama_hewan,
+                    h.jenis,
+                    h.ras,
+                    h.ukuran,
+                    h.warna,
+                    l.nama_layanan,
+                    l.harga as harga_layanan,
+                    k.kode_kandang,
+                    k.tipe as tipe_kandang
+                FROM transaksi t
+                LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
+                LEFT JOIN hewan h ON t.id_hewan = h.id_hewan
+                LEFT JOIN layanan l ON t.id_layanan = l.id_layanan
+                LEFT JOIN kandang k ON t.id_kandang = k.id_kandang
+                WHERE t.id_transaksi = ?";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    private function generateKodeTransaksi()
+    {
+        $sql = "SELECT MAX(CAST(SUBSTRING(kode_transaksi, 4) AS UNSIGNED)) as max_number 
+                FROM transaksi 
+                WHERE kode_transaksi LIKE 'TRX%'";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        
+        $nextNumber = ($result['max_number'] ?? 0) + 1;
+        return 'TRX' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+    }
+
     
     /**
      * GET BY ID - Ambil transaksi lengkap dengan detail
@@ -148,28 +166,6 @@ class Transaksi {
      * @param int $id
      * @return array|false
      */
-    public function getById($id) {
-        $sql = "SELECT t.*, 
-                       p.nama_pelanggan, p.no_hp, p.alamat,
-                       h.nama_hewan, h.jenis, h.ras, h.ukuran, h.warna,
-                       u.nama_lengkap as nama_kasir
-                FROM transaksi t
-                LEFT JOIN pelanggan p ON t.id_pelanggan = p.id_pelanggan
-                LEFT JOIN hewan h ON t.id_hewan = h.id_hewan
-                LEFT JOIN user u ON t.id_user = u.id_user
-                WHERE t.id_transaksi = :id";
-        
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['id' => $id]);
-        $transaksi = $stmt->fetch();
-        
-        if ($transaksi) {
-            // Ambil detail layanan
-            $transaksi['detail_layanan'] = $this->getDetailLayanan($id);
-        }
-        
-        return $transaksi;
-    }
     
     /**
      * GET BY NOMOR - Ambil transaksi berdasarkan nomor transaksi
