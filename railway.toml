@@ -1,8 +1,5 @@
-# railway.toml
 [build]
-buildCommand = "composer install --no-dev"
+builder = "NIXPACKS"
 
 [deploy]
-# Perintah ini memberitahu server Apache/Nginx bawaan untuk menggunakan
-# folder 'public/' sebagai Document Root.
-startCommand = "vendor/bin/heroku-php-apache2 public/"
+startCommand = "php -S 0.0.0.0:$PORT index.php"
