@@ -72,206 +72,208 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                     ======================================================== -->
                     <h5 class="mb-3">Form Pendaftaran Penitipan</h5>
 
-                    <form method="post" action="index.php?action=createTransaksi" id="formPendaftaran">
+                    <form method="post" action="controllers/TransaksiController.php?action=create" id="formPendaftaran">
 
                         <div class="row g-4">
 
                             <!-- INFORMASI PEMILIK -->
-<div class="col-lg-6">
-    <div class="card p-3 h-100 position-relative">
-        <h6 class="mb-3 text-primary">Informasi Pemilik</h6>
+                            <div class="col-lg-6">
+                                <div class="card p-3 h-100 position-relative">
+                                    <h6 class="mb-3 text-primary">Informasi Pemilik</h6>
 
-        <div class="mb-3">
-            <label class="form-label">Nama Pemilik <span class="text-danger">*</span></label>
-            <select name="id_pelanggan" class="form-select" id="selectPelanggan" required>
-                <option value="">-- Pilih Pemilik --</option>
-                <?php 
-                $pelangganList = $pelangganModel->getAll();
-                foreach ($pelangganList as $p): ?>
-                    <option value="<?= $p['id'] ?>" 
-                            data-hp="<?= $p['hp'] ?>" 
-                            data-alamat="<?= htmlspecialchars($p['alamat']) ?>">
-                        <?= htmlspecialchars($p['nama']) ?> (<?= $p['hp'] ?>)
-                    </option>
-                <?php endforeach; ?>
-                <option value="new">+ Tambah Pemilik Baru</option>
-            </select>
-            <small class="text-muted">Pilih dari daftar pelanggan terdaftar</small>
-        </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Nama Pemilik <span class="text-danger">*</span></label>
+                                        <select name="id_pelanggan" class="form-select" id="selectPelanggan" required>
+                                            <option value="">-- Pilih Pemilik --</option>
+                                            <?php 
+                                            $pelangganList = $pelangganModel->getAll();
+                                            foreach ($pelangganList as $p): ?>
+                                                <option value="<?= $p['id'] ?>" 
+                                                        data-hp="<?= $p['hp'] ?>" 
+                                                        data-alamat="<?= htmlspecialchars($p['alamat']) ?>">
+                                                    <?= htmlspecialchars($p['nama']) ?> (<?= $p['hp'] ?>)
+                                                </option>
+                                            <?php endforeach; ?>
+                                            <option value="new">+ Tambah Pemilik Baru</option>
+                                        </select>
+                                        <small class="text-muted">Pilih dari daftar pelanggan terdaftar</small>
+                                    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Nomor HP <span class="text-danger">*</span></label>
-            <input type="text" name="no_hp" id="p_hp" class="form-control"
-                placeholder="Contoh: 08123456789" required>
-        </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Nomor HP <span class="text-danger">*</span></label>
+                                        <input type="text" name="hp" id="p_hp" class="form-control"
+                                            placeholder="Contoh: 08123456789" required>
+                                    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Alamat <span class="text-danger">*</span></label>
-            <textarea name="alamat" id="p_alamat" class="form-control"
-                rows="2" placeholder="Alamat lengkap pemilik" required></textarea>
-        </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Alamat <span class="text-danger">*</span></label>
+                                        <textarea name="alamat" id="p_alamat" class="form-control"
+                                            rows="2" placeholder="Alamat lengkap pemilik" required></textarea>
+                                    </div>
 
-        <div class="mb-3" id="newCustomerFields" style="display: none;">
-            <label class="form-label">Nama Pemilik Baru <span class="text-danger">*</span></label>
-            <input type="text" name="nama_pelanggan_baru" class="form-control"
-                placeholder="Ketik nama pemilik baru">
-        </div>
-    </div>
-</div>
-
-    <!-- INFORMASI HEWAN -->
-    <div class="col-lg-6">
-        <div class="card p-3 h-100">
-            <h6 class="mb-3 text-primary">Informasi Hewan</h6>
-
-            <div class="mb-3">
-                <label class="form-label">Nama Hewan <span class="text-danger">*</span></label>
-                <input type="text" name="nama_hewan" class="form-control"
-                    placeholder="Contoh: Mochi, Blacky" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Jenis Hewan <span class="text-danger">*</span></label>
-                <select name="jenis" class="form-select" id="jenisHewanSelect" required> <!-- UBAH: jenis_hewan -> jenis -->
-                    <option value="">-- Pilih Hewan --</option>
-                    <option value="Kucing">Kucing</option>
-                    <option value="Anjing">Anjing</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Ras</label>
-                <input type="text" name="ras" class="form-control"
-                    placeholder="Contoh: Persia, Siberian Husky">
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Ukuran</label>
-                <select name="ukuran" class="form-select" id="ukuranHewanSelect">
-                    <option value="">-- Pilih Ukuran --</option>
-                    <option value="Kecil">Kecil</option>
-                    <option value="Sedang">Sedang</option>
-                    <option value="Besar">Besar</option>
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Warna</label>
-                <input type="text" name="warna" class="form-control"
-                    placeholder="Contoh: Putih, Hitam-Putih">
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Catatan Khusus</label>
-                <textarea name="catatan" class="form-control" rows="2"
-                    placeholder="Alergi, penyakit, kebiasaan khusus, dll."></textarea>
-            </div>
-        </div>
-    </div>
-
-<!-- LAYANAN -->
-<div class="col-12">
-    <div class="card p-3">
-        <h6 class="mb-3 text-primary">Layanan</h6>
-
-        <div class="row g-3">
-            <!-- Paket Utama -->
-            <div class="col-lg-4">
-                <label class="form-label">Paket Utama <span class="text-danger">*</span></label>
-                <select name="id_layanan" class="form-select" id="paketSelect" required>
-                    <option value="">-- Pilih Paket --</option>
-                    <?php foreach ($paketList as $pk): ?>
-                        <option value="<?= $pk['id_layanan'] ?>" 
-                                data-harga="<?= $pk['harga'] ?>" 
-                                data-nama="<?= htmlspecialchars($pk['nama_layanan']) ?>">
-                            <?= htmlspecialchars($pk['nama_layanan']) ?>
-                            - Rp <?= number_format($pk['harga'], 0, ',', '.'); ?>/hari
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <div class="form-text">Pilih salah satu paket penitipan</div>
-            </div>
-
-            <!-- Info Paket yang Dipilih -->
-            <div class="col-lg-8">
-                <div class="alert alert-info mt-4">
-                    <h6>Info Paket:</h6>
-                    <div id="paketInfo">Pilih paket untuk melihat detail</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TOTAL -->
-        <div class="mt-4 p-3 bg-light rounded">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <div class="small text-muted">Total Estimasi Biaya</div>
-                    <h3 id="totalHarga" class="fw-bold text-primary mb-0">Rp 0</h3>
-                </div>
-                <div class="text-end">
-                    <small class="text-muted d-block" id="detailPerhitungan">-</small>
-                </div>
-            </div>
-            <input type="hidden" name="total_biaya" id="totalInput" value="0">
-            <div class="small text-muted mt-1">
-                Total = (harga paket × lama inap)
-            </div>
-        </div>
-    </div>
-</div>
-
-    <!-- DETAIL PENITIPAN -->
-    <div class="col-12">
-        <div class="card p-3">
-            <h6 class="mb-3 text-primary">Detail Penitipan</h6>
-
-            <div class="row g-3">
-                <div class="col-lg-4">
-                    <label class="form-label">Tanggal Masuk <span class="text-danger">*</span></label>
-                    <input type="date" name="tanggal_masuk" class="form-control" <!-- UBAH: tgl_masuk -> tanggal_masuk -->
-                        value="<?= date('Y-m-d') ?>" required>
-                </div>
-
-                <div class="col-lg-4">
-                    <label class="form-label">Lama Inap (hari) <span class="text-danger">*</span></label>
-                    <input type="number" name="durasi" class="form-control" <!-- UBAH: lama_inap -> durasi -->
-                        min="1" value="1" required id="lamaInap">
-                </div>
-
-                <div class="col-lg-4">
-                    <label class="form-label">Kandang <span class="text-danger">*</span></label>
-                    <button type="button"
-                        class="btn btn-outline-secondary text-start w-100 d-flex justify-content-between align-items-center"
-                        id="btnPilihKandang">
-                        <span id="kandangLabel">Pilih kandang yang tersedia</span>
-                        <i class="bi bi-chevron-down ms-2 small"></i>
-                    </button>
-
-                    <div id="panelKandang" class="border rounded p-2 mt-1 d-none"
-                        style="max-height: 200px; overflow-y: auto;">
-                        <div class="text-center">
-                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                                    <div class="mb-3" id="newCustomerFields" style="display: none;">
+                                        <label class="form-label">Nama Pemilik Baru <span class="text-danger">*</span></label>
+                                        <input type="text" name="nama_pelanggan_baru" class="form-control"
+                                            placeholder="Ketik nama pemilik baru">
+                                    </div>
+                                </div>
                             </div>
-                            <span class="text-muted">Memuat kandang tersedia...</span>
+
+                            <!-- INFORMASI HEWAN -->
+                            <div class="col-lg-6">
+                                <div class="card p-3 h-100">
+                                    <h6 class="mb-3 text-primary">Informasi Hewan</h6>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Nama Hewan <span class="text-danger">*</span></label>
+                                        <input type="text" name="nama_hewan" class="form-control"
+                                            placeholder="Contoh: Mochi, Blacky" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Jenis Hewan <span class="text-danger">*</span></label>
+                                        <select name="jenis_hewan" class="form-select" id="jenisHewanSelect" required>
+                                            <option value="">-- Pilih Hewan --</option>
+                                            <option value="Kucing">Kucing</option>
+                                            <option value="Anjing">Anjing</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Ras</label>
+                                        <input type="text" name="ras" class="form-control"
+                                            placeholder="Contoh: Persia, Siberian Husky">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Ukuran</label>
+                                        <select name="ukuran" class="form-select" id="ukuranHewanSelect">
+                                            <option value="">-- Pilih Ukuran --</option>
+                                            <option value="Kecil">Kecil</option>
+                                            <option value="Sedang">Sedang</option>
+                                            <option value="Besar">Besar</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Warna</label>
+                                        <input type="text" name="warna" class="form-control"
+                                            placeholder="Contoh: Putih, Hitam-Putih">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Catatan Khusus</label>
+                                        <textarea name="catatan" class="form-control" rows="2"
+                                            placeholder="Alergi, penyakit, kebiasaan khusus, dll."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LAYANAN -->
+                            <div class="col-12">
+                                <div class="card p-3">
+                                    <h6 class="mb-3 text-primary">Layanan</h6>
+
+                                    <div class="row g-3">
+                                        <!-- Paket Utama -->
+                                        <div class="col-lg-4">
+                                            <label class="form-label">Paket Utama <span class="text-danger">*</span></label>
+                                            <select name="id_layanan" class="form-select" id="paketSelect" required>
+                                                <option value="">-- Pilih Paket --</option>
+                                                <?php foreach ($paketList as $pk): ?>
+                                                    <option value="<?= $pk['id_layanan'] ?>" 
+                                                            data-harga="<?= $pk['harga'] ?>" 
+                                                            data-nama="<?= htmlspecialchars($pk['nama_layanan']) ?>">
+                                                        <?= htmlspecialchars($pk['nama_layanan']) ?>
+                                                        - Rp <?= number_format($pk['harga'], 0, ',', '.'); ?>/hari
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                            <div class="form-text">Pilih salah satu paket penitipan</div>
+                                        </div>
+
+                                        <!-- Info Paket yang Dipilih -->
+                                        <div class="col-lg-8">
+                                            <div class="alert alert-info mt-4">
+                                                <h6>Info Paket:</h6>
+                                                <div id="paketInfo">Pilih paket untuk melihat detail</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TOTAL -->
+                                    <div class="mt-4 p-3 bg-light rounded">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="small text-muted">Total Estimasi Biaya</div>
+                                                <h3 id="totalHarga" class="fw-bold text-primary mb-0">Rp 0</h3>
+                                            </div>
+                                            <div class="text-end">
+                                                <small class="text-muted d-block" id="detailPerhitungan">-</small>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="total_biaya" id="totalInput" value="0">
+                                        <div class="small text-muted mt-1">
+                                            Total = (harga paket × lama inap)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DETAIL PENITIPAN -->
+                            <div class="col-12">
+                                <div class="card p-3">
+                                    <h6 class="mb-3 text-primary">Detail Penitipan</h6>
+
+                                    <div class="row g-3">
+                                        <div class="col-lg-4">
+                                            <label class="form-label">Tanggal Masuk <span class="text-danger">*</span></label>
+                                            <input type="date" name="tanggal_masuk" class="form-control"
+                                                value="<?= date('Y-m-d') ?>" required>
+                                        </div>
+
+                                        <div class="col-lg-4">
+                                            <label class="form-label">Lama Inap (hari) <span class="text-danger">*</span></label>
+                                            <input type="number" name="durasi" class="form-control"
+                                                min="1" value="1" required id="lamaInap">
+                                        </div>
+
+                                        <div class="col-lg-4">
+                                            <label class="form-label">Kandang <span class="text-danger">*</span></label>
+                                            <button type="button"
+                                                class="btn btn-outline-secondary text-start w-100 d-flex justify-content-between align-items-center"
+                                                id="btnPilihKandang">
+                                                <span id="kandangLabel">Pilih kandang yang tersedia</span>
+                                                <i class="bi bi-chevron-down ms-2 small"></i>
+                                            </button>
+
+                                            <div id="panelKandang" class="border rounded p-2 mt-1 d-none"
+                                                style="max-height: 200px; overflow-y: auto;">
+                                                <div class="text-center">
+                                                    <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                                        <span class="visually-hidden">Loading...</span>
+                                                    </div>
+                                                    <span class="text-muted">Memuat kandang tersedia...</span>
+                                                </div>
+                                            </div>
+
+                                            <input type="hidden" name="id_kandang" id="id_kandang">
+                                            <small class="text-muted d-block mt-1" id="kandangInfo">
+                                                Pilih kandang yang sesuai dengan jenis dan ukuran hewan
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- /.row -->
+
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-2"></i>Simpan &amp; Cetak Bukti
+                            </button>
                         </div>
-                    </div>
-
-                    <input type="hidden" name="id_kandang" id="id_kandang">
-                    <small class="text-muted d-block mt-1" id="kandangInfo">
-                        Pilih kandang yang sesuai dengan jenis dan ukuran hewan
-                    </small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-end mt-3">
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-save me-2"></i>Simpan &amp; Cetak Bukti
-        </button>
-    </div>
-</form>
+                    </form>
 
                 <?php else: ?>
 
@@ -424,8 +426,10 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        console.log("=== SCRIPT DIMULAI ===");
+
         // =============================================
-        // AUTO-FILL DATA PELANGGAN (SIMPLE VERSION)
+        // AUTO-FILL DATA PELANGGAN
         // =============================================
         const selectPelanggan = document.getElementById('selectPelanggan');
         const noHpInput = document.getElementById('p_hp');
@@ -459,292 +463,45 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
             });
         }
 
-                // =============================================
-                // KALKULASI TOTAL HARGA - DEBUG VERSION
-                // =============================================
-                const paketSelect = document.getElementById('paketSelect');
-                const lamaInapInput = document.getElementById('lamaInap');
-                const totalHargaElement = document.getElementById('totalHarga');
-                const totalInput = document.getElementById('totalInput');
-
-                function hitungTotal() {
-                    console.log("=== KALKULASI TOTAL DIMULAI ===");
-                    
-                    let total = 0;
-
-                    // Debug: Cek elemen
-                    console.log("paketSelect:", paketSelect);
-                    console.log("paketSelect value:", paketSelect ? paketSelect.value : 'null');
-                    console.log("lamaInapInput value:", lamaInapInput ? lamaInapInput.value : 'null');
-
-                    // Hitung harga paket
-                    if (paketSelect && paketSelect.value) {
-                        const selectedOption = paketSelect.options[paketSelect.selectedIndex];
-                        console.log("selectedOption:", selectedOption);
-                        
-                        const hargaPaket = selectedOption ? parseInt(selectedOption.getAttribute('data-harga')) : 0;
-                        const lamaInap = parseInt(lamaInapInput.value) || 1;
-                        
-                        console.log("hargaPaket dari data attribute:", hargaPaket);
-                        console.log("lamaInap:", lamaInap);
-                        
-                        total = hargaPaket * lamaInap;
-                        console.log("Total calculated:", total);
-                    } else {
-                        console.log("Paket tidak dipilih atau elemen tidak ditemukan");
-                    }
-
-                    // Update tampilan
-                    if (totalHargaElement) {
-                        totalHargaElement.textContent = 'Rp ' + total.toLocaleString('id-ID');
-                        console.log("Total display updated");
-                    }
-                    if (totalInput) {
-                        totalInput.value = total;
-                        console.log("Total input updated:", total);
-                    }
-
-                    console.log("=== KALKULASI TOTAL SELESAI ===");
-                }
-
-                // Event listeners untuk kalkulasi
-                if (paketSelect) {
-                    paketSelect.addEventListener('change', function() {
-                        console.log("Paket berubah:", this.value);
-                        hitungTotal();
-                    });
-                    console.log("Paket select event listener added");
-                }
-
-                if (lamaInapInput) {
-                    lamaInapInput.addEventListener('input', function() {
-                        console.log("Lama inap berubah:", this.value);
-                        hitungTotal();
-                    });
-                    console.log("Lama inap event listener added");
-                }
-
-                // Hitung total awal saat page load
-                console.log("Initial calculation on page load...");
-                hitungTotal();
-
-// =============================================
-// PEMILIHAN KANDANG - DEBUG VERSION
-// =============================================
-const btnPilihKandang = document.getElementById('btnPilihKandang');
-const panelKandang = document.getElementById('panelKandang');
-const kandangLabel = document.getElementById('kandangLabel');
-const idKandangInput = document.getElementById('id_kandang');
-const kandangInfo = document.getElementById('kandangInfo');
-const jenisHewanSelect = document.getElementById('jenisHewanSelect');
-const ukuranHewanSelect = document.getElementById('ukuranHewanSelect');
-
-// Debug: Cek elemen kandang
-console.log("=== DEBUG KANDANG ===");
-console.log("btnPilihKandang:", btnPilihKandang);
-console.log("panelKandang:", panelKandang);
-console.log("idKandangInput:", idKandangInput);
-console.log("jenisHewanSelect:", jenisHewanSelect);
-console.log("ukuranHewanSelect:", ukuranHewanSelect);
-console.log("Kandang tersedia dari PHP:", <?= json_encode($kandangTersedia) ?>);
-
-if (btnPilihKandang) {
-    console.log("Button pilih kandang ditemukan, adding event listener...");
-    
-    btnPilihKandang.addEventListener('click', function() {
-        console.log("Button pilih kandang diklik!");
-        
-        if (!jenisHewanSelect || !jenisHewanSelect.value) {
-            alert('Pilih jenis hewan terlebih dahulu');
-            return;
-        }
-
-        console.log("Jenis hewan:", jenisHewanSelect.value);
-        console.log("Ukuran hewan:", ukuranHewanSelect ? ukuranHewanSelect.value : 'null');
-
-        // Tampilkan loading
-        panelKandang.innerHTML = `
-            <div class="text-center py-2">
-                <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <span class="text-muted">Memuat kandang tersedia...</span>
-            </div>
-        `;
-        panelKandang.classList.remove('d-none');
-        console.log("Panel kandang ditampilkan");
-
-        // Filter kandang berdasarkan jenis dan ukuran hewan
-        const jenisHewan = jenisHewanSelect.value;
-        const ukuranHewan = ukuranHewanSelect ? ukuranHewanSelect.value : '';
-        
-        // Tentukan tipe kandang yang sesuai
-        let tipeKandangYangCocok = ['Kecil', 'Besar']; // Default tampilkan semua
-        
-        if (jenisHewan === 'Anjing') {
-            tipeKandangYangCocok = ['Besar']; // Anjing hanya kandang besar
-        } else if (ukuranHewan === 'Besar') {
-            tipeKandangYangCocok = ['Besar']; // Hewan besar hanya kandang besar
-        }
-
-        console.log("Tipe kandang yang cocok:", tipeKandangYangCocok);
-
-        // Tunggu sebentar lalu tampilkan kandang
-        setTimeout(() => {
-            panelKandang.innerHTML = '';
-            
-            let kandangDitemukan = false;
-            const kandangTersedia = <?= json_encode($kandangTersedia) ?>;
-            
-            console.log("Data kandang dari PHP:", kandangTersedia);
-            
-            kandangTersedia.forEach(kandang => {
-                console.log("Processing kandang:", kandang);
-                
-                // Filter kandang
-                if (kandang.status === 'tersedia' && tipeKandangYangCocok.includes(kandang.tipe)) {
-                    kandangDitemukan = true;
-                    console.log("Kandang cocok:", kandang.kode);
-                    
-                    const kandangItem = document.createElement('div');
-                    kandangItem.className = 'p-2 border-bottom cursor-pointer hover-bg-light';
-                    kandangItem.style.cursor = 'pointer';
-                    kandangItem.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="fw-semibold">${kandang.kode}</span>
-                                <small class="text-muted ms-2">${kandang.tipe}</small>
-                            </div>
-                            <span class="badge bg-success">Tersedia</span>
-                        </div>
-                        ${kandang.catatan ? `<small class="text-muted">${kandang.catatan}</small>` : ''}
-                    `;
-                    
-                    kandangItem.addEventListener('click', function() {
-                        console.log("Kandang dipilih:", kandang.id, kandang.kode);
-                        kandangLabel.textContent = `${kandang.kode} - ${kandang.tipe}`;
-                        idKandangInput.value = kandang.id;
-                        panelKandang.classList.add('d-none');
-                        kandangInfo.innerHTML = `<span class="text-success"><i class="bi bi-check-circle"></i> Kandang ${kandang.kode} dipilih</span>`;
-                        
-                        // Validasi form
-                        validateKandang();
-                    });
-                    
-                    panelKandang.appendChild(kandangItem);
-                }
-            });
-            
-            if (!kandangDitemukan) {
-                console.log("Tidak ada kandang yang cocok ditemukan");
-                panelKandang.innerHTML = `
-                    <div class="text-center text-muted py-3">
-                        <i class="bi bi-inbox display-6 opacity-50"></i>
-                        <p class="mt-2 mb-0">Tidak ada kandang tersedia</p>
-                        <small>Untuk ${jenisHewan} ${ukuranHewan ? 'ukuran ' + ukuranHewan : ''}</small>
-                    </div>
-                `;
-            } else {
-                console.log(kandangDitemukan + " kandang ditemukan");
-            }
-            
-        }, 300);
-    });
-
-    // Function untuk validasi kandang
-    function validateKandang() {
-        if (idKandangInput.value) {
-            btnPilihKandang.classList.remove('btn-outline-secondary');
-            btnPilihKandang.classList.add('btn-outline-success');
-        } else {
-            btnPilihKandang.classList.remove('btn-outline-success');
-            btnPilihKandang.classList.add('btn-outline-secondary');
-        }
-    }
-
-    // Update ketika jenis/ukuran hewan berubah
-    if (jenisHewanSelect) {
-        jenisHewanSelect.addEventListener('change', function() {
-            console.log("Jenis hewan berubah:", this.value);
-            resetKandangPilihan();
-        });
-    }
-    
-    if (ukuranHewanSelect) {
-        ukuranHewanSelect.addEventListener('change', function() {
-            console.log("Ukuran hewan berubah:", this.value);
-            resetKandangPilihan();
-        });
-    }
-
-    function resetKandangPilihan() {
-        console.log("Reset pilihan kandang");
-        idKandangInput.value = '';
-        kandangLabel.textContent = 'Pilih kandang yang tersedia';
-        kandangInfo.innerHTML = 'Pilih kandang yang sesuai dengan jenis dan ukuran hewan';
-        panelKandang.classList.add('d-none');
-        validateKandang();
-    }
-
-    // Sembunyikan panel ketika klik di luar
-    document.addEventListener('click', function(e) {
-        if (btnPilihKandang && !btnPilihKandang.contains(e.target) && !panelKandang.contains(e.target)) {
-            panelKandang.classList.add('d-none');
-            console.log("Panel kandang disembunyikan");
-        }
-    });
-
-    // Initial validation
-    validateKandang();
-} else {
-    console.error("Button pilih kandang TIDAK DITEMUKAN!");
-}
-
         // =============================================
-        // FORM VALIDATION
-        // =============================================
-        const btnLayanan = document.getElementById('btnLayananTambahan');
-        const panelLayanan = document.getElementById('panelLayananTambahan');
-        const ltLabel = document.getElementById('ltLabel');
-
-        if (btnLayanan) {
-            btnLayanan.addEventListener('click', function() {
-                panelLayanan.classList.toggle('d-none');
-            });
-
-            // Sembunyikan panel ketika klik di luar
-            document.addEventListener('click', function(e) {
-                if (!btnLayanan.contains(e.target) && !panelLayanan.contains(e.target)) {
-                    panelLayanan.classList.add('d-none');
-                }
-            });
-        }
-
-        // =============================================
-        // KALKULASI TOTAL HARGA (Tab Pendaftaran)
+        // KALKULASI TOTAL HARGA - FIXED VERSION
         // =============================================
         const paketSelect = document.getElementById('paketSelect');
         const lamaInapInput = document.getElementById('lamaInap');
-        const ltCheckboxes = document.querySelectorAll('.lt-checkbox');
         const totalHargaElement = document.getElementById('totalHarga');
         const totalInput = document.getElementById('totalInput');
+        const detailPerhitungan = document.getElementById('detailPerhitungan');
+        const paketInfo = document.getElementById('paketInfo');
 
         function hitungTotal() {
+            console.log("=== KALKULASI TOTAL DIMULAI ===");
+            
             let total = 0;
+            let hargaPaket = 0;
+            let lamaInap = 1;
+            let namaPaket = '';
 
             // Hitung harga paket
-            const selectedPaket = paketSelect ? paketSelect.options[paketSelect.selectedIndex] : null;
-            const hargaPaket = selectedPaket ? parseInt(selectedPaket.getAttribute('data-harga')) : 0;
-            const lamaInap = parseInt(lamaInapInput ? lamaInapInput.value : 1) || 1;
-
-            total += hargaPaket * lamaInap;
-
-            // Hitung layanan tambahan
-            ltCheckboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    total += parseInt(checkbox.getAttribute('data-harga'));
+            if (paketSelect && paketSelect.value) {
+                const selectedOption = paketSelect.options[paketSelect.selectedIndex];
+                hargaPaket = parseInt(selectedOption.getAttribute('data-harga')) || 0;
+                namaPaket = selectedOption.getAttribute('data-nama') || '';
+                lamaInap = parseInt(lamaInapInput.value) || 1;
+                
+                total = hargaPaket * lamaInap;
+                
+                // Update info paket
+                if (paketInfo) {
+                    paketInfo.innerHTML = `
+                        <strong>${namaPaket}</strong><br>
+                        <small>Harga: Rp ${hargaPaket.toLocaleString('id-ID')} / hari</small>
+                    `;
                 }
-            });
+            } else {
+                if (paketInfo) {
+                    paketInfo.textContent = 'Pilih paket untuk melihat detail';
+                }
+            }
 
             // Update tampilan
             if (totalHargaElement) {
@@ -753,33 +510,181 @@ if (btnPilihKandang) {
             if (totalInput) {
                 totalInput.value = total;
             }
-
-            // Update label layanan tambahan
-            if (ltLabel) {
-                const selectedLayanan = document.querySelectorAll('.lt-checkbox:checked').length;
-                if (selectedLayanan > 0) {
-                    ltLabel.textContent = `${selectedLayanan} layanan tambahan dipilih`;
+            if (detailPerhitungan) {
+                if (hargaPaket > 0) {
+                    detailPerhitungan.textContent = `Rp ${hargaPaket.toLocaleString('id-ID')} × ${lamaInap} hari`;
                 } else {
-                    ltLabel.textContent = 'Pilih layanan tambahan (opsional)';
+                    detailPerhitungan.textContent = '-';
                 }
             }
+
+            console.log("Total calculated:", total);
         }
 
         // Event listeners untuk kalkulasi
         if (paketSelect) {
             paketSelect.addEventListener('change', hitungTotal);
         }
+
         if (lamaInapInput) {
             lamaInapInput.addEventListener('input', hitungTotal);
         }
-        if (ltCheckboxes.length > 0) {
-            ltCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', hitungTotal);
+
+        // Hitung total awal saat page load
+        hitungTotal();
+
+        // =============================================
+        // PEMILIHAN KANDANG - FIXED VERSION
+        // =============================================
+        const btnPilihKandang = document.getElementById('btnPilihKandang');
+        const panelKandang = document.getElementById('panelKandang');
+        const kandangLabel = document.getElementById('kandangLabel');
+        const idKandangInput = document.getElementById('id_kandang');
+        const kandangInfo = document.getElementById('kandangInfo');
+        const jenisHewanSelect = document.getElementById('jenisHewanSelect');
+        const ukuranHewanSelect = document.getElementById('ukuranHewanSelect');
+
+        if (btnPilihKandang) {
+            console.log("Button pilih kandang ditemukan");
+            
+            btnPilihKandang.addEventListener('click', function() {
+                console.log("Button pilih kandang diklik");
+                
+                if (!jenisHewanSelect || !jenisHewanSelect.value) {
+                    alert('Pilih jenis hewan terlebih dahulu');
+                    return;
+                }
+
+                // Tampilkan loading
+                panelKandang.innerHTML = `
+                    <div class="text-center py-2">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="text-muted">Memuat kandang tersedia...</span>
+                    </div>
+                `;
+                panelKandang.classList.remove('d-none');
+
+                // Filter kandang berdasarkan jenis dan ukuran hewan
+                const jenisHewan = jenisHewanSelect.value;
+                const ukuranHewan = ukuranHewanSelect ? ukuranHewanSelect.value : '';
+                
+                // Tentukan tipe kandang yang sesuai
+                let tipeKandangYangCocok = ['Kecil', 'Besar'];
+                
+                if (jenisHewan === 'Anjing') {
+                    tipeKandangYangCocok = ['Besar'];
+                } else if (ukuranHewan === 'Besar') {
+                    tipeKandangYangCocok = ['Besar'];
+                }
+
+                // Tunggu sebentar lalu tampilkan kandang
+                setTimeout(() => {
+                    panelKandang.innerHTML = '';
+                    
+                    let kandangDitemukan = false;
+                    const kandangTersedia = <?= json_encode($kandangTersedia) ?>;
+                    
+                    kandangTersedia.forEach(kandang => {
+                        // Filter kandang
+                        if (kandang.status === 'tersedia' && tipeKandangYangCocok.includes(kandang.tipe)) {
+                            kandangDitemukan = true;
+                            
+                            const kandangItem = document.createElement('div');
+                            kandangItem.className = 'p-2 border-bottom cursor-pointer hover-bg-light';
+                            kandangItem.style.cursor = 'pointer';
+                            kandangItem.innerHTML = `
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="fw-semibold">${kandang.kode}</span>
+                                        <small class="text-muted ms-2">${kandang.tipe}</small>
+                                    </div>
+                                    <span class="badge bg-success">Tersedia</span>
+                                </div>
+                                ${kandang.catatan ? `<small class="text-muted">${kandang.catatan}</small>` : ''}
+                            `;
+                            
+                            kandangItem.addEventListener('click', function() {
+                                kandangLabel.textContent = `${kandang.kode} - ${kandang.tipe}`;
+                                idKandangInput.value = kandang.id;
+                                panelKandang.classList.add('d-none');
+                                kandangInfo.innerHTML = `<span class="text-success"><i class="bi bi-check-circle"></i> Kandang ${kandang.kode} dipilih</span>`;
+                                validateKandang();
+                            });
+                            
+                            panelKandang.appendChild(kandangItem);
+                        }
+                    });
+                    
+                    if (!kandangDitemukan) {
+                        panelKandang.innerHTML = `
+                            <div class="text-center text-muted py-3">
+                                <i class="bi bi-inbox display-6 opacity-50"></i>
+                                <p class="mt-2 mb-0">Tidak ada kandang tersedia</p>
+                                <small>Untuk ${jenisHewan} ${ukuranHewan ? 'ukuran ' + ukuranHewan : ''}</small>
+                            </div>
+                        `;
+                    }
+                    
+                }, 300);
             });
+
+            function validateKandang() {
+                if (idKandangInput.value) {
+                    btnPilihKandang.classList.remove('btn-outline-secondary');
+                    btnPilihKandang.classList.add('btn-outline-success');
+                } else {
+                    btnPilihKandang.classList.remove('btn-outline-success');
+                    btnPilihKandang.classList.add('btn-outline-secondary');
+                }
+            }
+
+            // Update ketika jenis/ukuran hewan berubah
+            if (jenisHewanSelect) {
+                jenisHewanSelect.addEventListener('change', resetKandangPilihan);
+            }
+            
+            if (ukuranHewanSelect) {
+                ukuranHewanSelect.addEventListener('change', resetKandangPilihan);
+            }
+
+            function resetKandangPilihan() {
+                idKandangInput.value = '';
+                kandangLabel.textContent = 'Pilih kandang yang tersedia';
+                kandangInfo.innerHTML = 'Pilih kandang yang sesuai dengan jenis dan ukuran hewan';
+                panelKandang.classList.add('d-none');
+                validateKandang();
+            }
+
+            // Sembunyikan panel ketika klik di luar
+            document.addEventListener('click', function(e) {
+                if (btnPilihKandang && !btnPilihKandang.contains(e.target) && !panelKandang.contains(e.target)) {
+                    panelKandang.classList.add('d-none');
+                }
+            });
+
+            // Initial validation
+            validateKandang();
         }
 
-        // Hitung total awal
-        hitungTotal();
+        // =============================================
+        // FORM SUBMIT HANDLER
+        // =============================================
+        const formPendaftaran = document.getElementById('formPendaftaran');
+        if (formPendaftaran) {
+            formPendaftaran.addEventListener('submit', function(e) {
+                console.log("Form submitted");
+                
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Jika valid, form akan dikirim ke server
+                console.log("Form valid, submitting...");
+            });
+        }
 
         // =============================================
         // FUNGSI CHECKOUT (Tab Pengembalian)
@@ -794,8 +699,7 @@ if (btnPilihKandang) {
                 kandang: 'KK01',
                 tgl_masuk: '2024-01-15',
                 lama_inap: 3,
-                total_biaya: 360000,
-                layanan_tambahan: ['Grooming Dasar']
+                total_biaya: 360000
             };
 
             // Isi modal checkout
@@ -834,10 +738,6 @@ if (btnPilihKandang) {
                             <td>Lama Inap:</td>
                             <td>${transaksiData.lama_inap} hari</td>
                         </tr>
-                        <tr>
-                            <td>Layanan Tambahan:</td>
-                            <td>${transaksiData.layanan_tambahan.join(', ') || '-'}</td>
-                        </tr>
                         <tr class="table-primary">
                             <td><strong>Total Biaya:</strong></td>
                             <td><strong>Rp ${transaksiData.total_biaya.toLocaleString('id-ID')}</strong></td>
@@ -857,11 +757,8 @@ if (btnPilihKandang) {
 
             // Setup confirm button
             document.getElementById('btnConfirmCheckout').onclick = function() {
-                // Simpan proses checkout
-                alert(`Check-out berhasil untuk transaksi ${idTransaksi}`);
-                modal.hide();
-                // Redirect atau refresh halaman
-                window.location.reload();
+                // Redirect ke controller untuk checkout
+                window.location.href = `controllers/TransaksiController.php?action=checkout&id=${idTransaksi}`;
             };
         };
 
@@ -876,96 +773,64 @@ if (btnPilihKandang) {
 
                 // Simulasi pencarian
                 alert(`Mencari: ${keyword} - Kandang: ${kandang || 'Semua'}`);
-                // Implementasi AJAX search akan ditambahkan di sini
             });
         }
     });
 
     // =============================================
-    // FUNGSI BUKTI PEMBAYARAN
+    // FUNGSI VALIDASI FORM
     // =============================================
-
-    function validasiForm() {
-        // Validasi dasar
+    function validateForm() {
         const requiredFields = document.querySelectorAll('#formPendaftaran [required]');
         let isValid = true;
 
+        // Validasi field required
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
                 isValid = false;
                 field.classList.add('is-invalid');
+                
+                // Cari label untuk field ini
+                const label = document.querySelector(`label[for="${field.id}"]`);
+                if (label) {
+                    console.log(`Field ${label.textContent} belum diisi`);
+                }
             } else {
                 field.classList.remove('is-invalid');
             }
         });
+
+        // Validasi kandang
+        const idKandangInput = document.getElementById('id_kandang');
+        if (!idKandangInput || !idKandangInput.value) {
+            isValid = false;
+            alert('Harap pilih kandang terlebih dahulu!');
+        }
+
+        // Validasi pelanggan baru
+        const selectPelanggan = document.getElementById('selectPelanggan');
+        if (selectPelanggan && selectPelanggan.value === 'new') {
+            const namaPelangganBaru = document.querySelector('[name="nama_pelanggan_baru"]');
+            if (!namaPelangganBaru || !namaPelangganBaru.value.trim()) {
+                isValid = false;
+                alert('Harap isi nama pemilik baru!');
+                if (namaPelangganBaru) {
+                    namaPelangganBaru.classList.add('is-invalid');
+                }
+            }
+        }
 
         if (!isValid) {
             alert('Harap lengkapi semua field yang wajib diisi!');
             return false;
         }
 
-        // Validasi kandang
-        if (!document.getElementById('no_kandang').value) {
-            alert('Harap pilih kandang terlebih dahulu!');
-            return false;
-        }
-
         return true;
     }
 
-    function simpanTransaksi() {
-        // Simulasi penyimpanan data ke server
-        const formData = new FormData(document.getElementById('formPendaftaran'));
-        
-        // Data transaksi untuk bukti bayar
-        const transaksiData = {
-            no_transaksi: 'TRX-' + new Date().getTime(),
-            tgl_transaksi: new Date().toLocaleString('id-ID'),
-            nama_pemilik: document.getElementById('search_pemilik').value,
-            no_hp: document.getElementById('p_hp').value,
-            alamat: document.getElementById('p_alamat').value,
-            nama_hewan: document.querySelector('[name="nama_hewan"]').value,
-            jenis_hewan: document.querySelector('[name="jenis_hewan"]').value,
-            ras: document.querySelector('[name="ras"]').value,
-            ukuran: document.querySelector('[name="ukuran"]').value,
-            warna: document.querySelector('[name="warna"]').value,
-            catatan: document.querySelector('[name="catatan"]').value,
-            paket: document.getElementById('paketSelect').options[document.getElementById('paketSelect').selectedIndex].text,
-            harga_paket: parseInt(document.getElementById('paketSelect').options[document.getElementById('paketSelect').selectedIndex].getAttribute('data-harga')),
-            lama_inap: parseInt(document.getElementById('lamaInap').value),
-            no_kandang: document.getElementById('no_kandang').value,
-            tgl_masuk: document.querySelector('[name="tgl_masuk"]').value,
-            tgl_keluar: hitungTanggalKeluar(document.querySelector('[name="tgl_masuk"]').value, parseInt(document.getElementById('lamaInap').value)),
-            total_biaya: parseInt(document.getElementById('totalInput').value),
-            layanan_tambahan: getLayananTambahanTerpilih()
-        };
-
-        // Tampilkan bukti bayar
-        tampilkanBuktiBayar(transaksiData);
-    }
-
-    function hitungTanggalKeluar(tglMasuk, lamaInap) {
-        const tgl = new Date(tglMasuk);
-        tgl.setDate(tgl.getDate() + lamaInap);
-        return tgl.toLocaleDateString('id-ID');
-    }
-
-    function getLayananTambahanTerpilih() {
-        const layananTerpilih = [];
-        const checkboxes = document.querySelectorAll('.lt-checkbox:checked');
-        
-        checkboxes.forEach(checkbox => {
-            const label = document.querySelector(`label[for="${checkbox.id}"]`).textContent;
-            const harga = parseInt(checkbox.getAttribute('data-harga'));
-            layananTerpilih.push({
-                nama: label.split(' - ')[0],
-                harga: harga
-            });
-        });
-
-        return layananTerpilih;
-    }
-
+    // =============================================
+    // FUNGSI BUKTI PEMBAYARAN
+    // =============================================
     function tampilkanBuktiBayar(transaksiData) {
         const buktiContent = document.getElementById('buktiBayarContent');
         
@@ -1106,15 +971,6 @@ if (btnPilihKandang) {
                                 <td class="text-center">${transaksiData.lama_inap} hari</td>
                                 <td class="text-end">Rp ${(transaksiData.harga_paket * transaksiData.lama_inap).toLocaleString('id-ID')}</td>
                             </tr>
-
-                            ${transaksiData.layanan_tambahan.map(layanan => `
-                                <tr>
-                                    <td><strong>${layanan.nama}</strong></td>
-                                    <td class="text-center">1</td>
-                                    <td class="text-end">Rp ${layanan.harga.toLocaleString('id-ID')}</td>
-                                </tr>
-                            `).join('')}
-
                             <tr class="table-primary">
                                 <td colspan="2" class="text-end"><strong>TOTAL</strong></td>
                                 <td class="text-end"><strong>Rp ${transaksiData.total_biaya.toLocaleString('id-ID')}</strong></td>
@@ -1191,4 +1047,4 @@ if (btnPilihKandang) {
     }
 </script>
 
-<?php include __DIR__ . '/template/footer.php'; ?>;
+<?php include __DIR__ . '/template/footer.php'; ?>
