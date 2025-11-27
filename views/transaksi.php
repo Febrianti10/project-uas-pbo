@@ -3,66 +3,27 @@ $pageTitle  = 'Transaksi Penitipan Hewan';
 $activeMenu = 'transaksi';
 include __DIR__ . '/template/header.php';
 
-/*
-|======================================================
-|  DATA PAKET & LAYANAN (sementara statis)
-|  (nanti bisa diganti ambil dari database)
-|======================================================
-*/
+// Load data dari database
+require_once __DIR__ . '/../models/Pelanggan.php';
+require_once __DIR__ . '/../models/Layanan.php';
+require_once __DIR__ . '/../models/Kandang.php';
+require_once __DIR__ . '/../models/Transaksi.php';
 
-// Paket utama
-$paketList = [
-    ['kode_paket' => 'P001', 'nama_paket' => 'Paket Daycare (Tanpa Menginap) ≤ 5 kg', 'harga' => 50000],
-    ['kode_paket' => 'P002', 'nama_paket' => 'Paket Daycare (Tanpa Menginap) > 5 kg', 'harga' => 60000],
-    ['kode_paket' => 'P003', 'nama_paket' => 'Paket Boarding',                       'harga' => 120000],
-    ['kode_paket' => 'P004', 'nama_paket' => 'Paket Boarding > 5 kg',                'harga' => 120000],
-    ['kode_paket' => 'P005', 'nama_paket' => 'Paket Boarding VIP',                   'harga' => 250000],
-];
+$pelangganModel = new Pelanggan();
+$layananModel = new Layanan();
+$kandangModel = new Kandang();
+$transaksiModel = new Transaksi();
 
-// Layanan tambahan
-$layananTambahanList = [
-    ['kode' => 'G001', 'nama_layanan' => 'Grooming Dasar',     'harga' => 100000, 'satuan' => '/ sesi'],
-    ['kode' => 'G002', 'nama_layanan' => 'Grooming Lengkap',   'harga' => 170000, 'satuan' => '/ sesi'],
-    ['kode' => 'L003', 'nama_layanan' => 'Vitamin / Suplemen', 'harga' => 50000,  'satuan' => '/ pemberian'],
-    ['kode' => 'L004', 'nama_layanan' => 'Vaksin',             'harga' => 260000, 'satuan' => '/ dosis'],
-];
+// Data paket utama dari database
+$paketList = $layananModel->getAll();
 
-// Data kandang yang tersedia (contoh dari database)
-$kandangTersedia = [
-    ['id' => 1, 'kode' => 'KK01', 'tipe' => 'Kecil', 'status' => 'tersedia'],
-    ['id' => 2, 'kode' => 'KK02', 'tipe' => 'Kecil', 'status' => 'tersedia'],
-    ['id' => 3, 'kode' => 'KK03', 'tipe' => 'Kecil', 'status' => 'terisi'],
-    ['id' => 4, 'kode' => 'KK04', 'tipe' => 'Kecil', 'status' => 'tersedia'],
-    ['id' => 5, 'kode' => 'KB01', 'tipe' => 'Besar', 'status' => 'tersedia'],
-    ['id' => 6, 'kode' => 'KB02', 'tipe' => 'Besar', 'status' => 'tersedia'],
-    ['id' => 7, 'kode' => 'KB03', 'tipe' => 'Besar', 'status' => 'terisi'],
-];
+// Data kandang yang tersedia
+$kandangTersedia = $kandangModel->getAll();
 
 // Data hewan yang sedang menginap (untuk tab pengembalian)
-$hewanMenginap = [
-    [
-        'id_transaksi' => 'TRX001',
-        'nama_pemilik' => 'Budi Santoso',
-        'nama_hewan' => 'Mochi',
-        'jenis_hewan' => 'Kucing',
-        'kandang' => 'KK01',
-        'tgl_masuk' => '2024-01-15',
-        'lama_inap' => 3,
-        'total_biaya' => 360000
-    ],
-    [
-        'id_transaksi' => 'TRX002',
-        'nama_pemilik' => 'Sari Dewi',
-        'nama_hewan' => 'Blacky',
-        'jenis_hewan' => 'Anjing',
-        'kandang' => 'KB02',
-        'tgl_masuk' => '2024-01-16',
-        'lama_inap' => 2,
-        'total_biaya' => 240000
-    ]
-];
+$hewanMenginap = $transaksiModel->getActiveTransactions();
 
-// Default nilai dari backend (supaya view tidak error kalau belum ada controller)
+// Default nilai dari backend
 $hasilPencarian = $hasilPencarian ?? [];
 $transaksi      = $transaksi      ?? null;
 
@@ -201,12 +162,12 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                                         <!-- Paket Utama -->
                                         <div class="col-lg-4">
                                             <label class="form-label">Paket Utama <span class="text-danger">*</span></label>
-                                            <select name="kode_paket" class="form-select" id="paketSelect" required>
+                                            <select name="id_layanan" class="form-select" id="paketSelect" required>
                                                 <option value="">-- Pilih Paket --</option>
                                                 <?php foreach ($paketList as $pk): ?>
-                                                    <option value="<?= $pk['kode_paket']; ?>"
+                                                    <option value="<?= $pk['id_layanan']; ?>"
                                                         data-harga="<?= $pk['harga']; ?>">
-                                                        <?= $pk['nama_paket']; ?>
+                                                        <?= htmlspecialchars($pk['nama_layanan']); ?>
                                                         - Rp <?= number_format($pk['harga'], 0, ',', '.'); ?>/hari
                                                     </option>
                                                 <?php endforeach; ?>
@@ -230,6 +191,16 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                                                 class="border rounded p-2 mt-1 d-none"
                                                 style="max-height:260px; overflow-y:auto;">
 
+                                                <?php 
+                                                // Layanan tambahan (bisa dari database atau static)
+                                                $layananTambahanList = [
+                                                    ['kode' => 'G001', 'nama_layanan' => 'Grooming Dasar',     'harga' => 100000, 'satuan' => '/ sesi'],
+                                                    ['kode' => 'G002', 'nama_layanan' => 'Grooming Lengkap',   'harga' => 170000, 'satuan' => '/ sesi'],
+                                                    ['kode' => 'L003', 'nama_layanan' => 'Vitamin / Suplemen', 'harga' => 50000,  'satuan' => '/ pemberian'],
+                                                    ['kode' => 'L004', 'nama_layanan' => 'Vaksin',             'harga' => 260000, 'satuan' => '/ dosis'],
+                                                ];
+                                                ?>
+                                                
                                                 <?php foreach ($layananTambahanList as $lt): ?>
                                                     <div class="form-check">
                                                         <input class="form-check-input lt-checkbox"
@@ -311,7 +282,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                                                 </div>
                                             </div>
 
-                                            <input type="hidden" name="no_kandang" id="no_kandang">
+                                            <input type="hidden" name="id_kandang" id="id_kandang">
                                             <small class="text-muted d-block mt-1" id="kandangInfo">
                                                 Pilih kandang yang sesuai dengan jenis dan ukuran hewan
                                             </small>
@@ -395,8 +366,8 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                                         <?php else: ?>
                                             <?php foreach ($hewanMenginap as $hewan): ?>
                                                 <tr>
-                                                    <td class="fw-semibold"><?= htmlspecialchars($hewan['id_transaksi']); ?></td>
-                                                    <td><?= htmlspecialchars($hewan['nama_pemilik']); ?></td>
+                                                    <td class="fw-semibold"><?= htmlspecialchars($hewan['kode_transaksi']); ?></td>
+                                                    <td><?= htmlspecialchars($hewan['nama_pelanggan']); ?></td>
                                                     <td>
                                                         <div class="d-flex align-items-center">
                                                             <?php
@@ -407,10 +378,10 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-secondary"><?= htmlspecialchars($hewan['kandang']); ?></span>
+                                                        <span class="badge bg-secondary"><?= htmlspecialchars($hewan['kode_kandang']); ?></span>
                                                     </td>
-                                                    <td><?= date('d/m/Y', strtotime($hewan['tgl_masuk'])); ?></td>
-                                                    <td><?= $hewan['lama_inap']; ?> hari</td>
+                                                    <td><?= date('d/m/Y', strtotime($hewan['tanggal_masuk'])); ?></td>
+                                                    <td><?= $hewan['durasi']; ?> hari</td>
                                                     <td class="fw-semibold text-primary">
                                                         Rp <?= number_format($hewan['total_biaya'], 0, ',', '.'); ?>
                                                     </td>
@@ -460,7 +431,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // =============================================
-        // AUTO-COMPLETE PEMILIK (Tab Pendaftaran)
+        // AUTO-COMPLETE PEMILIK (Real dengan Database)
         // =============================================
         const searchInput = document.getElementById('search_pemilik');
         const suggestBox = document.getElementById('suggest_pemilik');
@@ -477,8 +448,8 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                     return;
                 }
 
-                // Simulasi AJAX request ke server
-                fetch(`ajax_cari_pemilik.php?q=${encodeURIComponent(query)}`)
+                // AJAX request ke server untuk cari pelanggan
+                fetch(`index.php?action=searchPelanggan&q=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
                         suggestBox.innerHTML = '';
@@ -490,13 +461,13 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                                 item.style.cursor = 'pointer';
                                 item.innerHTML = `
                                 <div class="fw-semibold">${pemilik.nama}</div>
-                                <small class="text-muted">${pemilik.no_hp} - ${pemilik.alamat}</small>
+                                <small class="text-muted">${pemilik.hp} - ${pemilik.alamat}</small>
                             `;
 
                                 item.addEventListener('click', function() {
                                     searchInput.value = pemilik.nama;
                                     pemilikId.value = pemilik.id;
-                                    noHpInput.value = pemilik.no_hp;
+                                    noHpInput.value = pemilik.hp;
                                     alamatInput.value = pemilik.alamat;
                                     suggestBox.classList.add('d-none');
                                 });
@@ -525,12 +496,12 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
         }
 
         // =============================================
-        // PEMILIHAN KANDANG (Tab Pendaftaran)
+        // PEMILIHAN KANDANG (Real dengan Database)
         // =============================================
         const btnPilihKandang = document.getElementById('btnPilihKandang');
         const panelKandang = document.getElementById('panelKandang');
         const kandangLabel = document.getElementById('kandangLabel');
-        const noKandangInput = document.getElementById('no_kandang');
+        const idKandangInput = document.getElementById('id_kandang');
         const kandangInfo = document.getElementById('kandangInfo');
         const jenisHewanSelect = document.getElementById('jenisHewanSelect');
         const ukuranHewanSelect = document.getElementById('ukuranHewanSelect');
@@ -551,8 +522,8 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
             `;
                 panelKandang.classList.remove('d-none');
 
-                // Simulasi AJAX request untuk mengambil kandang tersedia
-                fetch(`ajax_kandang_tersedia.php?jenis=${jenisHewan}&ukuran=${ukuranHewan}`)
+                // AJAX request untuk mengambil kandang tersedia
+                fetch(`index.php?action=getKandangTersedia&jenis=${jenisHewan}&ukuran=${ukuranHewan}`)
                     .then(response => response.json())
                     .then(data => {
                         panelKandang.innerHTML = '';
@@ -580,7 +551,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                                 if (kandang.status === 'tersedia') {
                                     item.addEventListener('click', function() {
                                         kandangLabel.textContent = `${kandang.kode} - ${kandang.tipe}`;
-                                        noKandangInput.value = kandang.kode;
+                                        idKandangInput.value = kandang.id;
                                         panelKandang.classList.add('d-none');
                                         kandangInfo.innerHTML = `<span class="text-success">✓ Kandang ${kandang.kode} dipilih</span>`;
                                     });
@@ -609,7 +580,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
             // Update kandang ketika jenis/ukuran hewan berubah
             if (jenisHewanSelect) {
                 jenisHewanSelect.addEventListener('change', function() {
-                    noKandangInput.value = '';
+                    idKandangInput.value = '';
                     kandangLabel.textContent = 'Pilih kandang yang tersedia';
                     kandangInfo.textContent = 'Pilih kandang yang sesuai dengan jenis dan ukuran hewan';
                 });
@@ -617,7 +588,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
 
             if (ukuranHewanSelect) {
                 ukuranHewanSelect.addEventListener('change', function() {
-                    noKandangInput.value = '';
+                    idKandangInput.value = '';
                     kandangLabel.textContent = 'Pilih kandang yang tersedia';
                     kandangInfo.textContent = 'Pilih kandang yang sesuai dengan jenis dan ukuran hewan';
                 });
@@ -632,27 +603,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
         }
 
         // =============================================
-        // TOGGLE LAYANAN TAMBAHAN (Tab Pendaftaran)
-        // =============================================
-        const btnLayanan = document.getElementById('btnLayananTambahan');
-        const panelLayanan = document.getElementById('panelLayananTambahan');
-        const ltLabel = document.getElementById('ltLabel');
-
-        if (btnLayanan) {
-            btnLayanan.addEventListener('click', function() {
-                panelLayanan.classList.toggle('d-none');
-            });
-
-            // Sembunyikan panel ketika klik di luar
-            document.addEventListener('click', function(e) {
-                if (!btnLayanan.contains(e.target) && !panelLayanan.contains(e.target)) {
-                    panelLayanan.classList.add('d-none');
-                }
-            });
-        }
-
-        // =============================================
-        // KALKULASI TOTAL HARGA (Tab Pendaftaran)
+        // KALKULASI TOTAL HARGA (Sama seperti sebelumnya)
         // =============================================
         const paketSelect = document.getElementById('paketSelect');
         const lamaInapInput = document.getElementById('lamaInap');
@@ -686,6 +637,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
             }
 
             // Update label layanan tambahan
+            const ltLabel = document.getElementById('ltLabel');
             if (ltLabel) {
                 const selectedLayanan = document.querySelectorAll('.lt-checkbox:checked').length;
                 if (selectedLayanan > 0) {
@@ -713,104 +665,25 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
         hitungTotal();
 
         // =============================================
-        // FUNGSI CHECKOUT (Tab Pengembalian)
+        // TOGGLE LAYANAN TAMBAHAN (Sama seperti sebelumnya)
         // =============================================
-        window.prosesCheckout = function(idTransaksi) {
-            // Simulasi data transaksi
-            const transaksiData = {
-                id: idTransaksi,
-                pemilik: 'Budi Santoso',
-                hewan: 'Mochi',
-                jenis: 'Kucing',
-                kandang: 'KK01',
-                tgl_masuk: '2024-01-15',
-                lama_inap: 3,
-                total_biaya: 360000,
-                layanan_tambahan: ['Grooming Dasar']
-            };
+        const btnLayanan = document.getElementById('btnLayananTambahan');
+        const panelLayanan = document.getElementById('panelLayananTambahan');
 
-            // Isi modal checkout
-            const checkoutContent = document.getElementById('checkoutContent');
-            checkoutContent.innerHTML = `
-            <div class="row">
-                <div class="col-md-6">
-                    <h6>Detail Transaksi</h6>
-                    <table class="table table-sm">
-                        <tr>
-                            <td>No. Transaksi:</td>
-                            <td class="fw-semibold">${transaksiData.id}</td>
-                        </tr>
-                        <tr>
-                            <td>Pemilik:</td>
-                            <td>${transaksiData.pemilik}</td>
-                        </tr>
-                        <tr>
-                            <td>Hewan:</td>
-                            <td>${transaksiData.hewan} (${transaksiData.jenis})</td>
-                        </tr>
-                        <tr>
-                            <td>Kandang:</td>
-                            <td>${transaksiData.kandang}</td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="col-md-6">
-                    <h6>Rincian Biaya</h6>
-                    <table class="table table-sm">
-                        <tr>
-                            <td>Tanggal Masuk:</td>
-                            <td>${new Date(transaksiData.tgl_masuk).toLocaleDateString('id-ID')}</td>
-                        </tr>
-                        <tr>
-                            <td>Lama Inap:</td>
-                            <td>${transaksiData.lama_inap} hari</td>
-                        </tr>
-                        <tr>
-                            <td>Layanan Tambahan:</td>
-                            <td>${transaksiData.layanan_tambahan.join(', ') || '-'}</td>
-                        </tr>
-                        <tr class="table-primary">
-                            <td><strong>Total Biaya:</strong></td>
-                            <td><strong>Rp ${transaksiData.total_biaya.toLocaleString('id-ID')}</strong></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            <div class="alert alert-success mt-3">
-                <i class="bi bi-info-circle me-2"></i>
-                Pastikan hewan dalam kondisi baik sebelum melakukan check-out.
-            </div>
-        `;
+        if (btnLayanan) {
+            btnLayanan.addEventListener('click', function() {
+                panelLayanan.classList.toggle('d-none');
+            });
 
-            // Tampilkan modal
-            const modal = new bootstrap.Modal(document.getElementById('modalCheckout'));
-            modal.show();
-
-            // Setup confirm button
-            document.getElementById('btnConfirmCheckout').onclick = function() {
-                // Simpan proses checkout
-                alert(`Check-out berhasil untuk transaksi ${idTransaksi}`);
-                modal.hide();
-                // Redirect atau refresh halaman
-                window.location.reload();
-            };
-        };
-
-        // =============================================
-        // PENCARIAN CHECKOUT (Tab Pengembalian)
-        // =============================================
-        const btnCariCheckout = document.getElementById('btnCariCheckout');
-        if (btnCariCheckout) {
-            btnCariCheckout.addEventListener('click', function() {
-                const keyword = document.getElementById('searchCheckout').value;
-                const kandang = document.getElementById('filterKandang').value;
-
-                // Simulasi pencarian
-                alert(`Mencari: ${keyword} - Kandang: ${kandang || 'Semua'}`);
-                // Implementasi AJAX search akan ditambahkan di sini
+            // Sembunyikan panel ketika klik di luar
+            document.addEventListener('click', function(e) {
+                if (!btnLayanan.contains(e.target) && !panelLayanan.contains(e.target)) {
+                    panelLayanan.classList.add('d-none');
+                }
             });
         }
+
     });
 </script>
 
-<?php include __DIR__ . '/template/footer.php'; ?>;
+<?php include __DIR__ . '/template/footer.php'; ?>

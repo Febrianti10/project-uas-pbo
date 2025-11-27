@@ -30,26 +30,29 @@ class Pelanggan
         return $stmt->fetchAll();
     }
 
-
     /**
-     * Ambil data pelanggan berdasarkan ID
+     * Cari pelanggan untuk autocomplete - VERSI FIX
      */
-    public function getById($id)
+    public function searchForAutocomplete($keyword)
     {
+        // Gunakan query langsung tanpa prepared statement untuk simplicity
         $sql = "SELECT 
                     p.id_pelanggan as id,
                     p.kode_pelanggan as kode,
                     p.nama_pelanggan as nama,
                     p.no_hp as hp,
-                    p.alamat,
-                    p.created_at
+                    p.alamat
                 FROM pelanggan p
-                WHERE p.id_pelanggan = :id";
+                WHERE p.nama_pelanggan LIKE '%" . $keyword . "%'
+                OR p.no_hp LIKE '%" . $keyword . "%'
+                OR p.kode_pelanggan LIKE '%" . $keyword . "%'
+                ORDER BY p.nama_pelanggan
+                LIMIT 10";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(["id" => $id]);
-        return $stmt->fetch();
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
     }
+
 
     /**
      * Tambah pelanggan baru
@@ -163,13 +166,13 @@ class Pelanggan
                     p.no_hp as hp,
                     p.alamat
                 FROM pelanggan p
-                WHERE p.nama_pelanggan LIKE :key
-                OR p.no_hp LIKE :key
-                OR p.kode_pelanggan LIKE :key
+                WHERE p.nama_pelanggan LIKE :keyword
+                OR p.no_hp LIKE :keyword
+                OR p.kode_pelanggan LIKE :keyword
                 ORDER BY p.nama_pelanggan";
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute(["key" => "%{$keyword}%"]);
+        $stmt->execute(["keyword" => "%{$keyword}%"]);
         return $stmt->fetchAll();
     }
 

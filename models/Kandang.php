@@ -10,6 +10,9 @@ class Kandang
         $this->db = getDB();
     }
 
+    /**
+     * Ambil semua data kandang
+     */
     public function getAll()
     {
         $sql = "SELECT 
@@ -26,6 +29,9 @@ class Kandang
         return $stmt->fetchAll();
     }
 
+    /**
+     * Hitung total kandang berdasarkan tipe
+     */
     public function countByType($type)
     {
         $sql = "SELECT COUNT(*) as total FROM kandang WHERE tipe = ?";
@@ -33,5 +39,56 @@ class Kandang
         $stmt->execute([$type]);
         $result = $stmt->fetch();
         return $result['total'] ?? 0;
+    }
+
+    /**
+     * Ambil kandang yang tersedia berdasarkan jenis dan ukuran hewan
+     */
+    public function getAvailableKandang($jenisHewan, $ukuranHewan)
+    {
+        // Tentukan tipe kandang berdasarkan jenis dan ukuran hewan
+        $tipeKandang = 'Kecil'; // default
+        
+        if ($jenisHewan === 'Anjing' || $ukuranHewan === 'Besar') {
+            $tipeKandang = 'Besar';
+        } elseif ($ukuranHewan === 'Sedang') {
+            $tipeKandang = 'Besar'; // Sedang juga pakai kandang besar
+        }
+        
+        $sql = "SELECT 
+                    k.id_kandang as id,
+                    k.kode_kandang as kode,
+                    k.tipe,
+                    k.catatan,
+                    k.status
+                FROM kandang k
+                WHERE k.tipe = :tipe 
+                AND k.status = 'tersedia'
+                ORDER BY k.kode_kandang";
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['tipe' => $tipeKandang]);
+        return $stmt->fetchAll();
+    }
+
+    /**
+     * Ambil data kandang berdasarkan ID
+     */
+    public function getById($id)
+    {
+        $sql = "SELECT * FROM kandang WHERE id_kandang = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
+
+    /**
+     * Update status kandang
+     */
+    public function updateStatus($id, $status)
+    {
+        $sql = "UPDATE kandang SET status = ? WHERE id_kandang = ?";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$status, $id]);
     }
 }
