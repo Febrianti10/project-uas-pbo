@@ -1,3 +1,7 @@
 .git
 .gitignore
+<<<<<<< HEAD
 README.md
+=======
+README.md
+>>>>>>> 6b5ed58b57d31a8a4534cfa8e32e9cfd7009baeb

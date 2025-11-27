@@ -1,4 +1,14 @@
 <?php
+<<<<<<< HEAD
+return [
+    'host'     => getenv('MYSQLHOST') ?: 'localhost',  // ← ini fallback ke localhost
+    'port'     => getenv('MYSQLPORT') ?: '3306',       
+    'dbname'   => getenv('MYSQLDATABASE') ?: 'mvc_db', // ← nama database lokal
+    'username' => getenv('MYSQLUSER') ?: 'root',       // ← user lokal
+    'password' => getenv('MYSQLPASSWORD') ?: '',       // ← password kosong (lokal)
+    'charset'  => 'utf8mb4'
+];
+=======
 /**
  * Database Configuration
  * Sistem Penitipan Hewan
@@ -135,3 +145,4 @@ function getDB() {
 function isDBConnected() {
     return Database::getInstance()->testConnection();
 }
+>>>>>>> 6b5ed58b57d31a8a4534cfa8e32e9cfd7009baeb

@@ -60,7 +60,7 @@ $currentPage = $page ?? ($activeMenu ?? 'dashboard');
 
         <!-- TRANSAKSI PENITIPAN -->
         <li class="nav-item mb-1">
-          <a href="/index.php?page=transaksi"
+          <a href="index.php?page=transaksi"
              class="nav-link modern-link <?= $currentPage === 'transaksi' ? 'active' : '' ?>">
             <i class="bi bi-receipt modern-icon"></i>
             <span>Transaksi Penitipan</span>
