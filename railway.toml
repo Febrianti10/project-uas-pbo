@@ -3,4 +3,4 @@ builder = "NIXPACKS"
 
 [deploy]
 # Gunakan router PHP bawaan yang memeriksa keberadaan file sebelum meneruskan ke index.php
-startCommand = "php -S 0.0.0.0:$PORT -t . index.php"
+startCommand = "php -S 0.0.0.0:$PORT -t . router.php"
