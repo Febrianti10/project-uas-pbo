@@ -46,3 +46,11 @@ class Helper {
         die();
     }
 }
+
+function clean($value) {
+    return Helper::sanitize($value);
+}
+
+function number_only($value) {
+    return floatval(preg_replace('/[^0-9.]/', '', $value));
+}

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/PaymentMethod.php'; // PaymentMethod + CashPayment, TransferPayment, dll.
 
 /**
  * Model Transaksi
@@ -249,10 +250,11 @@ class Transaksi {
         try {
             $this->db->beginTransaction();
 
+            // Ambil transaksi lama (untuk detail & durasi jika perlu)
+            $transaksi = $this->getById($id);
+
             // Jika total_biaya tidak disediakan, hitung ulang dari detail_transaksi dan durasi
             if (!isset($data['total_biaya']) || empty($data['total_biaya'])) {
-                // ambil transaksi dan detail layanan tersimpan
-                $transaksi = $this->getById($id);
                 $detailLayananStored = $transaksi['detail_layanan'] ?? [];
                 
                 // ubah format detail agar cocok dengan calculateTotalFromInputs
@@ -275,6 +277,43 @@ class Transaksi {
                 $data['diskon'] = $calc['diskon'];
             }
 
+            // Validasi metode pembayaran
+            if (!isset($data['metode_pembayaran']) || empty($data['metode_pembayaran'])) {
+                throw new Exception("Metode pembayaran tidak boleh kosong");
+            }
+
+            // Pilih kelas pembayaran langsung (tanpa factory)
+            $methodKey = strtolower(trim($data['metode_pembayaran']));
+            $paymentObj = null;
+
+            // mapping sederhana - sesuaikan nama metode dengan data input yang dikirim
+            if (in_array($methodKey, ['cash', 'tunai'])) {
+                $paymentObj = new CashPayment();
+            } elseif (in_array($methodKey, ['transfer', 'bank_transfer', 'bank transfer', 'bank'])) {
+                $paymentObj = new TransferPayment();
+            } else {
+                // jika ada implementasi lain di PaymentMethod.php, tambahkan elseif di sini
+                // fallback: jika class bernama sama ada, coba instansiasi (lebih dinamis)
+                $classCandidate = ucfirst($methodKey) . 'Payment'; // contoh 'qris' => 'QrisPayment'
+                if (class_exists($classCandidate)) {
+                    $paymentObj = new $classCandidate();
+                } else {
+                    throw new Exception("Metode pembayaran tidak dikenal: {$data['metode_pembayaran']}");
+                }
+            }
+
+            // Jalankan proses pembayaran (polymorphism)
+            $paymentResult = $paymentObj->processPayment((float)$data['total_biaya'], [
+                'id_transaksi' => $id,
+                'meta' => $data['meta'] ?? []
+            ]);
+
+            if (!isset($paymentResult['success']) || $paymentResult['success'] !== true) {
+                // jika gagal, batalkan dan rollback
+                throw new Exception("Pembayaran gagal: " . ($paymentResult['detail'] ?? 'Unknown'));
+            }
+
+            // Update transaksi (simpan metode & tandai lunas)
             $sql = "UPDATE transaksi 
                     SET tanggal_keluar_aktual = :tanggal_keluar,
                         jam_keluar_aktual = :jam_keluar,
@@ -294,11 +333,10 @@ class Transaksi {
                 'durasi_hari' => $data['durasi_hari'],
                 'diskon' => $data['diskon'] ?? 0,
                 'total_biaya' => $data['total_biaya'],
-                'metode_pembayaran' => $data['metode_pembayaran']
+                'metode_pembayaran' => $paymentObj->getName()
             ]);
             
             // Update status hewan jadi sudah_diambil
-            $transaksi = $this->getById($id);
             $sqlHewan = "UPDATE hewan SET status = 'sudah_diambil' WHERE id_hewan = :id";
             $stmtHewan = $this->db->prepare($sqlHewan);
             $stmtHewan->execute(['id' => $transaksi['id_hewan']]);

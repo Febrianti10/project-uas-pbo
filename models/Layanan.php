@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../helper/helper.php';  
+require_once __DIR__ . '/../config/database.php';
+
 class Layanan
 {
     private $koneksi;
@@ -11,6 +14,10 @@ class Layanan
     // Tambah layanan (baik paket atau tambahan)
     public function tambahLayanan($nama, $harga, $jenis)
     {
+        $nama  = clean($nama);
+        $jenis = clean($jenis);
+        $harga = number_only($harga);
+
         $query = "INSERT INTO layanan (nama, harga, jenis) VALUES (?, ?, ?)";
         $stmt = $this->koneksi->prepare($query);
         $stmt->bind_param("sds", $nama, $harga, $jenis);
@@ -27,6 +34,8 @@ class Layanan
     // Ambil layanan berdasarkan jenis
     public function getByJenis($jenis)
     {
+        $jenis = clean($jenis);
+
         $query = "SELECT * FROM layanan WHERE jenis = ? ORDER BY id DESC";
         $stmt = $this->koneksi->prepare($query);
         $stmt->bind_param("s", $jenis);
@@ -37,6 +46,8 @@ class Layanan
     // Ambil satu layanan
     public function getLayananById($id)
     {
+        $id = intval($id);
+
         $query = "SELECT * FROM layanan WHERE id = ?";
         $stmt = $this->koneksi->prepare($query);
         $stmt->bind_param("i", $id);
@@ -47,6 +58,11 @@ class Layanan
     // Update layanan
     public function updateLayanan($id, $nama, $harga, $jenis)
     {
+        $id    = intval($id);
+        $nama  = clean($nama);
+        $jenis = clean($jenis);
+        $harga = number_only($harga);
+
         $query = "UPDATE layanan SET nama = ?, harga = ?, jenis = ? WHERE id = ?";
         $stmt = $this->koneksi->prepare($query);
         $stmt->bind_param("sdsi", $nama, $harga, $jenis, $id);
@@ -56,6 +72,8 @@ class Layanan
     // Hapus layanan
     public function deleteLayanan($id)
     {
+        $id = intval($id);
+
         $query = "DELETE FROM layanan WHERE id = ?";
         $stmt = $this->koneksi->prepare($query);
         $stmt->bind_param("i", $id);
