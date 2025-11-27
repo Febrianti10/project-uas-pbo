@@ -1,6 +1,6 @@
 <?php
 
-// index.php - Entry Point Gabungan (Frontend + Backend)
+// Struktur folder menggunakan MVC : index.php - Entry Point Gabungan (Frontend + Backend)
 
 // Autoload untuk load class otomatis dari /models dan /controllers
 spl_autoload_register(function ($className) {
