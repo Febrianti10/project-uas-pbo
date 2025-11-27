@@ -67,37 +67,62 @@ class Transaksi
     /**
      * Buat transaksi baru
      */
-    public function create($data)
-    {
-        try {
-            // Generate kode transaksi
-            $kodeTransaksi = $this->generateKodeTransaksi();
-            
-            $sql = "INSERT INTO transaksi 
-                    (kode_transaksi, id_pelanggan, id_hewan, id_kandang, id_layanan, 
-                     tanggal_masuk, durasi, total_biaya, status)
-                    VALUES 
-                    (:kode_transaksi, :id_pelanggan, :id_hewan, :id_kandang, :id_layanan,
-                     :tanggal_masuk, :durasi, :total_biaya, 'active')";
-            
-            $stmt = $this->db->prepare($sql);
-            
-            return $stmt->execute([
-                "kode_transaksi" => $kodeTransaksi,
-                "id_pelanggan" => $data["id_pelanggan"],
-                "id_hewan" => $data["id_hewan"], 
-                "id_kandang" => $data["id_kandang"],
-                "id_layanan" => $data["id_layanan"],
-                "tanggal_masuk" => $data["tanggal_masuk"],
-                "durasi" => $data["durasi"],
-                "total_biaya" => $data["total_biaya"]
-            ]);
-            
-        } catch (Exception $e) {
-            error_log("Error create transaksi: " . $e->getMessage());
+/**
+ * Buat transaksi baru - DEBUG VERSION
+ */
+public function create($data) {
+    try {
+        error_log("=== MODEL TRANSAKSI CREATE ===");
+        error_log("Data received: " . print_r($data, true));
+        
+        // Generate kode transaksi
+        $kodeTransaksi = $this->generateKodeTransaksi();
+        error_log("Generated kode: " . $kodeTransaksi);
+        
+        $sql = "INSERT INTO transaksi 
+                (kode_transaksi, id_pelanggan, id_hewan, id_kandang, id_layanan, 
+                 biaya_paket, tanggal_masuk, durasi, total_biaya, status)
+                VALUES 
+                (:kode_transaksi, :id_pelanggan, :id_hewan, :id_kandang, :id_layanan,
+                 :biaya_paket, :tanggal_masuk, :durasi, :total_biaya, 'active')";
+        
+        error_log("SQL: " . $sql);
+        
+        $stmt = $this->db->prepare($sql);
+        
+        $params = [
+            "kode_transaksi" => $kodeTransaksi,
+            "id_pelanggan" => $data["id_pelanggan"],
+            "id_hewan" => $data["id_hewan"], 
+            "id_kandang" => $data["id_kandang"],
+            "id_layanan" => $data["id_layanan"],
+            "biaya_paket" => $data["biaya_paket"],
+            "tanggal_masuk" => $data["tanggal_masuk"],
+            "durasi" => $data["durasi"],
+            "total_biaya" => $data["total_biaya"]
+        ];
+        
+        error_log("SQL params: " . print_r($params, true));
+        
+        $result = $stmt->execute($params);
+        error_log("Execute result: " . ($result ? 'true' : 'false'));
+        
+        if ($result) {
+            $lastId = $this->db->lastInsertId();
+            error_log("Last insert ID: " . $lastId);
+            return $lastId;
+        } else {
+            error_log("Execute failed");
+            $errorInfo = $stmt->errorInfo();
+            error_log("PDO error: " . print_r($errorInfo, true));
             return false;
         }
+        
+    } catch (Exception $e) {
+        error_log("❌ MODEL ERROR create transaksi: " . $e->getMessage());
+        return false;
     }
+}
 
     /**
      * Update status transaksi (checkout)

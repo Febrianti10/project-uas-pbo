@@ -72,7 +72,9 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                     ======================================================== -->
                     <h5 class="mb-3">Form Pendaftaran Penitipan</h5>
 
-                    <form method="post" action="index.php?action=createTransaksi">
+                    <!-- <form method="post" action="index.php?action=createTransaksi"> -->
+                        <form method="post" action="index.php?page=transaksi&action=create">
+
 
                         <div class="row g-4">
 
@@ -438,74 +440,123 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
             });
         }
 
-                // =============================================
-                // KALKULASI TOTAL HARGA - DEBUG VERSION
-                // =============================================
-                const paketSelect = document.getElementById('paketSelect');
-                const lamaInapInput = document.getElementById('lamaInap');
-                const totalHargaElement = document.getElementById('totalHarga');
-                const totalInput = document.getElementById('totalInput');
+// =============================================
+// KALKULASI TOTAL HARGA - DEBUG VERSION
+// =============================================
+const paketSelect = document.getElementById('paketSelect');
+const lamaInapInput = document.getElementById('lamaInap');
+const ltCheckboxes = document.querySelectorAll('.lt-checkbox');
+const totalHargaElement = document.getElementById('totalHarga');
+const totalInput = document.getElementById('totalInput');
+const detailPerhitungan = document.getElementById('detailPerhitungan');
 
-                function hitungTotal() {
-                    console.log("=== KALKULASI TOTAL DIMULAI ===");
-                    
-                    let total = 0;
+console.log("=== KALKULASI INIT ===");
+console.log("paketSelect:", paketSelect);
+console.log("lamaInapInput:", lamaInapInput);
+console.log("ltCheckboxes:", ltCheckboxes.length);
 
-                    // Debug: Cek elemen
-                    console.log("paketSelect:", paketSelect);
-                    console.log("paketSelect value:", paketSelect ? paketSelect.value : 'null');
-                    console.log("lamaInapInput value:", lamaInapInput ? lamaInapInput.value : 'null');
+// Data harga layanan tambahan
+const hargaLayananTambahan = {
+    'G001': 100000, // Grooming Dasar
+    'G002': 170000, // Grooming Lengkap  
+    'L003': 50000,  // Vitamin / Suplemen
+    'L004': 260000  // Vaksin
+};
 
-                    // Hitung harga paket
-                    if (paketSelect && paketSelect.value) {
-                        const selectedOption = paketSelect.options[paketSelect.selectedIndex];
-                        console.log("selectedOption:", selectedOption);
-                        
-                        const hargaPaket = selectedOption ? parseInt(selectedOption.getAttribute('data-harga')) : 0;
-                        const lamaInap = parseInt(lamaInapInput.value) || 1;
-                        
-                        console.log("hargaPaket dari data attribute:", hargaPaket);
-                        console.log("lamaInap:", lamaInap);
-                        
-                        total = hargaPaket * lamaInap;
-                        console.log("Total calculated:", total);
-                    } else {
-                        console.log("Paket tidak dipilih atau elemen tidak ditemukan");
-                    }
+function hitungTotal() {
+    console.log("=== HITUNG TOTAL DIPANGGIL ===");
+    
+    let total = 0;
+    let biayaPaket = 0;
+    let biayaTambahan = 0;
 
-                    // Update tampilan
-                    if (totalHargaElement) {
-                        totalHargaElement.textContent = 'Rp ' + total.toLocaleString('id-ID');
-                        console.log("Total display updated");
-                    }
-                    if (totalInput) {
-                        totalInput.value = total;
-                        console.log("Total input updated:", total);
-                    }
+    // Hitung harga paket
+    if (paketSelect && paketSelect.value) {
+        const selectedOption = paketSelect.options[paketSelect.selectedIndex];
+        const hargaPaketPerHari = parseInt(selectedOption.getAttribute('data-harga')) || 0;
+        const lamaInap = parseInt(lamaInapInput.value) || 1;
+        
+        console.log("Harga paket per hari:", hargaPaketPerHari);
+        console.log("Lama inap:", lamaInap);
+        
+        biayaPaket = hargaPaketPerHari * lamaInap;
+        total += biayaPaket;
+        
+        console.log("Biaya paket:", biayaPaket);
+    } else {
+        console.log("Paket belum dipilih");
+    }
 
-                    console.log("=== KALKULASI TOTAL SELESAI ===");
-                }
+    // Hitung layanan tambahan
+    let selectedLayananCount = 0;
+    ltCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            const kodeLayanan = checkbox.value;
+            const harga = hargaLayananTambahan[kodeLayanan] || 0;
+            biayaTambahan += harga;
+            total += harga;
+            selectedLayananCount++;
+            console.log("Layanan", kodeLayanan, "dipilih, harga:", harga);
+        }
+    });
 
-                // Event listeners untuk kalkulasi
-                if (paketSelect) {
-                    paketSelect.addEventListener('change', function() {
-                        console.log("Paket berubah:", this.value);
-                        hitungTotal();
-                    });
-                    console.log("Paket select event listener added");
-                }
+    console.log("Biaya tambahan:", biayaTambahan);
+    console.log("Total akhir:", total);
 
-                if (lamaInapInput) {
-                    lamaInapInput.addEventListener('input', function() {
-                        console.log("Lama inap berubah:", this.value);
-                        hitungTotal();
-                    });
-                    console.log("Lama inap event listener added");
-                }
+    // Update tampilan
+    if (totalHargaElement) {
+        totalHargaElement.textContent = 'Rp ' + total.toLocaleString('id-ID');
+        console.log("Total display updated");
+    }
+    if (totalInput) {
+        totalInput.value = total;
+        console.log("Total input updated:", total);
+    }
+    if (detailPerhitungan) {
+        detailPerhitungan.textContent = `Paket: Rp ${biayaPaket.toLocaleString('id-ID')} + Layanan: Rp ${biayaTambahan.toLocaleString('id-ID')}`;
+    }
 
-                // Hitung total awal saat page load
-                console.log("Initial calculation on page load...");
-                hitungTotal();
+    // Update label layanan tambahan
+    const ltLabel = document.getElementById('ltLabel');
+    if (ltLabel) {
+        if (selectedLayananCount > 0) {
+            ltLabel.textContent = `${selectedLayananCount} layanan tambahan (Rp ${biayaTambahan.toLocaleString('id-ID')})`;
+        } else {
+            ltLabel.textContent = 'Pilih layanan tambahan (opsional)';
+        }
+    }
+}
+
+// Event listeners untuk kalkulasi
+if (paketSelect) {
+    paketSelect.addEventListener('change', function() {
+        console.log("Paket berubah:", this.value);
+        hitungTotal();
+    });
+    console.log("Paket event listener added");
+}
+
+if (lamaInapInput) {
+    lamaInapInput.addEventListener('input', function() {
+        console.log("Lama inap berubah:", this.value);
+        hitungTotal();
+    });
+    console.log("Lama inap event listener added");
+}
+
+if (ltCheckboxes.length > 0) {
+    ltCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            console.log("Checkbox berubah:", this.value, this.checked);
+            hitungTotal();
+        });
+    });
+    console.log("Checkbox event listeners added");
+}
+
+// Hitung total awal
+console.log("Initial calculation...");
+hitungTotal();
 
 // =============================================
 // PEMILIHAN KANDANG - DEBUG VERSION
