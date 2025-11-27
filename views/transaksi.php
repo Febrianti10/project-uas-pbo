@@ -272,7 +272,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
 
                         <div class="d-flex justify-content-end mt-3">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save me-2"></i>Simpan &amp; Cetak Bukti
+                                <i class="bi bi-save me-2"></i>Simpan
                             </button>
                         </div>
                     </form>
