@@ -3,6 +3,10 @@ $pageTitle  = 'Data Hewan & Kandang';
 $activeMenu = 'hewan';
 include __DIR__ . '/template/header.php';
 
+// LOAD DATA KANDANG DARI DATABASE
+require_once __DIR__ . '/../models/Kandang.php';
+$kandangModel = new Kandang();
+
 /*
     =============================
     1. DATA HEWAN (diisi oleh controller)
@@ -273,7 +277,7 @@ if (empty($kandangList)) {
                                         <i class="bi bi-pencil"></i>
                                     </button>
 
-                                    <a href="index.php?page=kandang&action=delete&id=<?= urlencode($k['id']); ?>"
+                                    <a href="index.php?action=deleteKandang&id=<?= urlencode($k['id']); ?>"
                                         class="btn btn-outline-danger btn-sm"
                                         onclick="return confirm('Hapus kandang <?= htmlspecialchars($k['kode']); ?> ?');">
                                         <i class="bi bi-trash"></i>
@@ -285,7 +289,7 @@ if (empty($kandangList)) {
                             <div class="modal fade" id="modalEditKandang<?= (int)$k['id']; ?>" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
-                                        <form method="post" action="index.php?page=hewan&action=update_kandang">
+                                        <form method="post" action="index.php?action=updateKandang">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Edit Kandang <?= htmlspecialchars($k['kode']); ?></h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

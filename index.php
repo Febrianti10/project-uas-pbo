@@ -8,6 +8,7 @@ spl_autoload_register(function ($className) {
     $paths = [
         __DIR__ . '/models/' . $className . '.php',
         __DIR__ . '/controllers/' . $className . '.php',
+        __DIR__ . '/core/' . $className . '.php',
     ];
     foreach ($paths as $path) {
         if (file_exists($path)) {
@@ -22,6 +23,8 @@ session_start();
 
 // Cek apakah ada action (backend routing)
 $action = $_GET['action'] ?? $_POST['action'] ?? null;
+// DEBUG: Tampilkan action yang diterima
+error_log("Action received: " . $action);
 if ($action) {
     // Routing untuk backend (controllers)
     switch ($action) {
@@ -33,6 +36,20 @@ if ($action) {
             $controller = new AuthController();
             $controller->logout();
             break;
+        // KANDANG ACTIONS
+        case 'storeKandang':
+            $controller = new KandangController();
+            $controller->store();
+            break;
+        case 'updateKandang':
+            $controller = new KandangController();
+            $controller->update();
+            break;
+        case 'deleteKandang':
+            $controller = new KandangController();
+            $controller->delete();
+            break;
+        // TRANSAKSI ACTIONS     
         case 'createTransaksi':
             $controller = new TransaksiController();
             $controller->create();
@@ -61,20 +78,16 @@ if ($action) {
             $controller = new TransaksiController();
             $controller->cetakBukti($_GET['id']);
             break;
-        case 'storeKandang': // Menangani POST dari form tambah kandang
-            $controller = new KandangController();
-            $controller->store();
-            break;
-        case 'deleteKandang': // Menangani GET dari tombol hapus kandang
-            $controller = new KandangController();
-            $controller->delete();
-            break;
         default:
             echo json_encode(['error' => 'Action not found']);
             break;
     }
     exit; // Stop setelah handle backend, agar tidak include view
 }
+// DEBUG: Tampilkan semua parameter
+error_log("GET: " . print_r($_GET, true));
+error_log("POST: " . print_r($_POST, true));
+error_log("Action: " . $action);
 
 // Jika tidak ada action, lanjut ke frontend routing (page)
 $page = $_GET['page'] ?? 'dashboard';

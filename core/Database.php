@@ -1,56 +1,69 @@
 <?php
-// File: /core/Database.php
 
 class Database {
-    private static $instance = null;
-    private $conn;
-
-    private function __construct() {
-        // Load konfigurasi dari /config/database.php
-        $config = require_once __DIR__ . '/../config/database.php';
+    private $host;
+    private $username;
+    private $password;
+    private $database;
+    private $connection;
+    
+    public function __construct() {
+        // Include konfigurasi database
+        require_once __DIR__ . '/../config/database.php';
         
+        $config = getDatabaseConfig();
+        
+        $this->host = $config['host'];
+        $this->username = $config['username'];
+        $this->password = $config['password'];
+        $this->database = $config['database'];
+        
+        $this->connect();
+    }
+    
+    private function connect() {
         try {
-            // Buat DSN (Data Source Name)
-            $port = $config['port'] ?? 3306;
-            $dsn = "mysql:host={$config['host']};port={$port};dbname={$config['dbname']};charset={$config['charset']}";
-            
-            // Buat koneksi PDO
-            $this->conn = new PDO(
-                $dsn,
-                $config['username'],
-                $config['password'],
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false
-                ]
-            );
-            
-            echo "Database connected successfully!"; // untuk testing, nanti bisa dihapus
-            
+            $dsn = "mysql:host={$this->host};dbname={$this->database};charset=utf8mb4";
+            $this->connection = new PDO($dsn, $this->username, $this->password);
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             die("Connection failed: " . $e->getMessage());
         }
     }
-
-    // Singleton pattern: pastikan cuma 1 instance
-    public static function getInstance() {
-        if (self::$instance === null) {
-            self::$instance = new Database();
+    
+    public function query($sql, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            die("Query failed: " . $e->getMessage() . " - SQL: " . $sql);
         }
-        return self::$instance;
     }
-
-    // Get koneksi PDO untuk dipakai di Model
-    public function getConnection() {
-        return $this->conn;
+    
+    public function execute($sql, $params = []) {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            return $stmt->execute($params);
+        } catch (PDOException $e) {
+            die("Execute failed: " . $e->getMessage() . " - SQL: " . $sql);
+        }
     }
-
-    // Prevent cloning
-    private function __clone() {}
-
-    // Prevent unserialize
-    public function __wakeup() {
-        throw new Exception("Cannot unserialize singleton");
+    
+    public function lastInsertId() {
+        return $this->connection->lastInsertId();
+    }
+    
+    public function beginTransaction() {
+        return $this->connection->beginTransaction();
+    }
+    
+    public function commit() {
+        return $this->connection->commit();
+    }
+    
+    public function rollBack() {
+        return $this->connection->rollBack();
     }
 }
