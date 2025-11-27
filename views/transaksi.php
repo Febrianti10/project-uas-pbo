@@ -99,7 +99,7 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
                     ======================================================== -->
                     <h5 class="mb-3">Form Pendaftaran Penitipan</h5>
 
-                    <form method="post" action="index.php?action=createTransaksi">
+                    <form method="post" action="index.php?action=createTransaksi" id="formPendaftaran">
 
                         <div class="row g-4">
 
@@ -457,6 +457,27 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
     </div>
 </div>
 
+<!-- Modal Bukti Pembayaran -->
+<div class="modal fade" id="modalBuktiBayar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bukti Pembayaran</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="buktiBayarContent">
+                <!-- Content akan diisi via JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" onclick="cetakBuktiBayar()">
+                    <i class="bi bi-printer me-2"></i>Cetak
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // =============================================
@@ -713,6 +734,24 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
         hitungTotal();
 
         // =============================================
+        // FORM SUBMIT HANDLER (Tab Pendaftaran)
+        // =============================================
+        const formPendaftaran = document.getElementById('formPendaftaran');
+        if (formPendaftaran) {
+            formPendaftaran.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validasi form
+                if (!validasiForm()) {
+                    return;
+                }
+
+                // Simpan data dan tampilkan bukti bayar
+                simpanTransaksi();
+            });
+        }
+
+        // =============================================
         // FUNGSI CHECKOUT (Tab Pengembalian)
         // =============================================
         window.prosesCheckout = function(idTransaksi) {
@@ -811,6 +850,315 @@ $tab = $_GET['tab'] ?? 'pendaftaran';
             });
         }
     });
+
+    // =============================================
+    // FUNGSI BUKTI PEMBAYARAN
+    // =============================================
+
+    function validasiForm() {
+        // Validasi dasar
+        const requiredFields = document.querySelectorAll('#formPendaftaran [required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        if (!isValid) {
+            alert('Harap lengkapi semua field yang wajib diisi!');
+            return false;
+        }
+
+        // Validasi kandang
+        if (!document.getElementById('no_kandang').value) {
+            alert('Harap pilih kandang terlebih dahulu!');
+            return false;
+        }
+
+        return true;
+    }
+
+    function simpanTransaksi() {
+        // Simulasi penyimpanan data ke server
+        const formData = new FormData(document.getElementById('formPendaftaran'));
+        
+        // Data transaksi untuk bukti bayar
+        const transaksiData = {
+            no_transaksi: 'TRX-' + new Date().getTime(),
+            tgl_transaksi: new Date().toLocaleString('id-ID'),
+            nama_pemilik: document.getElementById('search_pemilik').value,
+            no_hp: document.getElementById('p_hp').value,
+            alamat: document.getElementById('p_alamat').value,
+            nama_hewan: document.querySelector('[name="nama_hewan"]').value,
+            jenis_hewan: document.querySelector('[name="jenis_hewan"]').value,
+            ras: document.querySelector('[name="ras"]').value,
+            ukuran: document.querySelector('[name="ukuran"]').value,
+            warna: document.querySelector('[name="warna"]').value,
+            catatan: document.querySelector('[name="catatan"]').value,
+            paket: document.getElementById('paketSelect').options[document.getElementById('paketSelect').selectedIndex].text,
+            harga_paket: parseInt(document.getElementById('paketSelect').options[document.getElementById('paketSelect').selectedIndex].getAttribute('data-harga')),
+            lama_inap: parseInt(document.getElementById('lamaInap').value),
+            no_kandang: document.getElementById('no_kandang').value,
+            tgl_masuk: document.querySelector('[name="tgl_masuk"]').value,
+            tgl_keluar: hitungTanggalKeluar(document.querySelector('[name="tgl_masuk"]').value, parseInt(document.getElementById('lamaInap').value)),
+            total_biaya: parseInt(document.getElementById('totalInput').value),
+            layanan_tambahan: getLayananTambahanTerpilih()
+        };
+
+        // Tampilkan bukti bayar
+        tampilkanBuktiBayar(transaksiData);
+    }
+
+    function hitungTanggalKeluar(tglMasuk, lamaInap) {
+        const tgl = new Date(tglMasuk);
+        tgl.setDate(tgl.getDate() + lamaInap);
+        return tgl.toLocaleDateString('id-ID');
+    }
+
+    function getLayananTambahanTerpilih() {
+        const layananTerpilih = [];
+        const checkboxes = document.querySelectorAll('.lt-checkbox:checked');
+        
+        checkboxes.forEach(checkbox => {
+            const label = document.querySelector(`label[for="${checkbox.id}"]`).textContent;
+            const harga = parseInt(checkbox.getAttribute('data-harga'));
+            layananTerpilih.push({
+                nama: label.split(' - ')[0],
+                harga: harga
+            });
+        });
+
+        return layananTerpilih;
+    }
+
+    function tampilkanBuktiBayar(transaksiData) {
+        const buktiContent = document.getElementById('buktiBayarContent');
+        
+        buktiContent.innerHTML = `
+            <div class="text-center mb-4">
+                <h2 class="text-primary mb-1">PetCare Center</h2>
+                <p class="text-muted mb-0">Jl. Kesehatan Hewan No. 45, Jakarta</p>
+                <p class="text-muted">Telp: (021) 123-4567 | Email: info@petcare.com</p>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary mb-3">Informasi Transaksi</h6>
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td width="40%"><strong>No. Transaksi</strong></td>
+                                    <td>: ${transaksiData.no_transaksi}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tanggal</strong></td>
+                                    <td>: ${transaksiData.tgl_transaksi}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kandang</strong></td>
+                                    <td>: ${transaksiData.no_kandang}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title text-primary mb-3">Periode Penitipan</h6>
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td width="40%"><strong>Check-in</strong></td>
+                                    <td>: ${new Date(transaksiData.tgl_masuk).toLocaleDateString('id-ID')}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Check-out</strong></td>
+                                    <td>: ${transaksiData.tgl_keluar}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Lama Inap</strong></td>
+                                    <td>: ${transaksiData.lama_inap} hari</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light py-2">
+                            <h6 class="mb-0 text-primary">Informasi Pemilik</h6>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td width="35%"><strong>Nama</strong></td>
+                                    <td>: ${transaksiData.nama_pemilik}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>No. HP</strong></td>
+                                    <td>: ${transaksiData.no_hp}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Alamat</strong></td>
+                                    <td>: ${transaksiData.alamat}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light py-2">
+                            <h6 class="mb-0 text-primary">Informasi Hewan</h6>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td width="35%"><strong>Nama</strong></td>
+                                    <td>: ${transaksiData.nama_hewan}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Jenis</strong></td>
+                                    <td>: ${transaksiData.jenis_hewan}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ras</strong></td>
+                                    <td>: ${transaksiData.ras || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ukuran</strong></td>
+                                    <td>: ${transaksiData.ukuran || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Warna</strong></td>
+                                    <td>: ${transaksiData.warna || '-'}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Catatan</strong></td>
+                                    <td>: ${transaksiData.catatan || '-'}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-light py-2">
+                    <h6 class="mb-0 text-primary">Rincian Biaya</h6>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-bordered mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th width="60%">Item</th>
+                                <th width="15%" class="text-center">Qty</th>
+                                <th width="25%" class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>${transaksiData.paket}</strong><br>
+                                    <small class="text-muted">Rp ${transaksiData.harga_paket.toLocaleString('id-ID')} / hari</small>
+                                </td>
+                                <td class="text-center">${transaksiData.lama_inap} hari</td>
+                                <td class="text-end">Rp ${(transaksiData.harga_paket * transaksiData.lama_inap).toLocaleString('id-ID')}</td>
+                            </tr>
+
+                            ${transaksiData.layanan_tambahan.map(layanan => `
+                                <tr>
+                                    <td><strong>${layanan.nama}</strong></td>
+                                    <td class="text-center">1</td>
+                                    <td class="text-end">Rp ${layanan.harga.toLocaleString('id-ID')}</td>
+                                </tr>
+                            `).join('')}
+
+                            <tr class="table-primary">
+                                <td colspan="2" class="text-end"><strong>TOTAL</strong></td>
+                                <td class="text-end"><strong>Rp ${transaksiData.total_biaya.toLocaleString('id-ID')}</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <h6 class="alert-heading mb-2"><i class="bi bi-info-circle me-2"></i>Informasi Penting</h6>
+                <ul class="mb-0 small">
+                    <li>Simpan bukti pembayaran ini sebagai tanda pengambilan hewan</li>
+                    <li>Penambahan hari penitipan akan dikenakan biaya tambahan</li>
+                    <li>Pengambilan hewan setelah jam 18:00 akan dikenakan biaya tambahan</li>
+                    <li>Hubungi kami jika ada perubahan atau pertanyaan</li>
+                </ul>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-6 text-center">
+                    <p class="mb-4">Hormat Kami,</p>
+                    <div style="border-bottom: 1px solid #000; width: 200px; margin: 0 auto 10px;"></div>
+                    <p class="mb-0"><small>PetCare Center</small></p>
+                </div>
+                <div class="col-md-6 text-center">
+                    <p class="mb-4">Pemilik Hewan,</p>
+                    <div style="border-bottom: 1px solid #000; width: 200px; margin: 0 auto 10px;"></div>
+                    <p class="mb-0"><small>${transaksiData.nama_pemilik}</small></p>
+                </div>
+            </div>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalBuktiBayar'));
+        modal.show();
+    }
+
+    function cetakBuktiBayar() {
+        const modal = bootstrap.Modal.getInstance(document.getElementById('modalBuktiBayar'));
+        modal.hide();
+        
+        // Buka window baru untuk print
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Bukti Pembayaran - PetCare Center</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+                <style>
+                    @media print {
+                        body { margin: 0; padding: 20px; }
+                        .no-print { display: none !important; }
+                    }
+                    .border-bottom-dotted { border-bottom: 1px dotted #000; }
+                </style>
+            </head>
+            <body>
+                ${document.getElementById('buktiBayarContent').innerHTML}
+                <div class="text-center mt-4 no-print">
+                    <button class="btn btn-primary" onclick="window.print()">Cetak</button>
+                    <button class="btn btn-secondary" onclick="window.close()">Tutup</button>
+                </div>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+        
+        // Auto print setelah window terbuka
+        printWindow.onload = function() {
+            printWindow.print();
+        };
+    }
 </script>
 
-<?php include __DIR__ . '/template/footer.php'; ?>;
+<?php include __DIR__ . '/template/footer.php'; ?>
