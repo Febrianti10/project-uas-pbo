@@ -31,7 +31,7 @@ class Hewan
     public function getById($id)
     {
         $sql = "SELECT h.*, 
-                       p.nama_pelanggan, p.no_hp, p.alamat
+                    p.nama_pelanggan, p.no_hp, p.alamat
                 FROM hewan h
                 LEFT JOIN pelanggan p ON h.id_pelanggan = p.id_pelanggan
                 WHERE h.id_hewan = :id";
