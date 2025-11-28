@@ -25,8 +25,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
                 FROM pelanggan p
                 ORDER BY p.nama_pelanggan";
 
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
+        $stmt = $this->db->query($sql);
         return $stmt->fetchAll();
     }
 
@@ -35,7 +34,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
      */
     public function searchForAutocomplete($keyword)
     {
-        // Gunakan query langsung tanpa prepared statement untuk simplicity
+        // Gunakan query langsung tanpa queryd statement untuk simplicity
         $sql = "SELECT 
                     p.id_pelanggan as id,
                     p.kode_pelanggan as kode,
@@ -68,7 +67,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
                     VALUES 
                     (:kode_pelanggan, :nama_pelanggan, :no_hp, :alamat)";
 
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->db->query($sql);
 
             return $stmt->execute([
                 "kode_pelanggan" => $kode,
@@ -101,7 +100,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
                         alamat = :alamat
                     WHERE id_pelanggan = :id";
 
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->db->query($sql);
 
             return $stmt->execute([
                 "id" => $id,
@@ -124,7 +123,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
         try {
             // Cek apakah pelanggan punya hewan
             $sqlCheck = "SELECT COUNT(*) as total FROM hewan WHERE id_pelanggan = :id";
-            $stmtCheck = $this->db->prepare($sqlCheck);
+            $stmtCheck = $this->db->query($sqlCheck);
             $stmtCheck->execute(["id" => $id]);
             $result = $stmtCheck->fetch();
 
@@ -134,7 +133,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
             }
 
             $sql = "DELETE FROM pelanggan WHERE id_pelanggan = :id";
-            $stmt = $this->db->prepare($sql);
+            $stmt = $this->db->query($sql);
             return $stmt->execute(["id" => $id]);
 
         } catch (Exception $e) {
@@ -152,7 +151,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
                 FROM pelanggan 
                 WHERE kode_pelanggan LIKE 'PLG%'";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->query($sql);
         $stmt->execute();
         $result = $stmt->fetch();
 
@@ -177,7 +176,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
                 OR p.kode_pelanggan LIKE :keyword
                 ORDER BY p.nama_pelanggan";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->query($sql);
         $stmt->execute(["keyword" => "%{$keyword}%"]);
         return $stmt->fetchAll();
     }
@@ -188,7 +187,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
     public function getTotalCount()
     {
         $sql = "SELECT COUNT(*) as total FROM pelanggan";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->query($sql);
         $stmt->execute();
         $result = $stmt->fetch();
         return $result['total'] ?? 0;
@@ -206,7 +205,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
                 FROM pelanggan p
                 ORDER BY p.nama_pelanggan";
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->query($sql);
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -227,7 +226,7 @@ class Pelanggan // Menggunakan Encapsulation private $db dan CRUD
             $params["exclude_id"] = $exclude_id;
         }
 
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->db->query($sql);
         $stmt->execute($params);
         $result = $stmt->fetch();
         return ($result['total'] ?? 0) > 0;

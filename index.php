@@ -46,10 +46,7 @@ if ($action) {
             $controller->logout();
             break;
             
-        // PELANGGAN ACTIONS
-        // Di bagian switch($action), pastikan case searchPelanggan ada:
         case 'searchPelanggan':
-        // models/ → berisi class untuk logika data
             require_once __DIR__ . '/models/Pelanggan.php';
             $pelangganModel = new Pelanggan();
             
@@ -63,22 +60,23 @@ if ($action) {
             echo json_encode($results);
             exit;
 
-        // Tambahkan case ini di switch($action) di index.php
         case 'getKandangTersedia':
-        // models/ → berisi class untuk logika data
             require_once __DIR__ . '/models/Kandang.php';
             $kandangModel = new Kandang();
             
             $jenis = $_GET['jenis'] ?? '';
             $ukuran = $_GET['ukuran'] ?? '';
             
-            // Filter kandang berdasarkan jenis dan ukuran hewan
             $kandangTersedia = $kandangModel->getAvailableKandang($jenis, $ukuran);
             
             header('Content-Type: application/json');
             echo json_encode($kandangTersedia);
             exit;
-            // break;
+        
+        case 'transaksi':
+            $controller = new TransaksiController();
+            $controller->index(); // MEMANGGIL METHOD INDEX() UNTUK MENGAMBIL DATA
+            break;
             
         // TRANSAKSI ACTIONS     
         case 'createTransaksi':
@@ -119,7 +117,6 @@ if ($action) {
     exit;
 }
 
-// Jika tidak ada action, lanjut ke frontend routing (page)
 // views/ → berisi tampilan dengan HTML
 $page = $_GET['page'] ?? 'dashboard';
 error_log("ACTION REQ: " . $action);
